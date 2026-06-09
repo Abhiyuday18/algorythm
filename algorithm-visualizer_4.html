@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AlgoRythm — Algorithm Visualizer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0f14;--surface:#13161d;--surface2:#1a1e28;--border:#1e2230;
+  --accent:#5b8dee;--accent2:#8b5cf6;--green:#34d399;--red:#f87171;
+  --yellow:#fbbf24;--orange:#fb923c;--text:#e8eaf0;--muted:#7a7f96;
+  --mono:'Space Mono',monospace;--sans:'Space Grotesk',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:.85rem 2rem;background:rgba(13,15,20,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav-left{display:flex;align-items:center;gap:1.2rem}
+.nav-logo{font-family:var(--mono);font-size:.88rem;color:var(--accent);letter-spacing:.04em;cursor:pointer;user-select:none}
+.nav-logo span{color:var(--accent2)}
+.nav-back{font-size:.8rem;color:var(--muted);cursor:pointer;padding:.28rem .75rem;border:1px solid var(--border);border-radius:6px;transition:all .2s;display:none}
+.nav-back:hover{border-color:var(--accent);color:var(--accent)}
+.nav-back.visible{display:block}
+.nav-tag{font-family:var(--mono);font-size:.62rem;padding:.18rem .5rem;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.25);border-radius:4px;color:var(--accent2)}
+
+/* HUB */
+#hub{padding:3.5rem 2rem 2.5rem}
+.hub-inner{max-width:1020px;margin:0 auto}
+.hub-eyebrow{font-family:var(--mono);font-size:.7rem;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.55rem}
+.hub-title{font-size:clamp(2.2rem,5.5vw,3.6rem);font-weight:700;letter-spacing:-.025em;line-height:1.08;margin-bottom:.75rem}
+.hub-title .grad{background:linear-gradient(120deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hub-sub{color:var(--muted);font-size:.95rem;max-width:540px;margin-bottom:.9rem}
+.hub-features{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:2.4rem}
+.hub-feat{font-family:var(--mono);font-size:.68rem;padding:.22rem .6rem;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--muted)}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(275px,1fr));gap:1.1rem}
+
+/* CARDS */
+.algo-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:border-color .2s,transform .2s}
+.algo-card:hover{border-color:var(--accent);transform:translateY(-3px)}
+.card-preview{height:128px;display:flex;align-items:flex-end;justify-content:center;background:var(--surface2);border-bottom:1px solid var(--border);overflow:hidden}
+.card-info{padding:1.05rem 1.25rem}
+.card-info h3{font-size:.95rem;font-weight:600;margin-bottom:.22rem}
+.card-info p{font-size:.78rem;color:var(--muted);line-height:1.5}
+.card-chips{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.6rem}
+.chip{font-family:var(--mono);font-size:.63rem;padding:.18rem .48rem;background:rgba(91,141,238,.09);border:1px solid rgba(91,141,238,.18);border-radius:3px;color:var(--accent)}
+.chip.purple{background:rgba(139,92,246,.09);border-color:rgba(139,92,246,.2);color:var(--accent2)}
+
+/* MINI PREVIEWS */
+.mini-bars{display:flex;align-items:flex-end;gap:2px;height:118px;padding:0 10px;width:100%}
+.mini-bar{flex:1;border-radius:2px 2px 0 0}
+
+/* VIZ PANEL */
+#viz-panel{display:none;max-width:1020px;margin:0 auto;padding:0 2rem 4rem}
+#viz-panel.active{display:block}
+#hub.hidden{display:none}
+.viz-section{display:none}
+
+/* VIZ HEADER */
+.viz-header{display:flex;align-items:center;gap:.9rem;padding:1.8rem 0 1.2rem;flex-wrap:wrap}
+.viz-title{font-size:1.45rem;font-weight:700;letter-spacing:-.015em}
+.viz-badge{font-family:var(--mono);font-size:.68rem;padding:.22rem .58rem;background:rgba(91,141,238,.1);border:1px solid rgba(91,141,238,.22);border-radius:4px;color:var(--accent)}
+
+/* CONTROLS */
+.controls{display:flex;gap:.55rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.ctrl-select{background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--sans);font-size:.82rem;padding:.42rem .8rem;border-radius:7px;cursor:pointer;outline:none;transition:border-color .2s}
+.ctrl-select:hover,.ctrl-select:focus{border-color:var(--accent)}
+.ctrl-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--sans);font-size:.82rem;font-weight:500;padding:.42rem .95rem;border-radius:7px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.ctrl-btn:hover{border-color:var(--accent);color:var(--accent)}
+.ctrl-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.ctrl-btn.primary:hover{background:#4a7de0}
+.ctrl-btn.step-btn{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.3);color:var(--yellow)}
+.ctrl-btn.step-btn:hover{background:rgba(251,191,36,.2);border-color:var(--yellow)}
+.ctrl-btn:disabled{opacity:.35;cursor:not-allowed}
+.ctrl-label{font-size:.76rem;color:var(--muted);font-family:var(--mono)}
+input[type=range]{accent-color:var(--accent);cursor:pointer;width:80px}
+
+/* STATS */
+.stat-row{display:flex;gap:1.3rem;margin-bottom:.85rem;flex-wrap:wrap;align-items:center}
+.stat{font-family:var(--mono);font-size:.75rem;color:var(--muted)}
+.stat span{color:var(--text)}
+.step-indicator{font-family:var(--mono);font-size:.72rem;padding:.22rem .65rem;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);border-radius:4px;color:var(--yellow);margin-left:auto}
+
+/* TWO-COLUMN LAYOUT */
+.viz-layout{display:grid;grid-template-columns:1fr 320px;gap:1rem;align-items:start}
+.viz-main{}
+.viz-sidebar{display:flex;flex-direction:column;gap:.9rem}
+
+/* CANVAS */
+.canvas-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+canvas{display:block;width:100%}
+
+/* PSEUDOCODE */
+.pseudo-block{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.pseudo-header{font-family:var(--mono);font-size:.68rem;color:var(--muted);padding:.55rem .9rem;background:var(--surface2);border-bottom:1px solid var(--border);letter-spacing:.06em;text-transform:uppercase}
+.pseudo-code{padding:.7rem .9rem;font-family:var(--mono);font-size:.73rem;line-height:1.85}
+.pline{padding:.1rem .5rem;border-radius:3px;color:var(--muted);transition:background .2s,color .2s;white-space:pre}
+.pline.active{background:rgba(91,141,238,.15);color:var(--text);border-left:2px solid var(--accent)}
+.pline.done-line{color:rgba(52,211,153,.5)}
+
+/* EXPLANATION BOX */
+.explain-block{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem}
+.explain-header{font-family:var(--mono);font-size:.66rem;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.45rem}
+.explain-text{font-size:.82rem;color:var(--muted);line-height:1.6;min-height:48px}
+.explain-text span{color:var(--text)}
+
+/* COMPLEXITY BOX */
+.complex-block{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem}
+.complex-header{font-family:var(--mono);font-size:.66rem;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem}
+.complex-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem}
+.complex-label{font-size:.75rem;color:var(--muted)}
+.complex-val{font-family:var(--mono);font-size:.73rem;color:var(--yellow)}
+.complex-bar-wrap{height:5px;background:var(--border);border-radius:3px;margin-top:.5rem;overflow:hidden}
+.complex-bar{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .4s}
+
+/* PATHFINDER */
+#path-canvas-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.9rem;overflow-x:auto;user-select:none}
+#path-grid{display:inline-grid;gap:2px;cursor:crosshair}
+.pcell{width:21px;height:21px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);transition:background .08s}
+.pcell.wall{background:#2a2f42;border-color:#3a4055}
+.pcell.start{background:var(--green);border-color:var(--green)}
+.pcell.end{background:var(--red);border-color:var(--red)}
+.pcell.visited{background:rgba(91,141,238,.28);border-color:rgba(91,141,238,.35)}
+.pcell.path{background:var(--yellow);border-color:var(--yellow)}
+.path-legend{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.7rem}
+.legend-item{display:flex;align-items:center;gap:.35rem;font-size:.74rem;color:var(--muted)}
+.legend-dot{width:12px;height:12px;border-radius:3px}
+
+/* BINARY SEARCH */
+#bs-array{display:flex;flex-wrap:wrap;gap:6px;padding:1.3rem;min-height:100px;align-items:center}
+.bs-item{width:48px;height:48px;border-radius:7px;background:var(--surface2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.85rem;font-weight:700;transition:all .3s;position:relative}
+.bs-item.low,.bs-item.high{border-color:var(--accent)}
+.bs-item.mid{background:rgba(251,191,36,.15);border-color:var(--yellow);color:var(--yellow)}
+.bs-item.found{background:rgba(52,211,153,.15);border-color:var(--green);color:var(--green)}
+.bs-item.eliminated{opacity:.2}
+.bs-item .bs-label{position:absolute;bottom:-17px;font-size:.55rem;color:var(--muted);font-family:var(--mono)}
+.bs-step-log{padding:0 1.3rem 1.2rem;font-family:var(--mono);font-size:.76rem;color:var(--muted);min-height:36px;margin-top:1.5rem}
+.bs-step-log span{color:var(--text)}
+
+/* HANOI */
+#hanoi-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;display:flex;flex-direction:column;align-items:center}
+.hanoi-log{font-family:var(--mono);font-size:.76rem;color:var(--muted);text-align:center;margin-top:.6rem;min-height:20px}
+.hanoi-log span{color:var(--text)}
+
+/* N-QUEEN */
+#nq-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;overflow-x:auto}
+#nq-board{display:inline-grid;gap:2px}
+.nq-cell{width:40px;height:40px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;transition:background .15s}
+.nq-cell.light{background:#1e2535}.nq-cell.dark{background:#161b27}
+.nq-cell.queen{background:rgba(91,141,238,.28)}.nq-cell.conflict{background:rgba(248,113,113,.2)}.nq-cell.placing{background:rgba(251,191,36,.22)}
+.nq-log{margin-top:.6rem;font-family:var(--mono);font-size:.74rem;color:var(--muted);min-height:20px}
+.nq-log span{color:var(--accent)}
+
+/* SUDOKU */
+#sdk-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;display:flex;flex-direction:column;align-items:center;gap:.7rem}
+#sdk-board{display:grid;grid-template-columns:repeat(9,1fr);gap:1px;background:var(--border);border:2px solid var(--accent);border-radius:4px;overflow:hidden}
+.sdk-cell{width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.85rem;font-weight:600;background:var(--surface2);color:var(--text);transition:background .1s,color .1s}
+.sdk-cell.given{font-weight:700}.sdk-cell.filled{color:var(--accent)}
+.sdk-cell.trying{background:rgba(251,191,36,.2);color:var(--yellow)}.sdk-cell.backtrack{background:rgba(248,113,113,.2);color:var(--red)}.sdk-cell.done{background:rgba(52,211,153,.12);color:var(--green)}
+.sdk-log{font-family:var(--mono);font-size:.74rem;color:var(--muted);text-align:center;min-height:20px}
+.sdk-log span{color:var(--text)}
+
+/* EASTER EGG */
+#easter-egg{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;opacity:0;pointer-events:none;transition:opacity .6s}
+#easter-egg.visible{opacity:1;pointer-events:auto}
+.egg-card{background:var(--surface);border:1px solid var(--accent2);border-radius:12px;padding:1rem 1.4rem;box-shadow:0 0 30px rgba(139,92,246,.25);max-width:260px}
+.egg-card h4{font-family:var(--mono);font-size:.8rem;color:var(--accent2);margin-bottom:.3rem}
+.egg-card p{font-size:.78rem;color:var(--muted);line-height:1.5}
+.egg-card .sig{font-family:var(--mono);font-size:.7rem;color:var(--accent);margin-top:.6rem}
+.egg-close{float:right;cursor:pointer;color:var(--muted);font-size:.8rem;margin-left:.5rem}
+.egg-close:hover{color:var(--text)}
+
+/* WATERMARK */
+.watermark{position:absolute;bottom:8px;right:12px;font-family:var(--mono);font-size:.58rem;color:rgba(91,141,238,.18);letter-spacing:.08em;pointer-events:none;user-select:none}
+
+/* STEP MODE OVERLAY */
+.step-mode-badge{display:none;font-family:var(--mono);font-size:.65rem;padding:.18rem .5rem;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.28);border-radius:4px;color:var(--yellow)}
+.step-mode-badge.on{display:inline-flex}
+
+@media(max-width:900px){
+  .viz-layout{grid-template-columns:1fr}
+  .viz-sidebar{flex-direction:row;flex-wrap:wrap}
+  .pseudo-block,.explain-block,.complex-block{flex:1;min-width:240px}
+}
+@media(max-width:640px){
+  #hub{padding:2rem 1rem 1.5rem}
+  #viz-panel{padding:0 1rem 3rem}
+  nav{padding:.75rem 1rem}
+  .pcell{width:16px;height:16px}
+  .nq-cell{width:32px;height:32px;font-size:.9rem}
+  .sdk-cell{width:30px;height:30px;font-size:.75rem}
+}
+</style>
+</head>
+<body>
+
+<!-- EASTER EGG PANEL -->
+<div id="easter-egg">
+  <div class="egg-card">
+    <span class="egg-close" onclick="document.getElementById('easter-egg').classList.remove('visible')">&#x2715;</span>
+    <h4>&#128075; You found it.</h4>
+    <p>AlgoRythm is built and designed by ap.dev. Every animation, every step, every line of pseudocode &mdash; crafted from scratch.</p>
+    <div class="sig">~ ap.dev &nbsp;|&nbsp; AlgoRythm v1.0</div>
+    <a href="https://github.com/Abhiyuday18" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;margin-top:.6rem;font-family:var(--mono);font-size:.68rem;color:var(--accent);text-decoration:none;border:1px solid rgba(91,141,238,.25);border-radius:5px;padding:.25rem .6rem;transition:border-color .2s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(91,141,238,.25)'">&#128279; github.com/Abhiyuday18</a>
+  </div>
+</div>
+
+<nav>
+  <div class="nav-left">
+    <div class="nav-logo" onclick="goHub()">Algo<span>Rythm</span> /</div>
+    <div class="nav-back" id="nav-back" onclick="goHub()">&#8592; All Algorithms</div>
+    <div class="step-mode-badge" id="step-mode-badge">STEP MODE</div>
+  </div>
+  <div class="nav-tag">ap.dev</div>
+</nav>
+
+<!-- HUB -->
+<section id="hub">
+  <div class="hub-inner">
+    <div class="hub-eyebrow">// algorithm visualizer</div>
+    <h1 class="hub-title">Learn algorithms<br/>at your own <span class="grad">rhythm.</span></h1>
+    <p class="hub-sub">Step through every algorithm one move at a time. Real pseudocode, plain-English explanations, and live animations &mdash; designed as a teaching tool.</p>
+    <div class="hub-features">
+      <span class="hub-feat">&#9654; Auto-run</span>
+      <span class="hub-feat">&#8594; Step-by-step</span>
+      <span class="hub-feat">Live pseudocode</span>
+      <span class="hub-feat">Complexity breakdown</span>
+      <span class="hub-feat">6 algorithm families</span>
+    </div>
+    <div class="cards-grid">
+
+      <div class="algo-card" onclick="openViz('sorting')">
+        <div class="card-preview"><div class="mini-bars" id="mini-sort"></div></div>
+        <div class="card-info">
+          <h3>Sorting Algorithms</h3>
+          <p>Bubble, Selection, Insertion, Merge, Quick &mdash; animated comparisons and swaps.</p>
+          <div class="card-chips"><span class="chip">5 algorithms</span><span class="chip">Step mode</span></div>
+        </div>
+      </div>
+
+      <div class="algo-card" onclick="openViz('bsearch')">
+        <div class="card-preview" style="align-items:center"><div id="mini-bs" style="display:flex;gap:4px;padding:0 14px"></div></div>
+        <div class="card-info">
+          <h3>Binary Search</h3>
+          <p>Eliminate half the search space with every comparison. Step at your own pace.</p>
+          <div class="card-chips"><span class="chip">O(log n)</span><span class="chip">Step mode</span></div>
+        </div>
+      </div>
+
+      <div class="algo-card" onclick="openViz('pathfinder')">
+        <div class="card-preview" style="align-items:center;padding:8px"><div id="mini-path" style="display:inline-grid;gap:2px;grid-template-columns:repeat(10,1fr);width:190px;height:108px"></div></div>
+        <div class="card-info">
+          <h3>Pathfinder</h3>
+          <p>Draw walls, set start &amp; end, watch BFS or DFS explore step by step.</p>
+          <div class="card-chips"><span class="chip">BFS</span><span class="chip">DFS</span><span class="chip">Step mode</span></div>
+        </div>
+      </div>
+
+      <div class="algo-card" onclick="openViz('hanoi')">
+        <div class="card-preview" style="align-items:center"><canvas id="mini-hanoi" width="230" height="118"></canvas></div>
+        <div class="card-info">
+          <h3>Towers of Hanoi</h3>
+          <p>Watch the recursive solution unfold disk by disk with step control.</p>
+          <div class="card-chips"><span class="chip purple">Recursion</span><span class="chip">O(2&#x207f;)</span><span class="chip">Step mode</span></div>
+        </div>
+      </div>
+
+      <div class="algo-card" onclick="openViz('nqueen')">
+        <div class="card-preview" style="align-items:center"><div id="mini-nq" style="display:inline-grid;gap:2px"></div></div>
+        <div class="card-info">
+          <h3>N-Queen Problem</h3>
+          <p>Watch backtracking place queens, fail, and retry &mdash; row by row.</p>
+          <div class="card-chips"><span class="chip purple">Backtracking</span><span class="chip">Step mode</span></div>
+        </div>
+      </div>
+
+      <div class="algo-card" onclick="openViz('sudoku')">
+        <div class="card-preview" style="align-items:center"><div id="mini-sdk" style="display:inline-grid;grid-template-columns:repeat(4,1fr);gap:2px"></div></div>
+        <div class="card-info">
+          <h3>Sudoku Solver</h3>
+          <p>Watch constraint-based backtracking fill the grid cell by cell.</p>
+          <div class="card-chips"><span class="chip purple">Backtracking</span><span class="chip">Constraint</span><span class="chip">Step mode</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- VIZ PANEL -->
+<div id="viz-panel">
+
+<!-- ═══ SORTING ═══════════════════════════════════════════════ -->
+<div id="viz-sorting" class="viz-section">
+  <div class="viz-header">
+    <div class="viz-title">Sorting</div>
+    <div class="viz-badge" id="sort-badge">Bubble Sort</div>
+  </div>
+  <div class="controls">
+    <select class="ctrl-select" id="sort-algo" onchange="sortAlgoChange()">
+      <option value="bubble">Bubble Sort</option>
+      <option value="selection">Selection Sort</option>
+      <option value="insertion">Insertion Sort</option>
+      <option value="merge">Merge Sort</option>
+      <option value="quick">Quick Sort</option>
+    </select>
+    <label class="ctrl-label">Size</label>
+    <input type="range" id="sort-size" min="8" max="60" value="30" oninput="resetSort()"/>
+    <label class="ctrl-label">Speed</label>
+    <input type="range" id="sort-speed" min="1" max="10" value="5"/>
+    <button class="ctrl-btn" onclick="resetSort()">Randomize</button>
+    <button class="ctrl-btn primary" id="sort-run-btn" onclick="runSort()">&#9654; Run</button>
+    <button class="ctrl-btn step-btn" id="sort-step-btn" onclick="stepSort()">&#8594; Step</button>
+  </div>
+  <div class="stat-row">
+    <div class="stat">Comparisons: <span id="sort-comps">0</span></div>
+    <div class="stat">Swaps: <span id="sort-swaps">0</span></div>
+    <div class="stat">Status: <span id="sort-status">Ready</span></div>
+  </div>
+  <div class="viz-layout">
+    <div class="viz-main">
+      <div class="canvas-wrap" style="position:relative">
+        <canvas id="sort-canvas" style="height:310px"></canvas>
+        <div class="watermark">AlgoRythm · ap.dev</div>
+      </div>
+    </div>
+    <div class="viz-sidebar">
+      <div class="pseudo-block">
+        <div class="pseudo-header">Pseudocode</div>
+        <div class="pseudo-code" id="sort-pseudo"></div>
+      </div>
+      <div class="explain-block">
+        <div class="explain-header">What’s happening</div>
+        <div class="explain-text" id="sort-explain">Press Run or Step to begin.</div>
+      </div>
+      <div class="complex-block">
+        <div class="complex-header">Complexity</div>
+        <div id="sort-complex"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BINARY SEARCH ═════════════════════════════════════════ -->
+<div id="viz-bsearch" class="viz-section">
+  <div class="viz-header"><div class="viz-title">Binary Search</div><div class="viz-badge">O(log n)</div></div>
+  <div class="controls">
+    <button class="ctrl-btn" onclick="resetBS()">New Array</button>
+    <label class="ctrl-label">Target:</label>
+    <select class="ctrl-select" id="bs-target-sel"></select>
+    <button class="ctrl-btn primary" id="bs-run-btn" onclick="runBS()">&#9654; Run</button>
+    <button class="ctrl-btn step-btn" id="bs-step-btn" onclick="stepBS()">&#8594; Step</button>
+  </div>
+  <div class="stat-row">
+    <div class="stat">Steps: <span id="bs-steps">0</span></div>
+    <div class="stat">Range: <span id="bs-range">—</span></div>
+    <div class="stat">Status: <span id="bs-status">Ready</span></div>
+  </div>
+  <div class="viz-layout">
+    <div class="viz-main">
+      <div class="canvas-wrap" style="position:relative;padding:0">
+        <div id="bs-array"></div>
+        <div class="bs-step-log" id="bs-log">Select a target and press Run or Step.</div>
+        <div class="watermark">AlgoRythm · ap.dev</div>
+      </div>
+    </div>
+    <div class="viz-sidebar">
+      <div class="pseudo-block">
+        <div class="pseudo-header">Pseudocode</div>
+        <div class="pseudo-code" id="bs-pseudo">
+          <div class="pline" id="bsp0">function binarySearch(arr, target):</div>
+          <div class="pline" id="bsp1">&nbsp;&nbsp;low = 0, high = len - 1</div>
+          <div class="pline" id="bsp2">&nbsp;&nbsp;while low &lt;= high:</div>
+          <div class="pline" id="bsp3">&nbsp;&nbsp;&nbsp;&nbsp;mid = (low + high) / 2</div>
+          <div class="pline" id="bsp4">&nbsp;&nbsp;&nbsp;&nbsp;if arr[mid] == target: return mid</div>
+          <div class="pline" id="bsp5">&nbsp;&nbsp;&nbsp;&nbsp;if arr[mid] &lt; target: low = mid + 1</div>
+          <div class="pline" id="bsp6">&nbsp;&nbsp;&nbsp;&nbsp;else: high = mid - 1</div>
+          <div class="pline" id="bsp7">&nbsp;&nbsp;return -1  // not found</div>
+        </div>
+      </div>
+      <div class="explain-block">
+        <div class="explain-header">What’s happening</div>
+        <div class="explain-text" id="bs-explain">Pick a target value and press Run or Step to begin.</div>
+      </div>
+      <div class="complex-block">
+        <div class="complex-header">Complexity</div>
+        <div class="complex-row"><span class="complex-label">Best case</span><span class="complex-val">O(1)</span></div>
+        <div class="complex-row"><span class="complex-label">Average / Worst</span><span class="complex-val">O(log n)</span></div>
+        <div class="complex-row"><span class="complex-label">Space</span><span class="complex-val">O(1)</span></div>
+        <div class="complex-bar-wrap"><div class="complex-bar" style="width:18%"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PATHFINDER ════════════════════════════════════════════ -->
+<div id="viz-pathfinder" class="viz-section">
+  <div class="viz-header">
+    <div class="viz-title">Pathfinder</div>
+    <div class="viz-badge" id="path-badge">BFS</div>
+  </div>
+  <div class="controls">
+    <select class="ctrl-select" id="path-algo" onchange="document.getElementById('path-badge').textContent=this.options[this.selectedIndex].text.split(' ')[0]">
+      <option value="bfs">BFS (Breadth-First)</option>
+      <option value="dfs">DFS (Depth-First)</option>
+    </select>
+    <select class="ctrl-select" id="path-mode">
+      <option value="wall">Draw Wall</option>
+      <option value="start">Set Start</option>
+      <option value="end">Set End</option>
+    </select>
+    <button class="ctrl-btn" onclick="clearPath()">Clear Path</button>
+    <button class="ctrl-btn" onclick="resetPathGrid()">Reset Grid</button>
+    <button class="ctrl-btn primary" id="path-run-btn" onclick="runPath()">&#9654; Run</button>
+    <button class="ctrl-btn step-btn" id="path-step-btn" onclick="stepPath()">&#8594; Step</button>
+  </div>
+  <div class="stat-row">
+    <div class="stat">Visited: <span id="path-visited">0</span></div>
+    <div class="stat">Path length: <span id="path-length">—</span></div>
+    <div class="stat">Status: <span id="path-status">Draw walls then run</span></div>
+  </div>
+  <div class="viz-layout">
+    <div class="viz-main">
+      <div id="path-canvas-wrap" style="position:relative">
+        <div id="path-grid"></div>
+        <div class="path-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Start</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>End</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#2a2f42"></div>Wall</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(91,141,238,.28)"></div>Visited</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div>Path</div>
+        </div>
+        <div class="watermark">AlgoRythm · ap.dev</div>
+      </div>
+    </div>
+    <div class="viz-sidebar">
+      <div class="pseudo-block">
+        <div class="pseudo-header">Pseudocode</div>
+        <div class="pseudo-code" id="path-pseudo">
+          <div class="pline" id="pathp0">function BFS(grid, start, end):</div>
+          <div class="pline" id="pathp1">&nbsp;&nbsp;queue = [start]</div>
+          <div class="pline" id="pathp2">&nbsp;&nbsp;visited = {start}</div>
+          <div class="pline" id="pathp3">&nbsp;&nbsp;while queue not empty:</div>
+          <div class="pline" id="pathp4">&nbsp;&nbsp;&nbsp;&nbsp;node = queue.dequeue()</div>
+          <div class="pline" id="pathp5">&nbsp;&nbsp;&nbsp;&nbsp;if node == end: tracePath()</div>
+          <div class="pline" id="pathp6">&nbsp;&nbsp;&nbsp;&nbsp;for each neighbor:</div>
+          <div class="pline" id="pathp7">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if not visited, not wall:</div>
+          <div class="pline" id="pathp8">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;visited.add(neighbor)</div>
+          <div class="pline" id="pathp9">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;queue.enqueue(neighbor)</div>
+        </div>
+      </div>
+      <div class="explain-block">
+        <div class="explain-header">What’s happening</div>
+        <div class="explain-text" id="path-explain">Draw walls on the grid, then press Run or Step.</div>
+      </div>
+      <div class="complex-block">
+        <div class="complex-header">Complexity</div>
+        <div class="complex-row"><span class="complex-label">Time</span><span class="complex-val">O(V + E)</span></div>
+        <div class="complex-row"><span class="complex-label">Space</span><span class="complex-val">O(V)</span></div>
+        <div class="complex-row"><span class="complex-label">Shortest path</span><span class="complex-val" id="path-shortest">Yes (BFS)</span></div>
+        <div class="complex-bar-wrap"><div class="complex-bar" style="width:45%"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TOWERS OF HANOI ═══════════════════════════════════════ -->
+<div id="viz-hanoi" class="viz-section">
+  <div class="viz-header"><div class="viz-title">Towers of Hanoi</div><div class="viz-badge" id="hanoi-badge">3 Disks</div></div>
+  <div class="controls">
+    <label class="ctrl-label">Disks</label>
+    <select class="ctrl-select" id="hanoi-disks" onchange="resetHanoi()">
+      <option value="3">3 Disks</option><option value="4">4 Disks</option><option value="5">5 Disks</option><option value="6">6 Disks</option>
+    </select>
+    <label class="ctrl-label">Speed</label>
+    <input type="range" id="hanoi-speed" min="1" max="10" value="6"/>
+    <button class="ctrl-btn" onclick="resetHanoi()">Reset</button>
+    <button class="ctrl-btn primary" id="hanoi-run-btn" onclick="runHanoi()">&#9654; Run</button>
+    <button class="ctrl-btn step-btn" id="hanoi-step-btn" onclick="stepHanoi()">&#8594; Step</button>
+  </div>
+  <div class="stat-row">
+    <div class="stat">Moves: <span id="hanoi-moves">0</span></div>
+    <div class="stat">Total: <span id="hanoi-total">7</span></div>
+    <div class="stat">Status: <span id="hanoi-status">Ready</span></div>
+  </div>
+  <div class="viz-layout">
+    <div class="viz-main">
+      <div id="hanoi-wrap" style="position:relative">
+        <canvas id="hanoi-canvas" style="max-width:100%"></canvas>
+        <div class="hanoi-log" id="hanoi-log">Press Run or Step to begin solving.</div>
+        <div class="watermark">AlgoRythm · ap.dev</div>
+      </div>
+    </div>
+    <div class="viz-sidebar">
+      <div class="pseudo-block">
+        <div class="pseudo-header">Pseudocode</div>
+        <div class="pseudo-code" id="hanoi-pseudo">
+          <div class="pline" id="hanoip0">hanoi(n, from, to, via):</div>
+          <div class="pline" id="hanoip1">&nbsp;&nbsp;if n == 0: return</div>
+          <div class="pline" id="hanoip2">&nbsp;&nbsp;hanoi(n-1, from, via, to)</div>
+          <div class="pline" id="hanoip3">&nbsp;&nbsp;move top disk: from → to</div>
+          <div class="pline" id="hanoip4">&nbsp;&nbsp;hanoi(n-1, via, to, from)</div>
+        </div>
+      </div>
+      <div class="explain-block">
+        <div class="explain-header">What’s happening</div>
+        <div class="explain-text" id="hanoi-explain">Press Run or Step to watch the recursive solution.</div>
+      </div>
+      <div class="complex-block">
+        <div class="complex-header">Complexity</div>
+        <div class="complex-row"><span class="complex-label">Time</span><span class="complex-val">O(2ⁿ)</span></div>
+        <div class="complex-row"><span class="complex-label">Moves</span><span class="complex-val">2ⁿ − 1</span></div>
+        <div class="complex-row"><span class="complex-label">Space (stack)</span><span class="complex-val">O(n)</span></div>
+        <div class="complex-bar-wrap"><div class="complex-bar" style="width:92%"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ N-QUEEN ════════════════════════════════════════════════ -->
+<div id="viz-nqueen" class="viz-section">
+  <div class="viz-header"><div class="viz-title">N-Queen Problem</div><div class="viz-badge" id="nq-badge">8×8</div></div>
+  <div class="controls">
+    <label class="ctrl-label">Board</label>
+    <select class="ctrl-select" id="nq-size" onchange="resetNQ()">
+      <option value="4">4×4</option><option value="5">5×5</option><option value="6">6×6</option><option value="7">7×7</option><option value="8" selected>8×8</option>
+    </select>
+    <label class="ctrl-label">Speed</label>
+    <input type="range" id="nq-speed" min="1" max="10" value="6"/>
+    <button class="ctrl-btn" onclick="resetNQ()">Reset</button>
+    <button class="ctrl-btn primary" id="nq-run-btn" onclick="runNQ()">&#9654; Run</button>
+    <button class="ctrl-btn step-btn" id="nq-step-btn" onclick="stepNQ()">&#8594; Step</button>
+  </div>
+  <div class="stat-row">
+    <div class="stat">Tried: <span id="nq-tries">0</span></div>
+    <div class="stat">Backtracks: <span id="nq-backs">0</span></div>
+    <div class="stat">Status: <span id="nq-status">Ready</span></div>
+  </div>
+  <div class="viz-layout">
+    <div class="viz-main">
+      <div id="nq-wrap" style="position:relative">
+        <div id="nq-board"></div>
+        <div class="nq-log" id="nq-log">Press Run or Step to begin.</div>
+        <div class="watermark">AlgoRythm · ap.dev</div>
+      </div>
+    </div>
+    <div class="viz-sidebar">
+      <div class="pseudo-block">
+        <div class="pseudo-header">Pseudocode</div>
+        <div class="pseudo-code" id="nq-pseudo">
+          <div class="pline" id="nqp0">solve(board, row):</div>
+          <div class="pline" id="nqp1">&nbsp;&nbsp;if row == N: return true</div>
+          <div class="pline" id="nqp2">&nbsp;&nbsp;for col in 0..N:</div>
+          <div class="pline" id="nqp3">&nbsp;&nbsp;&nbsp;&nbsp;if isSafe(board, row, col):</div>
+          <div class="pline" id="nqp4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;board[row] = col</div>
+          <div class="pline" id="nqp5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if solve(row + 1): return true</div>
+          <div class="pline" id="nqp6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;board[row] = -1  // backtrack</div>
+          <div class="pline" id="nqp7">&nbsp;&nbsp;return false</div>
+        </div>
+      </div>
+      <div class="explain-block">
+        <div class="explain-header">What’s happening</div>
+        <div class="explain-text" id="nq-explain">Press Run or Step to watch backtracking in action.</div>
+      </div>
+      <div class="complex-block">
+        <div class="complex-header">Complexity</div>
+        <div class="complex-row"><span class="complex-label">Time</span><span class="complex-val">O(N!)</span></div>
+        <div class="complex-row"><span class="complex-label">Space</span><span class="complex-val">O(N)</span></div>
+        <div class="complex-bar-wrap"><div class="complex-bar" style="width:78%"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SUDOKU ════════════════════════════════════════════════ -->
+<div id="viz-sudoku" class="viz-section">
+  <div class="viz-header"><div class="viz-title">Sudoku Solver</div><div class="viz-badge">Backtracking</div></div>
+  <div class="controls">
+    <select class="ctrl-select" id="sdk-puzzle-sel" onchange="loadSudokuPuzzle()">
+      <option value="0">Puzzle 1 (Easy)</option><option value="1">Puzzle 2 (Medium)</option><option value="2">Puzzle 3 (Hard)</option>
+    </select>
+    <label class="ctrl-label">Speed</label>
+    <input type="range" id="sdk-speed" min="1" max="10" value="7"/>
+    <button class="ctrl-btn" onclick="loadSudokuPuzzle()">Reset</button>
+    <button class="ctrl-btn primary" id="sdk-run-btn" onclick="runSudoku()">&#9654; Run</button>
+    <button class="ctrl-btn step-btn" id="sdk-step-btn" onclick="stepSudoku()">&#8594; Step</button>
+  </div>
+  <div class="stat-row">
+    <div class="stat">Filled: <span id="sdk-filled">0</span></div>
+    <div class="stat">Backtracks: <span id="sdk-backs">0</span></div>
+    <div class="stat">Status: <span id="sdk-status">Ready</span></div>
+  </div>
+  <div class="viz-layout">
+    <div class="viz-main">
+      <div id="sdk-wrap" style="position:relative">
+        <div id="sdk-board"></div>
+        <div class="sdk-log" id="sdk-log">Press Run or Step to begin solving.</div>
+        <div class="watermark">AlgoRythm · ap.dev</div>
+      </div>
+    </div>
+    <div class="viz-sidebar">
+      <div class="pseudo-block">
+        <div class="pseudo-header">Pseudocode</div>
+        <div class="pseudo-code" id="sdk-pseudo">
+          <div class="pline" id="sdkp0">solve(board):</div>
+          <div class="pline" id="sdkp1">&nbsp;&nbsp;cell = findEmpty(board)</div>
+          <div class="pline" id="sdkp2">&nbsp;&nbsp;if no empty cell: return true</div>
+          <div class="pline" id="sdkp3">&nbsp;&nbsp;for num in 1..9:</div>
+          <div class="pline" id="sdkp4">&nbsp;&nbsp;&nbsp;&nbsp;if isValid(board, cell, num):</div>
+          <div class="pline" id="sdkp5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;board[cell] = num</div>
+          <div class="pline" id="sdkp6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if solve(board): return true</div>
+          <div class="pline" id="sdkp7">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;board[cell] = 0  // backtrack</div>
+          <div class="pline" id="sdkp8">&nbsp;&nbsp;return false</div>
+        </div>
+      </div>
+      <div class="explain-block">
+        <div class="explain-header">What’s happening</div>
+        <div class="explain-text" id="sdk-explain">Press Run or Step to watch backtracking fill the grid.</div>
+      </div>
+      <div class="complex-block">
+        <div class="complex-header">Complexity</div>
+        <div class="complex-row"><span class="complex-label">Time</span><span class="complex-val">O(9^m)</span></div>
+        <div class="complex-row"><span class="complex-label">m = empty cells</span><span class="complex-val">—</span></div>
+        <div class="complex-row"><span class="complex-label">Space</span><span class="complex-val">O(m)</span></div>
+        <div class="complex-bar-wrap"><div class="complex-bar" style="width:72%"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end viz-panel -->
+
+<script>
+// ─── GLOBALS ──────────────────────────────────────────────────
+const ALL_VIZ=['sorting','bsearch','pathfinder','hanoi','nqueen','sudoku']
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+let sortRunning=false,bsRunning=false,pathRunning=false,hanoiRunning=false,nqRunning=false,sdkRunning=false
+
+// ─── EASTER EGG (type ap.dev anywhere) ──────────────────────
+let eggBuffer=''
+document.addEventListener('keydown',e=>{
+  eggBuffer=(eggBuffer+e.key).slice(-6)
+  if(eggBuffer==='ap.dev'){document.getElementById('easter-egg').classList.add('visible');eggBuffer=''}
+})
+
+// ─── NAVIGATION ──────────────────────────────────────────────
+function openViz(name){
+  document.getElementById('hub').classList.add('hidden')
+  document.getElementById('viz-panel').style.display='block'
+  document.getElementById('nav-back').classList.add('visible')
+  ALL_VIZ.forEach(v=>{const el=document.getElementById('viz-'+v);if(el)el.style.display=v===name?'block':'none'})
+  if(name==='sorting') initSort()
+  if(name==='bsearch') initBS()
+  if(name==='pathfinder') initPathGrid()
+  if(name==='hanoi') initHanoi()
+  if(name==='nqueen') initNQ()
+  if(name==='sudoku') initSudoku()
+  document.getElementById('step-mode-badge').classList.remove('on')
+}
+function goHub(){
+  document.getElementById('hub').classList.remove('hidden')
+  document.getElementById('viz-panel').style.display='none'
+  document.getElementById('nav-back').classList.remove('visible')
+  document.getElementById('step-mode-badge').classList.remove('on')
+  sortRunning=false;bsRunning=false;pathRunning=false;hanoiRunning=false;nqRunning=false;sdkRunning=false
+}
+
+// ─── PSEUDOCODE HELPERS ───────────────────────────────────────
+function setPseudo(prefix,active){
+  document.querySelectorAll('[id^="'+prefix+'"]').forEach(el=>{
+    el.classList.remove('active','done-line')
+    if(el.id===prefix+active)el.classList.add('active')
+  })
+}
+function clearPseudo(prefix){
+  document.querySelectorAll('[id^="'+prefix+'"]').forEach(el=>el.classList.remove('active','done-line'))
+}
+
+// ─── MINI PREVIEWS ────────────────────────────────────────────
+function buildMinis(){
+  // Sort bars
+  const ms=document.getElementById('mini-sort')
+  const vals=[22,55,18,72,44,88,33,60,28,95,50,38,78,12,68,82,45,30]
+  const clr=['#5b8dee','#8b5cf6','#34d399','#5b8dee','#fbbf24','#34d399','#5b8dee','#8b5cf6','#34d399','#34d399','#5b8dee','#5b8dee','#34d399','#5b8dee','#34d399','#8b5cf6','#5b8dee','#fbbf24']
+  ms.innerHTML=vals.map((h,i)=>`<div class="mini-bar" style="height:${h}%;background:${clr[i]};opacity:.8"></div>`).join('')
+  // Binary search
+  const mb=document.getElementById('mini-bs')
+  mb.style.cssText='display:flex;gap:3px;padding:0 12px;align-items:center;flex-wrap:wrap;justify-content:center'
+  const bv=[3,7,11,15,20,26,31,38]
+  mb.innerHTML=bv.map((v,i)=>`<div style="width:25px;height:25px;border-radius:5px;background:${i===3?'rgba(251,191,36,.18)':i===5?'rgba(52,211,153,.18)':'var(--surface)'};border:1px solid ${i===3?'var(--yellow)':i===5?'var(--green)':'var(--border)'};display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.58rem;color:${i===3?'var(--yellow)':i===5?'var(--green)':'var(--muted)'}">${v}</div>`).join('')
+  // Path grid
+  const mp=document.getElementById('mini-path'),walls=[3,6,13,14,22,23,32,43,49,59,70,74]
+  let ph=''
+  for(let i=0;i<60;i++){const iW=walls.includes(i),iS=i===10,iE=i===49;ph+=`<div style="border-radius:2px;background:${iS?'var(--green)':iE?'var(--red)':iW?'#2a2f42':'var(--surface)'};border:1px solid var(--border)"></div>`}
+  mp.innerHTML=ph
+  // Hanoi mini
+  const hcv=document.getElementById('mini-hanoi'),hctx=hcv.getContext('2d')
+  const W=230,H=118,px=[46,115,184],N=3
+  hctx.clearRect(0,0,W,H)
+  hctx.fillStyle='#1e2535';hctx.fillRect(14,H-14,W-28,6)
+  px.forEach(x=>{hctx.fillStyle='#2a3044';hctx.fillRect(x-4,16,8,H-22)})
+  const hcl=['#5b8dee','#8b5cf6','#34d399']
+  for(let i=0;i<N;i++){const w=14+(N-i)*18,dh=11,y=H-20-(i*(dh+2));hctx.fillStyle=hcl[i];hctx.beginPath();hctx.roundRect(px[0]-w/2,y,w,dh,3);hctx.fill()}
+  // NQ mini
+  const nqm=document.getElementById('mini-nq'),nqN=4
+  nqm.style.gridTemplateColumns='repeat(4,1fr)'
+  const queens=[[0,1],[1,3],[2,0],[3,2]];let nqh=''
+  for(let r=0;r<nqN;r++)for(let c=0;c<nqN;c++){const isQ=queens.some(([qr,qc])=>qr===r&&qc===c);nqh+=`<div style="width:27px;height:27px;border-radius:3px;background:${isQ?'rgba(91,141,238,.28)':(r+c)%2===0?'#161b27':'#1e2535'};display:flex;align-items:center;justify-content:center;font-size:.9rem">${isQ?'♛':''}</div>`}
+  nqm.innerHTML=nqh
+  // SDK mini
+  const sdkm=document.getElementById('mini-sdk')
+  const sn=[1,0,3,0,0,3,0,2,3,0,2,0,0,2,0,3];let sdkh=''
+  sn.forEach(n=>sdkh+=`<div style="width:25px;height:25px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.68rem;color:${n?'var(--accent)':'var(--muted)'}">${n||''}</div>`)
+  sdkm.innerHTML=sdkh
+}
+buildMinis()
+
+// ════════════════════════════════════════════════════════════
+// SORTING
+// ════════════════════════════════════════════════════════════
+const sortCanvas=document.getElementById('sort-canvas')
+const sortCtx=sortCanvas.getContext('2d')
+let sortArr=[],sortColors=[],sortComps=0,sortSwaps=0
+let sortStepGen=null,sortStepMode=false
+
+const SORT_INFO={
+  bubble:{
+    desc:'Compares adjacent elements, swapping them if out of order. Repeats until no swaps occur.',
+    pseudo:['for i in 0..n:','  for j in 0..n-i-1:','    if arr[j] > arr[j+1]:','      swap(arr[j], arr[j+1])'],
+    tavg:'O(n²)',tbest:'O(n)',space:'O(1)',complexity:62
+  },
+  selection:{
+    desc:'Finds the smallest unsorted element and swaps it to the front of the unsorted section.',
+    pseudo:['for i in 0..n:','  minIdx = i','  for j in i+1..n:','    if arr[j] < arr[minIdx]: minIdx=j','  swap(arr[i], arr[minIdx])'],
+    tavg:'O(n²)',tbest:'O(n²)',space:'O(1)',complexity:62
+  },
+  insertion:{
+    desc:'Picks each element and inserts it into its correct position in the already-sorted portion.',
+    pseudo:['for i in 1..n:','  key = arr[i], j = i-1','  while j>=0 and arr[j]>key:','    arr[j+1] = arr[j], j--','  arr[j+1] = key'],
+    tavg:'O(n²)',tbest:'O(n)',space:'O(1)',complexity:62
+  },
+  merge:{
+    desc:'Divides array in half recursively, then merges sorted halves back together.',
+    pseudo:['mergeSort(arr, l, r):','  if l >= r: return','  m = (l+r)/2','  mergeSort(arr, l, m)','  mergeSort(arr, m+1, r)','  merge(arr, l, m, r)'],
+    tavg:'O(n log n)',tbest:'O(n log n)',space:'O(n)',complexity:35
+  },
+  quick:{
+    desc:'Picks a pivot, partitions smaller elements left and larger right, then recurses on each side.',
+    pseudo:['quickSort(arr, lo, hi):','  if lo >= hi: return','  pivot = arr[hi]','  i = lo-1','  for j in lo..hi: partition','  quickSort(lo, pi-1)','  quickSort(pi+1, hi)'],
+    tavg:'O(n log n)',tbest:'O(n log n)',space:'O(log n)',complexity:35
+  }
+}
+
+function initSort(){resetSort()}
+function resetSort(){
+  sortRunning=false;sortStepGen=null;sortStepMode=false
+  document.getElementById('step-mode-badge').classList.remove('on')
+  const btn=document.getElementById('sort-run-btn');btn.textContent='▶ Run';btn.disabled=false
+  document.getElementById('sort-step-btn').disabled=false
+  const n=parseInt(document.getElementById('sort-size').value)
+  sortArr=Array.from({length:n},()=>Math.floor(Math.random()*88)+8)
+  sortColors=new Array(n).fill('default')
+  sortComps=0;sortSwaps=0
+  document.getElementById('sort-comps').textContent='0'
+  document.getElementById('sort-swaps').textContent='0'
+  document.getElementById('sort-status').textContent='Ready'
+  const algo=document.getElementById('sort-algo').value,info=SORT_INFO[algo]
+  document.getElementById('sort-explain').textContent='Press Run or Step to begin.'
+  // Render pseudocode
+  const pEl=document.getElementById('sort-pseudo')
+  pEl.innerHTML=info.pseudo.map((l,i)=>`<div class="pline" id="sortp${i}">${l.replace(/</g,'&lt;')}</div>`).join('')
+  // Complexity
+  document.getElementById('sort-complex').innerHTML=`
+    <div class="complex-row"><span class="complex-label">Time (avg)</span><span class="complex-val">${info.tavg}</span></div>
+    <div class="complex-row"><span class="complex-label">Time (best)</span><span class="complex-val">${info.tbest}</span></div>
+    <div class="complex-row"><span class="complex-label">Space</span><span class="complex-val">${info.space}</span></div>
+    <div class="complex-bar-wrap"><div class="complex-bar" style="width:${info.complexity}%"></div></div>`
+  drawSort()
+}
+function sortAlgoChange(){
+  const a=document.getElementById('sort-algo').value
+  document.getElementById('sort-badge').textContent={bubble:'Bubble Sort',selection:'Selection Sort',insertion:'Insertion Sort',merge:'Merge Sort',quick:'Quick Sort'}[a]
+  resetSort()
+}
+function drawSort(){
+  const wrap=sortCanvas.parentElement
+  const W=wrap.clientWidth||700,H=310
+  sortCanvas.width=W;sortCanvas.height=H
+  sortCtx.clearRect(0,0,W,H)
+  const n=sortArr.length,maxVal=Math.max(...sortArr)
+  const barW=Math.max(2,(W-n*1.2)/n)
+  const gap=(W-barW*n)/(n+1)
+  sortArr.forEach((v,i)=>{
+    const x=gap+(barW+gap)*i
+    const barH=Math.max(2,Math.floor((v/maxVal)*(H-2)))
+    const s=sortColors[i]
+    let color=s==='compare'?'#fbbf24':s==='swap'?'#f87171':s==='sorted'?'#34d399':s==='pivot'?'#8b5cf6':'#5b8dee'
+    sortCtx.fillStyle=color
+    sortCtx.beginPath();sortCtx.roundRect(Math.floor(x),H-barH,Math.ceil(barW),barH,2);sortCtx.fill()
+  })
+}
+function getSortDelay(){return Math.max(4,115-parseInt(document.getElementById('sort-speed').value)*11)}
+function setExplain(id,text){const el=document.getElementById(id);if(el)el.innerHTML=text}
+
+// STEP GENERATOR for sorting
+function*sortGenerator(){
+  const algo=document.getElementById('sort-algo').value
+  if(algo==='bubble') yield*bubbleSortGen()
+  else if(algo==='selection') yield*selectionSortGen()
+  else if(algo==='insertion') yield*insertionSortGen()
+  else if(algo==='merge') yield*mergeSortGen(0,sortArr.length-1)
+  else if(algo==='quick') yield*quickSortGen(0,sortArr.length-1)
+  sortColors=new Array(sortArr.length).fill('sorted')
+  drawSort()
+  setExplain('sort-explain','&#10003; Sorted! All elements are in order.')
+  document.getElementById('sort-status').textContent='Done ✓'
+}
+function*bubbleSortGen(){
+  const n=sortArr.length
+  for(let i=0;i<n;i++){
+    for(let j=0;j<n-i-1;j++){
+      sortColors[j]='compare';sortColors[j+1]='compare';sortComps++
+      document.getElementById('sort-comps').textContent=sortComps
+      setPseudo('sortp',1)
+      setExplain('sort-explain',`Comparing <span>${sortArr[j]}</span> and <span>${sortArr[j+1]}</span>. ${sortArr[j]>sortArr[j+1]?'Out of order — will swap.':'Already in order, no swap needed.'}`)
+      drawSort();yield
+      if(sortArr[j]>sortArr[j+1]){
+        [sortArr[j],sortArr[j+1]]=[sortArr[j+1],sortArr[j]];sortSwaps++
+        document.getElementById('sort-swaps').textContent=sortSwaps
+        sortColors[j]='swap';sortColors[j+1]='swap'
+        setPseudo('sortp',2)
+        setExplain('sort-explain',`Swapped <span>${sortArr[j+1]}</span> and <span>${sortArr[j]}</span>. Larger element bubbles right.`)
+        drawSort();yield
+      }
+      sortColors[j]='default';sortColors[j+1]='default'
+    }
+    sortColors[n-i-1]='sorted'
+    setPseudo('sortp',0)
+    setExplain('sort-explain',`Pass ${i+1} complete. Element <span>${sortArr[n-i-1]}</span> is now in its final position.`)
+    drawSort();yield
+  }
+}
+function*selectionSortGen(){
+  const n=sortArr.length
+  for(let i=0;i<n;i++){
+    let minIdx=i;sortColors[i]='pivot'
+    setPseudo('sortp',1)
+    setExplain('sort-explain',`Starting scan from index ${i}. Looking for the smallest remaining element.`)
+    drawSort();yield
+    for(let j=i+1;j<n;j++){
+      sortColors[j]='compare';sortComps++;document.getElementById('sort-comps').textContent=sortComps
+      setPseudo('sortp',2)
+      setExplain('sort-explain',`Checking <span>${sortArr[j]}</span> against current min <span>${sortArr[minIdx]}</span>. ${sortArr[j]<sortArr[minIdx]?'New minimum found!':'Not smaller.'}`)
+      drawSort();yield
+      if(sortArr[j]<sortArr[minIdx]){if(minIdx!==i)sortColors[minIdx]='default';minIdx=j;sortColors[minIdx]='pivot'}
+      else sortColors[j]='default'
+    }
+    if(minIdx!==i){[sortArr[i],sortArr[minIdx]]=[sortArr[minIdx],sortArr[i]];sortSwaps++;document.getElementById('sort-swaps').textContent=sortSwaps}
+    sortColors[i]='sorted';sortColors[minIdx]='default'
+    setPseudo('sortp',3)
+    setExplain('sort-explain',`Placed <span>${sortArr[i]}</span> at position ${i}. It’s now in its correct final spot.`)
+    drawSort();yield
+  }
+}
+function*insertionSortGen(){
+  const n=sortArr.length;sortColors[0]='sorted'
+  for(let i=1;i<n;i++){
+    let key=sortArr[i],j=i-1;sortColors[i]='compare'
+    setPseudo('sortp',1)
+    setExplain('sort-explain',`Picking up element <span>${key}</span> at index ${i}. Will insert it into the sorted left portion.`)
+    drawSort();yield
+    while(j>=0&&sortArr[j]>key){
+      sortComps++;document.getElementById('sort-comps').textContent=sortComps
+      sortArr[j+1]=sortArr[j];sortColors[j+1]='swap';sortColors[j]='compare'
+      setPseudo('sortp',2)
+      setExplain('sort-explain',`<span>${sortArr[j]}</span> is larger than <span>${key}</span>. Shifting it right to make room.`)
+      drawSort();yield
+      sortColors[j+1]='sorted';j--
+    }
+    sortArr[j+1]=key;sortSwaps++;document.getElementById('sort-swaps').textContent=sortSwaps
+    sortColors[j+1]='sorted'
+    setPseudo('sortp',3)
+    setExplain('sort-explain',`Inserted <span>${key}</span> at index ${j+1}. Sorted section grows by one.`)
+    drawSort();yield
+  }
+}
+function*mergeSortGen(l,r){
+  if(l>=r)return
+  const m=Math.floor((l+r)/2)
+  yield*mergeSortGen(l,m);yield*mergeSortGen(m+1,r);yield*mergeGen(l,m,r)
+}
+function*mergeGen(l,m,r){
+  const left=sortArr.slice(l,m+1),right=sortArr.slice(m+1,r+1)
+  let i=0,j=0,k=l
+  while(i<left.length&&j<right.length){
+    sortColors[k]='compare';sortComps++;document.getElementById('sort-comps').textContent=sortComps
+    setPseudo('sortp',4)
+    setExplain('sort-explain',`Merging: comparing <span>${left[i]}</span> and <span>${right[j]}</span>. Taking the smaller one.`)
+    drawSort();yield
+    if(left[i]<=right[j]){sortArr[k]=left[i];i++}else{sortArr[k]=right[j];j++;sortSwaps++;document.getElementById('sort-swaps').textContent=sortSwaps}
+    sortColors[k]='sorted';k++
+  }
+  while(i<left.length){sortArr[k]=left[i];sortColors[k]='sorted';i++;k++}
+  while(j<right.length){sortArr[k]=right[j];sortColors[k]='sorted';j++;k++}
+  setExplain('sort-explain',`Merged segment [${l}..${r}] into sorted order.`)
+  drawSort();yield
+}
+function*quickSortGen(lo,hi){
+  if(lo>=hi)return
+  const pi=yield*qPartGen(lo,hi)
+  yield*quickSortGen(lo,pi-1);yield*quickSortGen(pi+1,hi)
+}
+function*qPartGen(lo,hi){
+  const pivot=sortArr[hi];sortColors[hi]='pivot';let i=lo-1
+  setPseudo('sortp',2)
+  setExplain('sort-explain',`Pivot is <span>${pivot}</span> (last element). Partitioning: smaller elements go left, larger go right.`)
+  drawSort();yield
+  for(let j=lo;j<hi;j++){
+    sortColors[j]='compare';sortComps++;document.getElementById('sort-comps').textContent=sortComps
+    setPseudo('sortp',3)
+    setExplain('sort-explain',`Comparing <span>${sortArr[j]}</span> with pivot <span>${pivot}</span>. ${sortArr[j]<pivot?'Smaller — goes to left partition.':'Larger or equal — stays right.'}`)
+    drawSort();yield
+    if(sortArr[j]<pivot){i++;[sortArr[i],sortArr[j]]=[sortArr[j],sortArr[i]];sortSwaps++;document.getElementById('sort-swaps').textContent=sortSwaps;sortColors[j]='swap';drawSort();yield}
+    sortColors[j]='default'
+  }
+  [sortArr[i+1],sortArr[hi]]=[sortArr[hi],sortArr[i+1]]
+  sortColors[hi]='default';sortColors[i+1]='sorted'
+  setExplain('sort-explain',`Pivot <span>${pivot}</span> placed at index ${i+1}. Everything left is smaller, everything right is larger.`)
+  drawSort();yield
+  return i+1
+}
+
+async function runSort(){
+  if(sortRunning)return
+  sortRunning=true;sortStepMode=false
+  sortStepGen=sortGenerator()
+  document.getElementById('sort-run-btn').disabled=true
+  document.getElementById('sort-status').textContent='Running'
+  document.getElementById('step-mode-badge').classList.remove('on')
+  let r
+  do{r=sortStepGen.next();drawSort();await sleep(getSortDelay())}while(!r.done&&sortRunning)
+  sortRunning=false
+  document.getElementById('sort-run-btn').textContent='▶ Run'
+  document.getElementById('sort-run-btn').disabled=false
+}
+function stepSort(){
+  if(sortRunning)return
+  if(!sortStepGen){sortStepGen=sortGenerator();sortStepMode=true;document.getElementById('step-mode-badge').classList.add('on');document.getElementById('sort-status').textContent='Step mode'}
+  const r=sortStepGen.next()
+  if(r.done){sortStepGen=null;document.getElementById('step-mode-badge').classList.remove('on')}
+}
+
+// ════════════════════════════════════════════════════════════
+// BINARY SEARCH
+// ════════════════════════════════════════════════════════════
+let bsArr=[],bsLow=0,bsHigh=0,bsStepGen=null
+
+function initBS(){resetBS()}
+function resetBS(){
+  bsRunning=false;bsStepGen=null
+  const set=new Set();while(set.size<16)set.add(Math.floor(Math.random()*95)+3)
+  bsArr=[...set].sort((a,b)=>a-b);bsLow=0;bsHigh=bsArr.length-1
+  document.getElementById('bs-steps').textContent='0'
+  document.getElementById('bs-range').textContent='0 – '+(bsArr.length-1)
+  document.getElementById('bs-status').textContent='Ready'
+  document.getElementById('bs-log').innerHTML='Select a target and press Run or Step.'
+  document.getElementById('bs-explain').textContent='Pick a target value and press Run or Step.'
+  clearPseudo('bsp')
+  const sel=document.getElementById('bs-target-sel')
+  sel.innerHTML=bsArr.map(v=>`<option value="${v}">${v}</option>`).join('')
+  sel.value=bsArr[Math.floor(Math.random()*bsArr.length)]
+  renderBS([],[],[])
+}
+function renderBS(lows,highs,mids,foundIdx=-1,elim=[]){
+  document.getElementById('bs-array').innerHTML=bsArr.map((v,i)=>{
+    let cls=foundIdx===i?'found':elim.includes(i)?'eliminated':mids.includes(i)?'mid':(lows.includes(i)||highs.includes(i))?'low':''
+    let label=mids.includes(i)?'<span class="bs-label">mid</span>':i===bsLow&&!elim.includes(i)&&foundIdx===-1?'<span class="bs-label">low</span>':i===bsHigh&&!elim.includes(i)&&foundIdx===-1?'<span class="bs-label">high</span>':''
+    return`<div class="bs-item ${cls}">${v}${label}</div>`
+  }).join('')
+}
+function*bsGenerator(target){
+  let low=0,high=bsArr.length-1,steps=0,elim=[]
+  setPseudo('bsp','1');setExplain('bs-explain',`Starting search for <span>${target}</span>. Array has ${bsArr.length} elements. Setting low=0, high=${bsArr.length-1}.`)
+  yield
+  while(low<=high){
+    const mid=Math.floor((low+high)/2);steps++;bsLow=low;bsHigh=high
+    document.getElementById('bs-steps').textContent=steps
+    document.getElementById('bs-range').textContent=`${low} – ${high}`
+    renderBS([low,high],[],[mid],-1,elim)
+    setPseudo('bsp','3')
+    setExplain('bs-explain',`Step ${steps}: mid = (${low}+${high})/2 = ${mid}. Checking arr[${mid}] = <span>${bsArr[mid]}</span>.`)
+    yield
+    if(bsArr[mid]===target){
+      document.getElementById('bs-log').innerHTML=`Found <span>${target}</span> at index ${mid} in ${steps} step${steps>1?'s':''}! &#127881;`
+      document.getElementById('bs-status').textContent='Found ✓'
+      setPseudo('bsp','4')
+      setExplain('bs-explain',`<span>${bsArr[mid]}</span> equals target <span>${target}</span>. Found at index ${mid}! Done in ${steps} steps.`)
+      renderBS([],[],[],mid,elim);yield;return
+    }else if(bsArr[mid]<target){
+      document.getElementById('bs-log').innerHTML=`arr[${mid}]=<span>${bsArr[mid]}</span> &lt; target <span>${target}</span> → search right half.`
+      setPseudo('bsp','5')
+      setExplain('bs-explain',`<span>${bsArr[mid]}</span> is less than <span>${target}</span>. Target must be in the right half. Set low = ${mid+1}.`)
+      for(let i=low;i<=mid;i++)if(!elim.includes(i))elim.push(i);low=mid+1
+    }else{
+      document.getElementById('bs-log').innerHTML=`arr[${mid}]=<span>${bsArr[mid]}</span> &gt; target <span>${target}</span> → search left half.`
+      setPseudo('bsp','6')
+      setExplain('bs-explain',`<span>${bsArr[mid]}</span> is greater than <span>${target}</span>. Target must be in the left half. Set high = ${mid-1}.`)
+      for(let i=mid;i<=high;i++)if(!elim.includes(i))elim.push(i);high=mid-1
+    }
+    renderBS([low,high],[],[mid],-1,elim);yield
+  }
+  document.getElementById('bs-log').innerHTML=`Target <span>${target}</span> not found in array.`
+  document.getElementById('bs-status').textContent='Not found'
+  setPseudo('bsp','7')
+  setExplain('bs-explain',`Search range is empty. Target <span>${target}</span> does not exist in this array.`)
+  yield
+}
+function stepBS(){
+  const t=parseInt(document.getElementById('bs-target-sel').value)
+  if(!bsStepGen){bsStepGen=bsGenerator(t);document.getElementById('step-mode-badge').classList.add('on');document.getElementById('bs-status').textContent='Step mode'}
+  const r=bsStepGen.next()
+  if(r.done){bsStepGen=null;document.getElementById('step-mode-badge').classList.remove('on')}
+}
+async function runBS(){
+  const t=parseInt(document.getElementById('bs-target-sel').value)
+  bsStepGen=bsGenerator(t);bsRunning=true
+  document.getElementById('bs-run-btn').disabled=true;document.getElementById('bs-step-btn').disabled=true
+  document.getElementById('step-mode-badge').classList.remove('on')
+  let r;do{r=bsStepGen.next();await sleep(700)}while(!r.done&&r.value!=='found'&&bsRunning)
+  document.getElementById('bs-run-btn').disabled=false;document.getElementById('bs-step-btn').disabled=false;bsRunning=false
+}
+
+// ════════════════════════════════════════════════════════════
+// PATHFINDER
+// ════════════════════════════════════════════════════════════
+const ROWS=17,COLS=28
+let pathGrid=[],pathStart=[2,2],pathEnd=[14,25],mouseDown=false
+let pathQueue=[],pathVisited=new Set(),pathParent={},pathStepMode=false,pathStepping=false
+
+function initPathGrid(){resetPathGrid()}
+function resetPathGrid(){
+  pathRunning=false;pathStepMode=false;pathStepping=false
+  pathGrid=Array.from({length:ROWS},()=>Array(COLS).fill('empty'))
+  pathGrid[pathStart[0]][pathStart[1]]='start';pathGrid[pathEnd[0]][pathEnd[1]]='end'
+  renderPathGrid()
+  document.getElementById('path-visited').textContent='0'
+  document.getElementById('path-length').textContent='—'
+  document.getElementById('path-status').textContent='Draw walls then run'
+  document.getElementById('path-run-btn').disabled=false
+  clearPseudo('pathp')
+  setExplain('path-explain','Draw walls on the grid, then press Run or Step.')
+  document.getElementById('step-mode-badge').classList.remove('on')
+}
+function clearPath(){
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(pathGrid[r][c]==='visited'||pathGrid[r][c]==='path')pathGrid[r][c]='empty'
+  renderPathGrid()
+  document.getElementById('path-visited').textContent='0';document.getElementById('path-length').textContent='—'
+  document.getElementById('path-status').textContent='Ready';document.getElementById('path-run-btn').disabled=false
+  pathQueue=[];pathVisited=new Set();pathParent={};pathStepMode=false;pathStepping=false
+  document.getElementById('step-mode-badge').classList.remove('on')
+}
+function renderPathGrid(){
+  const wrap=document.getElementById('path-grid')
+  wrap.style.gridTemplateColumns=`repeat(${COLS},1fr)`
+  if(wrap.children.length!==ROWS*COLS){
+    wrap.innerHTML=''
+    for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+      const cell=document.createElement('div');cell.className='pcell';cell.dataset.r=r;cell.dataset.c=c
+      cell.addEventListener('mousedown',()=>{mouseDown=true;handleCell(r,c)})
+      cell.addEventListener('mouseenter',()=>{if(mouseDown)handleCell(r,c)})
+      cell.addEventListener('touchstart',e=>{e.preventDefault();handleCell(r,c)},{passive:false})
+      wrap.appendChild(cell)
+    }
+  }
+  wrap.querySelectorAll('.pcell').forEach(cell=>{cell.className='pcell '+pathGrid[+cell.dataset.r][+cell.dataset.c]})
+}
+document.addEventListener('mouseup',()=>mouseDown=false)
+function handleCell(r,c){
+  if(pathRunning||pathStepMode)return
+  const mode=document.getElementById('path-mode').value,cur=pathGrid[r][c]
+  if(mode==='wall'){if(cur==='empty')pathGrid[r][c]='wall';else if(cur==='wall')pathGrid[r][c]='empty'}
+  else if(mode==='start'){if(cur==='end')return;pathGrid[pathStart[0]][pathStart[1]]='empty';pathStart=[r,c];pathGrid[r][c]='start'}
+  else if(mode==='end'){if(cur==='start')return;pathGrid[pathEnd[0]][pathEnd[1]]='empty';pathEnd=[r,c];pathGrid[r][c]='end'}
+  renderPathGrid()
+}
+const DIRS=[[-1,0],[1,0],[0,-1],[0,1]]
+let pathStepQueue=[],pathStepVisited=new Set(),pathStepParent={},pathStepCount=0
+
+function initPathStep(){
+  pathStepQueue=[[...pathStart]];pathStepVisited=new Set();pathStepVisited.add(pathStart.join(','))
+  pathStepParent={};pathStepCount=0
+  setPseudo('pathp','1')
+  setExplain('path-explain',`Initialized. Start node added to the ${document.getElementById('path-algo').value==='bfs'?'queue':'stack'}. Beginning search from (${pathStart[0]},${pathStart[1]}).`)
+}
+async function stepPath(){
+  const algo=document.getElementById('path-algo').value
+  if(!pathStepMode){
+    clearPath();await sleep(30)
+    pathStepMode=true;document.getElementById('step-mode-badge').classList.add('on')
+    document.getElementById('path-status').textContent='Step mode'
+    initPathStep();renderPathGrid();return
+  }
+  if(!pathStepQueue.length){setExplain('path-explain','No more nodes to explore. No path found.');return}
+  const node=algo==='bfs'?pathStepQueue.shift():pathStepQueue.pop()
+  const[r,c]=node;const key=`${r},${c}`;pathStepCount++
+  document.getElementById('path-visited').textContent=pathStepCount
+  if(r===pathEnd[0]&&c===pathEnd[1]){
+    setPseudo('pathp','5')
+    setExplain('path-explain',`Reached the end node at (${r},${c})! Tracing back the path now.`)
+    await tracePathStep(pathStepParent,pathEnd);return
+  }
+  setPseudo('pathp','4')
+  setExplain('path-explain',`Dequeued node (${r},${c}). Checking its ${DIRS.length} neighbors for unvisited, non-wall cells.`)
+  for(const[dr,dc]of DIRS){
+    const nr=r+dr,nc=c+dc,nk=`${nr},${nc}`
+    if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&!pathStepVisited.has(nk)&&pathGrid[nr][nc]!=='wall'){
+      pathStepVisited.add(nk);pathStepParent[nk]=key;pathStepQueue.push([nr,nc])
+      if(pathGrid[nr][nc]!=='end'&&pathGrid[nr][nc]!=='start')pathGrid[nr][nc]='visited'
+    }
+  }
+  renderPathGrid()
+}
+async function tracePathStep(parent,end){
+  let cur=end.join(','),len=0,nodes=[]
+  while(parent[cur]){nodes.push(cur.split(',').map(Number));cur=parent[cur];len++}
+  nodes.reverse()
+  for(const[r,c]of nodes){if(pathGrid[r][c]!=='start'&&pathGrid[r][c]!=='end')pathGrid[r][c]='path';renderPathGrid();await sleep(30)}
+  document.getElementById('path-length').textContent=len;document.getElementById('path-status').textContent='Path found ✓'
+  setExplain('path-explain',`Path found! Length: <span>${len}</span> steps. The yellow cells show the optimal route from start to end.`)
+  pathStepMode=false;document.getElementById('step-mode-badge').classList.remove('on')
+}
+async function runPath(){
+  if(pathRunning||pathStepMode)return
+  clearPath();await sleep(40)
+  pathRunning=true;document.getElementById('path-run-btn').disabled=true
+  document.getElementById('path-status').textContent='Searching...'
+  const algo=document.getElementById('path-algo').value
+  const found=algo==='bfs'?await bfsPath():await dfsPath()
+  if(!found)document.getElementById('path-status').textContent='No path found'
+  pathRunning=false;document.getElementById('path-run-btn').disabled=false
+}
+async function bfsPath(){
+  const queue=[[...pathStart]],visited=new Set(),parent={}
+  visited.add(pathStart.join(','));let vc=0
+  while(queue.length&&pathRunning){
+    const[r,c]=queue.shift()
+    if(r===pathEnd[0]&&c===pathEnd[1]){setPseudo('pathp','5');setExplain('path-explain','End node reached! Tracing shortest path back to start.');await tracePath(parent,pathEnd);return true}
+    setPseudo('pathp','4');setExplain('path-explain',`Visiting (${r},${c}). Exploring neighbors — BFS checks all nearby nodes at current depth first.`)
+    for(const[dr,dc]of DIRS){
+      const nr=r+dr,nc=c+dc,key=`${nr},${nc}`
+      if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&!visited.has(key)&&pathGrid[nr][nc]!=='wall'){
+        visited.add(key);parent[key]=`${r},${c}`;queue.push([nr,nc])
+        if(pathGrid[nr][nc]!=='end'&&pathGrid[nr][nc]!=='start'){pathGrid[nr][nc]='visited';vc++;document.getElementById('path-visited').textContent=vc}
+        renderPathGrid();await sleep(16)
+      }
+    }
+  }
+  return false
+}
+async function dfsPath(){
+  const stack=[[...pathStart]],visited=new Set(),parent={};let vc=0
+  while(stack.length&&pathRunning){
+    const[r,c]=stack.pop(),key=`${r},${c}`
+    if(visited.has(key))continue;visited.add(key)
+    if(r===pathEnd[0]&&c===pathEnd[1]){setExplain('path-explain','End reached! DFS found a path (may not be shortest). Tracing back.');await tracePath(parent,pathEnd);return true}
+    setPseudo('pathp','4');setExplain('path-explain',`Visiting (${r},${c}). DFS dives deep — exploring one branch fully before trying others.`)
+    if(pathGrid[r][c]!=='start'&&pathGrid[r][c]!=='end'){pathGrid[r][c]='visited';vc++;document.getElementById('path-visited').textContent=vc;renderPathGrid();await sleep(16)}
+    for(const[dr,dc]of DIRS){
+      const nr=r+dr,nc=c+dc,nk=`${nr},${nc}`
+      if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&!visited.has(nk)&&pathGrid[nr][nc]!=='wall'){parent[nk]=key;stack.push([nr,nc])}
+    }
+  }
+  return false
+}
+async function tracePath(parent,end){
+  let cur=end.join(','),len=0,nodes=[]
+  while(parent[cur]){nodes.push(cur.split(',').map(Number));cur=parent[cur];len++}
+  nodes.reverse()
+  for(const[r,c]of nodes){if(pathGrid[r][c]!=='start'&&pathGrid[r][c]!=='end')pathGrid[r][c]='path';renderPathGrid();await sleep(28)}
+  document.getElementById('path-length').textContent=len;document.getElementById('path-status').textContent='Path found ✓'
+  setExplain('path-explain',`Path found! Length: <span>${len}</span> steps from start to end.`)
+}
+
+// ════════════════════════════════════════════════════════════
+// TOWERS OF HANOI
+// ════════════════════════════════════════════════════════════
+const hcv=document.getElementById('hanoi-canvas'),hctx=hcv.getContext('2d')
+let hanoiPegs=[[],[],[]],hanoiN=3,hanoiMoveCount=0
+let hanoiMoves=[],hanoiMoveIdx=0
+const DCOL=['#5b8dee','#8b5cf6','#34d399','#fbbf24','#fb923c','#f87171']
+
+function initHanoi(){resetHanoi()}
+function resetHanoi(){
+  hanoiRunning=false;hanoiMoveIdx=0
+  hanoiN=parseInt(document.getElementById('hanoi-disks').value)
+  document.getElementById('hanoi-badge').textContent=hanoiN+' Disks'
+  document.getElementById('hanoi-total').textContent=(Math.pow(2,hanoiN)-1)
+  hanoiMoveCount=0
+  document.getElementById('hanoi-moves').textContent='0'
+  document.getElementById('hanoi-status').textContent='Ready'
+  document.getElementById('hanoi-log').innerHTML='Press Run or Step to begin solving.'
+  document.getElementById('hanoi-run-btn').disabled=false
+  document.getElementById('step-mode-badge').classList.remove('on')
+  clearPseudo('hanoip')
+  setExplain('hanoi-explain','Press Run or Step to watch the recursive solution.')
+  hanoiPegs=[[],[],[]]
+  for(let i=hanoiN;i>=1;i--)hanoiPegs[0].push(i)
+  // Pre-compute all moves
+  hanoiMoves=[]
+  function computeMoves(n,from,to,via){if(n===0)return;computeMoves(n-1,from,via,to);hanoiMoves.push([from,to,n]);computeMoves(n-1,via,to,from)}
+  computeMoves(hanoiN,0,2,1)
+  drawHanoi()
+}
+function drawHanoi(){
+  const wrap=hcv.parentElement,W=Math.min(wrap.clientWidth||700,700),H=260
+  hcv.width=W;hcv.height=H
+  const ctx=hctx,px=[W*.18,W*.5,W*.82],baseY=H-22,pegH=H-55
+  ctx.clearRect(0,0,W,H)
+  ctx.fillStyle='#1e2535';ctx.fillRect(14,baseY,W-28,6)
+  px.forEach((x,i)=>{
+    ctx.fillStyle='#2a3044';ctx.fillRect(x-5,baseY-pegH,10,pegH);ctx.fillRect(x-52,baseY,104,6)
+    ctx.fillStyle='#7a7f96';ctx.font='600 12px Space Grotesk,sans-serif';ctx.textAlign='center';ctx.fillText('ABC'[i],x,H-5)
+  })
+  const maxW=Math.min(W*.27,104),minW=20,diskH=15,gap=2
+  hanoiPegs.forEach((peg,pi)=>{
+    peg.forEach((disk,di)=>{
+      const w=minW+(maxW-minW)*((disk-1)/Math.max(hanoiN-1,1))
+      const x=px[pi]-w/2,y=baseY-(di+1)*(diskH+gap)
+      ctx.fillStyle=DCOL[(disk-1)%DCOL.length]
+      ctx.beginPath();ctx.roundRect(x,y,w,diskH,3);ctx.fill()
+      if(w>32){ctx.fillStyle='rgba(0,0,0,.3)';ctx.font='bold 9px Space Mono,monospace';ctx.textAlign='center';ctx.fillText(disk,px[pi],y+diskH-3)}
+    })
+  })
+}
+function getHanoiDelay(){return Math.max(55,720-parseInt(document.getElementById('hanoi-speed').value)*68)}
+function doHanoiMove(from,to){
+  const disk=hanoiPegs[from].pop();hanoiPegs[to].push(disk);hanoiMoveCount++
+  document.getElementById('hanoi-moves').textContent=hanoiMoveCount
+  document.getElementById('hanoi-log').innerHTML='Move disk <span>'+disk+'</span> from peg '+'ABC'[from]+' → peg '+'ABC'[to]
+  setPseudo('hanoip','3')
+  setExplain('hanoi-explain',`Moving disk <span>${disk}</span> from peg ${'ABC'[from]} to peg ${'ABC'[to]}. This is move ${hanoiMoveCount} of ${Math.pow(2,hanoiN)-1}.`)
+  drawHanoi()
+}
+function stepHanoi(){
+  if(hanoiRunning)return
+  if(hanoiMoveIdx===0){document.getElementById('step-mode-badge').classList.add('on');document.getElementById('hanoi-status').textContent='Step mode'}
+  if(hanoiMoveIdx>=hanoiMoves.length){setExplain('hanoi-explain','All disks moved to peg C! Solution complete.');document.getElementById('hanoi-status').textContent='Solved ✓';document.getElementById('step-mode-badge').classList.remove('on');return}
+  const[from,to]=hanoiMoves[hanoiMoveIdx++]
+  doHanoiMove(from,to)
+  if(hanoiMoveIdx>=hanoiMoves.length){document.getElementById('hanoi-status').textContent='Solved ✓';document.getElementById('step-mode-badge').classList.remove('on');document.getElementById('hanoi-log').innerHTML='All disks on peg C! Used <span>'+(Math.pow(2,hanoiN)-1)+'</span> moves.'}
+}
+async function runHanoi(){
+  if(hanoiRunning)return
+  hanoiRunning=true;hanoiMoveIdx=0;hanoiMoveCount=0;hanoiPegs=[[],[],[]];for(let i=hanoiN;i>=1;i--)hanoiPegs[0].push(i)
+  document.getElementById('hanoi-run-btn').disabled=true;document.getElementById('hanoi-status').textContent='Solving...'
+  document.getElementById('step-mode-badge').classList.remove('on')
+  document.getElementById('hanoi-moves').textContent='0'
+  for(const[from,to]of hanoiMoves){if(!hanoiRunning)break;doHanoiMove(from,to);await sleep(getHanoiDelay())}
+  if(hanoiRunning){document.getElementById('hanoi-status').textContent='Solved ✓';document.getElementById('hanoi-log').innerHTML='All disks on peg C! Used <span>'+(Math.pow(2,hanoiN)-1)+'</span> moves.'}
+  hanoiRunning=false;document.getElementById('hanoi-run-btn').disabled=false
+}
+
+// ════════════════════════════════════════════════════════════
+// N-QUEEN
+// ════════════════════════════════════════════════════════════
+let nqBoard=[],nqN=8,nqTries=0,nqBacks=0,nqStepGen=null
+
+function initNQ(){resetNQ()}
+function resetNQ(){
+  nqRunning=false;nqStepGen=null;nqN=parseInt(document.getElementById('nq-size').value)
+  document.getElementById('nq-badge').textContent=nqN+'×'+nqN
+  nqBoard=new Array(nqN).fill(-1);nqTries=0;nqBacks=0
+  document.getElementById('nq-tries').textContent='0';document.getElementById('nq-backs').textContent='0'
+  document.getElementById('nq-status').textContent='Ready';document.getElementById('nq-run-btn').disabled=false
+  document.getElementById('nq-log').textContent='Press Run or Step to begin.'
+  document.getElementById('step-mode-badge').classList.remove('on')
+  clearPseudo('nqp');setExplain('nq-explain','Press Run or Step to watch backtracking place queens.')
+  renderNQ(-1,-1,false)
+}
+function renderNQ(aR,aC,conflict){
+  const wrap=document.getElementById('nq-board')
+  wrap.style.gridTemplateColumns='repeat('+nqN+',1fr)'
+  if(wrap.children.length!==nqN*nqN){wrap.innerHTML='';for(let r=0;r<nqN;r++)for(let c=0;c<nqN;c++){const el=document.createElement('div');el.className='nq-cell';el.id='nq-'+r+'-'+c;wrap.appendChild(el)}}
+  for(let r=0;r<nqN;r++)for(let c=0;c<nqN;c++){
+    const el=document.getElementById('nq-'+r+'-'+c),hQ=nqBoard[r]===c,isA=r===aR&&c===aC
+    el.className=isA&&conflict?'nq-cell conflict':isA?'nq-cell placing':hQ?'nq-cell queen':'nq-cell '+((r+c)%2===0?'light':'dark')
+    el.textContent=hQ?'♛':''
+  }
+}
+function isSafeNQ(board,row,col){for(let r=0;r<row;r++){if(board[r]===col||Math.abs(board[r]-col)===Math.abs(r-row))return false}return true}
+function getNQDelay(){return Math.max(22,570-parseInt(document.getElementById('nq-speed').value)*55)}
+
+function*nqGenerator(){
+  yield*solveNQGen(0)
+}
+function*solveNQGen(row){
+  if(row===nqN){return true}
+  setPseudo('nqp','2')
+  for(let col=0;col<nqN;col++){
+    nqTries++;document.getElementById('nq-tries').textContent=nqTries
+    const safe=isSafeNQ(nqBoard,row,col);nqBoard[row]=col
+    renderNQ(row,col,!safe)
+    if(safe){
+      setPseudo('nqp','3')
+      setExplain('nq-explain',`Row ${row+1}, col ${col+1}: <span>safe</span>. No queen in same column or diagonal. Placing ♛ and moving to next row.`)
+      document.getElementById('nq-log').innerHTML='Row '+(row+1)+', col '+(col+1)+' — <span>safe</span>, placed ♛'
+    }else{
+      setPseudo('nqp','6')
+      setExplain('nq-explain',`Row ${row+1}, col ${col+1}: conflict. Another queen threatens this cell. Trying next column.`)
+      document.getElementById('nq-log').innerHTML='Row '+(row+1)+', col '+(col+1)+' — conflict'
+    }
+    yield
+    if(safe){
+      const result=yield*solveNQGen(row+1)
+      if(result===true)return true
+      nqBacks++;document.getElementById('nq-backs').textContent=nqBacks
+      setPseudo('nqp','6')
+      setExplain('nq-explain',`Backtracking from row ${row+2}. No valid placement found. Removing queen from row ${row+1}, col ${col+1}.`)
+      document.getElementById('nq-log').innerHTML='Backtracking from row '+(row+2)+'...'
+    }
+    nqBoard[row]=-1;renderNQ(row,-1,false);yield
+  }
+  return false
+}
+function stepNQ(){
+  if(nqRunning)return
+  if(!nqStepGen){nqStepGen=nqGenerator();document.getElementById('step-mode-badge').classList.add('on');document.getElementById('nq-status').textContent='Step mode'}
+  const r=nqStepGen.next()
+  if(r.done){nqStepGen=null;document.getElementById('step-mode-badge').classList.remove('on');document.getElementById('nq-status').textContent='Solved ✓';document.getElementById('nq-log').innerHTML='All '+nqN+' queens placed!';setExplain('nq-explain','Solution found! All '+nqN+' queens placed with no conflicts.')}
+}
+async function runNQ(){
+  if(nqRunning)return
+  nqRunning=true;nqTries=0;nqBacks=0;nqBoard=new Array(nqN).fill(-1)
+  nqStepGen=nqGenerator()
+  document.getElementById('nq-run-btn').disabled=true;document.getElementById('nq-status').textContent='Solving...'
+  document.getElementById('step-mode-badge').classList.remove('on')
+  let r;do{r=nqStepGen.next();await sleep(getNQDelay())}while(!r.done&&nqRunning)
+  if(nqRunning){document.getElementById('nq-status').textContent='Solved ✓';document.getElementById('nq-log').innerHTML='All '+nqN+' queens placed!'}
+  nqRunning=false;document.getElementById('nq-run-btn').disabled=false;nqStepGen=null
+}
+
+// ════════════════════════════════════════════════════════════
+// SUDOKU SOLVER
+// ════════════════════════════════════════════════════════════
+const SDK_PUZZLES=[
+  [[5,3,0,0,7,0,0,0,0],[6,0,0,1,9,5,0,0,0],[0,9,8,0,0,0,0,6,0],[8,0,0,0,6,0,0,0,3],[4,0,0,8,0,3,0,0,1],[7,0,0,0,2,0,0,0,6],[0,6,0,0,0,0,2,8,0],[0,0,0,4,1,9,0,0,5],[0,0,0,0,8,0,0,7,9]],
+  [[0,0,0,2,6,0,7,0,1],[6,8,0,0,7,0,0,9,0],[1,9,0,0,0,4,5,0,0],[8,2,0,1,0,0,0,4,0],[0,0,4,6,0,2,9,0,0],[0,5,0,0,0,3,0,2,8],[0,0,9,3,0,0,0,7,4],[0,4,0,0,5,0,0,3,6],[7,0,3,0,1,8,0,0,0]],
+  [[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,3,0,8,5],[0,0,1,0,2,0,0,0,0],[0,0,0,5,0,7,0,0,0],[0,0,4,0,0,0,1,0,0],[0,9,0,0,0,0,0,0,0],[5,0,0,0,0,0,0,7,3],[0,0,2,0,1,0,0,0,0],[0,0,0,0,4,0,0,0,9]]
+]
+let sdkGiven=[],sdkBoard=[],sdkFilled=0,sdkBacks=0,sdkStepGen=null
+
+function initSudoku(){loadSudokuPuzzle()}
+function loadSudokuPuzzle(){
+  sdkRunning=false;sdkStepGen=null
+  const idx=parseInt(document.getElementById('sdk-puzzle-sel').value)
+  sdkGiven=SDK_PUZZLES[idx].map(r=>[...r]);sdkBoard=sdkGiven.map(r=>[...r])
+  sdkFilled=0;sdkBacks=0
+  document.getElementById('sdk-filled').textContent='0';document.getElementById('sdk-backs').textContent='0'
+  document.getElementById('sdk-status').textContent='Ready';document.getElementById('sdk-run-btn').disabled=false
+  document.getElementById('sdk-log').textContent='Press Run or Step to begin solving.'
+  document.getElementById('step-mode-badge').classList.remove('on')
+  clearPseudo('sdkp');setExplain('sdk-explain','Press Run or Step to watch backtracking fill the grid.')
+  renderSDK(-1,-1,'')
+}
+function bS(r,c,cell){if(c===2||c===5)cell.style.borderRight='2px solid #5b8dee';if(r===2||r===5)cell.style.borderBottom='2px solid #5b8dee'}
+function renderSDK(aR,aC,state){
+  const wrap=document.getElementById('sdk-board')
+  if(wrap.children.length!==81){wrap.innerHTML='';for(let r=0;r<9;r++)for(let c=0;c<9;c++){const el=document.createElement('div');el.className='sdk-cell';el.id='sdk-'+r+'-'+c;bS(r,c,el);wrap.appendChild(el)}}
+  for(let r=0;r<9;r++)for(let c=0;c<9;c++){
+    const el=document.getElementById('sdk-'+r+'-'+c),isG=sdkGiven[r][c]!==0,val=sdkBoard[r][c],isA=r===aR&&c===aC
+    el.textContent=val||''
+    if(isA&&state==='try')el.className='sdk-cell trying'
+    else if(isA&&state==='back')el.className='sdk-cell backtrack'
+    else if(isG)el.className='sdk-cell given'
+    else el.className='sdk-cell'+(val?' filled':'')
+    bS(r,c,el)
+  }
+}
+function getSDKDelay(){return Math.max(5,200-parseInt(document.getElementById('sdk-speed').value)*20)}
+function isValidSDK(board,r,c,num){
+  for(let i=0;i<9;i++){if(board[r][i]===num||board[i][c]===num)return false}
+  const br=Math.floor(r/3)*3,bc=Math.floor(c/3)*3
+  for(let i=0;i<3;i++)for(let j=0;j<3;j++)if(board[br+i][bc+j]===num)return false
+  return true
+}
+function*sdkGenerator(){
+  yield*solveSdkGen()
+}
+function*solveSdkGen(){
+  let r=-1,c=-1
+  outer:for(let i=0;i<9;i++)for(let j=0;j<9;j++)if(sdkBoard[i][j]===0){r=i;c=j;break outer}
+  if(r===-1){return true}
+  setPseudo('sdkp','1')
+  setExplain('sdk-explain',`Found empty cell at row ${r+1}, col ${c+1}. Trying digits 1–9.`)
+  yield
+  for(let num=1;num<=9;num++){
+    if(isValidSDK(sdkBoard,r,c,num)){
+      sdkBoard[r][c]=num;sdkFilled++;document.getElementById('sdk-filled').textContent=sdkFilled
+      setPseudo('sdkp','5')
+      setExplain('sdk-explain',`Placing <span>${num}</span> at row ${r+1}, col ${c+1}. Valid — no conflict in row, column, or 3×3 box.`)
+      document.getElementById('sdk-log').innerHTML='Trying <span>'+num+'</span> at ('+( r+1)+', '+(c+1)+')'
+      renderSDK(r,c,'try');yield
+      const result=yield*solveSdkGen()
+      if(result===true)return true
+      sdkBoard[r][c]=0;sdkFilled--;sdkBacks++
+      document.getElementById('sdk-filled').textContent=sdkFilled;document.getElementById('sdk-backs').textContent=sdkBacks
+      setPseudo('sdkp','7')
+      setExplain('sdk-explain',`<span>${num}</span> at (${r+1},${c+1}) led to a dead end. Backtracking — erasing and trying next digit.`)
+      document.getElementById('sdk-log').innerHTML='Backtracking from ('+(r+1)+', '+(c+1)+')'
+      renderSDK(r,c,'back');yield
+    }
+  }
+  return false
+}
+function stepSudoku(){
+  if(sdkRunning)return
+  if(!sdkStepGen){sdkStepGen=sdkGenerator();document.getElementById('step-mode-badge').classList.add('on');document.getElementById('sdk-status').textContent='Step mode'}
+  const r=sdkStepGen.next()
+  if(r.done){
+    sdkStepGen=null;document.getElementById('step-mode-badge').classList.remove('on')
+    // mark all filled green
+    for(let row=0;row<9;row++)for(let col=0;col<9;col++)if(sdkGiven[row][col]===0){const el=document.getElementById('sdk-'+row+'-'+col);el.className='sdk-cell done';bS(row,col,el)}
+    document.getElementById('sdk-status').textContent='Solved ✓'
+    setExplain('sdk-explain','Puzzle solved! All cells filled with valid digits.')
+  }
+}
+async function runSudoku(){
+  if(sdkRunning)return
+  sdkBoard=sdkGiven.map(r=>[...r]);sdkRunning=true;sdkFilled=0;sdkBacks=0
+  sdkStepGen=sdkGenerator()
+  document.getElementById('sdk-run-btn').disabled=true;document.getElementById('sdk-status').textContent='Solving...'
+  document.getElementById('step-mode-badge').classList.remove('on')
+  let r;do{r=sdkStepGen.next();await sleep(getSDKDelay())}while(!r.done&&sdkRunning)
+  if(sdkRunning){
+    renderSDK(-1,-1,'')
+    for(let row=0;row<9;row++)for(let col=0;col<9;col++)if(sdkGiven[row][col]===0){const el=document.getElementById('sdk-'+row+'-'+col);el.className='sdk-cell done';bS(row,col,el)}
+    document.getElementById('sdk-status').textContent='Solved ✓'
+    document.getElementById('sdk-log').innerHTML='Solved in <span>'+sdkFilled+'</span> placements, <span>'+sdkBacks+'</span> backtracks.'
+    setExplain('sdk-explain','Puzzle solved! <span>'+sdkFilled+'</span> cells filled, <span>'+sdkBacks+'</span> backtracks needed.')
+  }
+  sdkRunning=false;document.getElementById('sdk-run-btn').disabled=false;sdkStepGen=null
+}
+</script>
+</body>
+</html>
