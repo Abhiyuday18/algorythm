@@ -1,6 +1,6 @@
 # AlgoRythm 🎵
 
-> An interactive algorithm visualizer built as a teaching tool — step through every algorithm one move at a time.
+> An interactive algorithm visualizer built as a teaching tool - step through every algorithm one move at a time.
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20Site-5b8dee?style=for-the-badge)](https://abhiyuday18.github.io/algorythm)
 ![HTML](https://img.shields.io/badge/HTML-CSS-JS-E34F26?style=flat&logo=html5&logoColor=white)
