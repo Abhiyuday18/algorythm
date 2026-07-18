@@ -63,6 +63,8 @@ Built entirely in vanilla HTML, CSS, and JavaScript. Zero dependencies, zero fra
 - **Pathfinder grid**: draw walls, set start and end points, then watch BFS, DFS, or Dijkstra navigate
 - **Zero install**: runs entirely in the browser, no setup required
 - **Keyboard accessible**: every card, control, and the pathfinder grid itself work without a mouse; live regions announce step-by-step narration to screen readers
+- **Adaptive light/dark theme**: follows your OS preference by default, with a manual toggle that remembers your choice
+- **Guided tour and Docs**: a skippable first-visit tour of the main features, and an in-app Docs page covering every mode, shortcut, and how it works under the hood
 
 ---
 

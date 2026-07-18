@@ -16,6 +16,11 @@ const appScript = scriptMatch[1]
 // that state, this hook is appended to the SAME eval invocation as the app
 // script, so it closes over the real, live bindings rather than copies.
 const TEST_HOOKS = `
+// The guided tour auto-starts on a 700ms timer in real browsers; in tests
+// that timer could fire mid-test and call goHub(), aborting async runs.
+// This flag is checked inside the timer callback, and TEST_HOOKS runs long
+// before 700ms elapse, so setting it here reliably suppresses auto-start.
+window.__disableTour = true
 window.__test = {
   getSortArr: () => sortArr,
   getBsArr: () => bsArr,
