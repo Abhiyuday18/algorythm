@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>AlgoRythm — Algorithm Visualizer</title>
+<title>AlgoRythm - Algorithm Visualizer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
@@ -93,6 +93,48 @@ input[type=range]{accent-color:var(--accent);cursor:pointer;width:80px}
 .canvas-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
 canvas{display:block;width:100%}
 
+/* COMPARE MODE */
+.compare-toggle{display:flex;align-items:center;gap:.4rem;font-size:.82rem;color:var(--muted);cursor:pointer;font-family:var(--sans);white-space:nowrap}
+.compare-toggle input{accent-color:var(--accent);cursor:pointer;width:auto}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+
+/* COMPARE SUMMARY */
+@keyframes summaryIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.compare-summary{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.15rem 1.3rem;margin-top:1.1rem;animation:summaryIn .35s ease}
+.summary-header{font-family:var(--mono);font-size:.66rem;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.9rem}
+.summary-winner{font-size:.9rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
+.summary-winner span{color:var(--text)}
+.win-badge{font-family:var(--mono);font-size:.68rem;font-weight:700;padding:.22rem .6rem;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);border-radius:4px;color:var(--green);white-space:nowrap}
+.summary-stats{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.summary-stat-col{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.75rem .9rem}
+.summary-stat-col h4{font-family:var(--mono);font-size:.72rem;color:var(--accent);margin-bottom:.55rem;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.summary-stat-row{display:flex;justify-content:space-between;gap:.6rem;font-size:.78rem;color:var(--muted);padding:.15rem 0}
+.summary-stat-row span{color:var(--text);font-family:var(--mono)}
+.summary-stat-row.better span{color:var(--green)}
+.summary-explain{font-size:.83rem;color:var(--muted);line-height:1.65;padding-top:.95rem;border-top:1px solid var(--border)}
+.summary-explain span{color:var(--text)}
+@media(max-width:640px){.summary-stats{grid-template-columns:1fr}}
+
+/* CHALLENGE MODE */
+.challenge-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.3rem;margin-top:1.1rem}
+.challenge-q{font-size:.95rem;color:var(--muted);line-height:1.6;margin-bottom:.85rem}
+.challenge-q span{color:var(--text);font-family:var(--mono)}
+.challenge-opts{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.7rem}
+.ch-opt.locked{pointer-events:none}
+.ch-opt.correct{border-color:var(--green);color:var(--green);background:rgba(52,211,153,.1)}
+.ch-opt.wrong{border-color:var(--red);color:var(--red);background:rgba(248,113,113,.1)}
+.challenge-feedback{font-size:.85rem;color:var(--muted);line-height:1.6;min-height:22px}
+.challenge-feedback span{color:var(--text)}
+
+/* BENCHMARK */
+.bench-note{font-size:.82rem;color:var(--muted);line-height:1.6;margin-top:.85rem}
+.bench-table{width:100%;border-collapse:collapse;margin-top:.9rem;font-family:var(--mono);font-size:.72rem}
+.bench-table th{color:var(--accent);text-transform:uppercase;letter-spacing:.05em;font-size:.64rem;text-align:right;padding:.45rem .7rem;border-bottom:1px solid var(--border)}
+.bench-table th:first-child{text-align:left}
+.bench-table td{color:var(--muted);text-align:right;padding:.4rem .7rem;border-bottom:1px solid var(--border)}
+.bench-table td:first-child{text-align:left;color:var(--text)}
+.bench-table td.best{color:var(--green)}
+
 /* PSEUDOCODE */
 .pseudo-block{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
 .pseudo-header{font-family:var(--mono);font-size:.68rem;color:var(--muted);padding:.55rem .9rem;background:var(--surface2);border-bottom:1px solid var(--border);letter-spacing:.06em;text-transform:uppercase}
@@ -119,7 +161,7 @@ canvas{display:block;width:100%}
 /* PATHFINDER */
 #path-canvas-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.9rem;overflow-x:auto;user-select:none}
 #path-grid{display:inline-grid;gap:2px;cursor:crosshair}
-.pcell{width:21px;height:21px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);transition:background .08s}
+.pcell{width:21px;height:21px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);transition:background .08s;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.52rem;color:rgba(232,234,240,.55)}
 .pcell.wall{background:#2a2f42;border-color:#3a4055}
 .pcell.start{background:var(--green);border-color:var(--green)}
 .pcell.end{background:var(--red);border-color:var(--red)}
@@ -180,16 +222,28 @@ canvas{display:block;width:100%}
 .step-mode-badge{display:none;font-family:var(--mono);font-size:.65rem;padding:.18rem .5rem;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.28);border-radius:4px;color:var(--yellow)}
 .step-mode-badge.on{display:inline-flex}
 
+/* ACCESSIBILITY */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip-link{position:absolute;top:-40px;left:.5rem;z-index:1000;background:var(--accent);color:#fff;padding:.55rem 1rem;border-radius:6px;font-family:var(--sans);font-size:.85rem;font-weight:600;text-decoration:none;transition:top .15s}
+.skip-link:focus{top:.5rem}
+.ctrl-btn:focus-visible,.ctrl-select:focus-visible,input[type=range]:focus-visible,.compare-toggle input:focus-visible,.algo-card:focus-visible,.nav-back:focus-visible,.nav-logo:focus-visible,.egg-close:focus-visible,#path-grid:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#path-grid:focus .pcell.kfocus{box-shadow:inset 0 0 0 2px var(--yellow)}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none!important;animation:none!important}
+  html{scroll-behavior:auto}
+}
+
 @media(max-width:900px){
   .viz-layout{grid-template-columns:1fr}
   .viz-sidebar{flex-direction:row;flex-wrap:wrap}
   .pseudo-block,.explain-block,.complex-block{flex:1;min-width:240px}
+  .compare-grid{grid-template-columns:1fr}
 }
 @media(max-width:640px){
   #hub{padding:2rem 1rem 1.5rem}
   #viz-panel{padding:0 1rem 3rem}
   nav{padding:.75rem 1rem}
-  .pcell{width:16px;height:16px}
+  .pcell{width:16px;height:16px;font-size:.44rem}
   .nq-cell{width:32px;height:32px;font-size:.9rem}
   .sdk-cell{width:30px;height:30px;font-size:.75rem}
 }
@@ -197,12 +251,14 @@ canvas{display:block;width:100%}
 </head>
 <body>
 
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
 <!-- EASTER EGG PANEL -->
-<div id="easter-egg">
+<div id="easter-egg" aria-hidden="true">
   <div class="egg-card">
-    <span class="egg-close" onclick="document.getElementById('easter-egg').classList.remove('visible')">&#x2715;</span>
+    <span class="egg-close" role="button" tabindex="0" aria-label="Close" onclick="closeEasterEgg()" onkeydown="activateOnKey(event,closeEasterEgg)">&#x2715;</span>
     <h4>&#128075; You found it.</h4>
-    <p>AlgoRythm is built and designed by ap.dev. Every animation, every step, every line of pseudocode &mdash; crafted from scratch.</p>
+    <p>AlgoRythm is built and designed by ap.dev. Every animation, every step, every line of pseudocode, crafted from scratch.</p>
     <div class="sig">~ ap.dev &nbsp;|&nbsp; AlgoRythm v1.0</div>
     <a href="https://github.com/Abhiyuday18" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;margin-top:.6rem;font-family:var(--mono);font-size:.68rem;color:var(--accent);text-decoration:none;border:1px solid rgba(91,141,238,.25);border-radius:5px;padding:.25rem .6rem;transition:border-color .2s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(91,141,238,.25)'">&#128279; github.com/Abhiyuday18</a>
   </div>
@@ -210,19 +266,21 @@ canvas{display:block;width:100%}
 
 <nav>
   <div class="nav-left">
-    <div class="nav-logo" onclick="goHub()">Algo<span>Rythm</span> /</div>
-    <div class="nav-back" id="nav-back" onclick="goHub()">&#8592; All Algorithms</div>
-    <div class="step-mode-badge" id="step-mode-badge">STEP MODE</div>
+    <div class="nav-logo" role="button" tabindex="0" aria-label="AlgoRythm home" onclick="goHub()" onkeydown="activateOnKey(event,goHub)">Algo<span>Rythm</span> /</div>
+    <div class="nav-back" id="nav-back" role="button" tabindex="0" aria-label="Back to all algorithms" onclick="goHub()" onkeydown="activateOnKey(event,goHub)">&#8592; All Algorithms</div>
+    <div class="step-mode-badge" id="step-mode-badge" role="status">STEP MODE</div>
   </div>
   <div class="nav-tag">ap.dev</div>
 </nav>
+
+<main id="main-content" tabindex="-1">
 
 <!-- HUB -->
 <section id="hub">
   <div class="hub-inner">
     <div class="hub-eyebrow">// algorithm visualizer</div>
     <h1 class="hub-title">Learn algorithms<br/>at your own <span class="grad">rhythm.</span></h1>
-    <p class="hub-sub">Step through every algorithm one move at a time. Real pseudocode, plain-English explanations, and live animations &mdash; designed as a teaching tool.</p>
+    <p class="hub-sub">Step through every algorithm one move at a time. Real pseudocode, plain-English explanations, and live animations, designed as a teaching tool.</p>
     <div class="hub-features">
       <span class="hub-feat">&#9654; Auto-run</span>
       <span class="hub-feat">&#8594; Step-by-step</span>
@@ -232,17 +290,17 @@ canvas{display:block;width:100%}
     </div>
     <div class="cards-grid">
 
-      <div class="algo-card" onclick="openViz('sorting')">
-        <div class="card-preview"><div class="mini-bars" id="mini-sort"></div></div>
+      <div class="algo-card" role="button" tabindex="0" aria-label="Sorting Algorithms" onclick="openViz('sorting')" onkeydown="activateOnKey(event,()=>openViz('sorting'))">
+        <div class="card-preview" aria-hidden="true"><div class="mini-bars" id="mini-sort"></div></div>
         <div class="card-info">
           <h3>Sorting Algorithms</h3>
-          <p>Bubble, Selection, Insertion, Merge, Quick &mdash; animated comparisons and swaps.</p>
-          <div class="card-chips"><span class="chip">5 algorithms</span><span class="chip">Step mode</span></div>
+          <p>Bubble, Selection, Insertion, Merge, Quick: animated comparisons and swaps.</p>
+          <div class="card-chips"><span class="chip">5 algorithms</span><span class="chip">Step mode</span><span class="chip purple">Challenge</span></div>
         </div>
       </div>
 
-      <div class="algo-card" onclick="openViz('bsearch')">
-        <div class="card-preview" style="align-items:center"><div id="mini-bs" style="display:flex;gap:4px;padding:0 14px"></div></div>
+      <div class="algo-card" role="button" tabindex="0" aria-label="Binary Search" onclick="openViz('bsearch')" onkeydown="activateOnKey(event,()=>openViz('bsearch'))">
+        <div class="card-preview" style="align-items:center" aria-hidden="true"><div id="mini-bs" style="display:flex;gap:4px;padding:0 14px"></div></div>
         <div class="card-info">
           <h3>Binary Search</h3>
           <p>Eliminate half the search space with every comparison. Step at your own pace.</p>
@@ -250,8 +308,8 @@ canvas{display:block;width:100%}
         </div>
       </div>
 
-      <div class="algo-card" onclick="openViz('pathfinder')">
-        <div class="card-preview" style="align-items:center;padding:8px"><div id="mini-path" style="display:inline-grid;gap:2px;grid-template-columns:repeat(10,1fr);width:190px;height:108px"></div></div>
+      <div class="algo-card" role="button" tabindex="0" aria-label="Pathfinder" onclick="openViz('pathfinder')" onkeydown="activateOnKey(event,()=>openViz('pathfinder'))">
+        <div class="card-preview" style="align-items:center;padding:8px" aria-hidden="true"><div id="mini-path" style="display:inline-grid;gap:2px;grid-template-columns:repeat(10,1fr);width:190px;height:108px"></div></div>
         <div class="card-info">
           <h3>Pathfinder</h3>
           <p>Draw walls, set start &amp; end, watch BFS or DFS explore step by step.</p>
@@ -259,8 +317,8 @@ canvas{display:block;width:100%}
         </div>
       </div>
 
-      <div class="algo-card" onclick="openViz('hanoi')">
-        <div class="card-preview" style="align-items:center"><canvas id="mini-hanoi" width="230" height="118"></canvas></div>
+      <div class="algo-card" role="button" tabindex="0" aria-label="Towers of Hanoi" onclick="openViz('hanoi')" onkeydown="activateOnKey(event,()=>openViz('hanoi'))">
+        <div class="card-preview" style="align-items:center" aria-hidden="true"><canvas id="mini-hanoi" width="230" height="118"></canvas></div>
         <div class="card-info">
           <h3>Towers of Hanoi</h3>
           <p>Watch the recursive solution unfold disk by disk with step control.</p>
@@ -268,17 +326,17 @@ canvas{display:block;width:100%}
         </div>
       </div>
 
-      <div class="algo-card" onclick="openViz('nqueen')">
-        <div class="card-preview" style="align-items:center"><div id="mini-nq" style="display:inline-grid;gap:2px"></div></div>
+      <div class="algo-card" role="button" tabindex="0" aria-label="N-Queen Problem" onclick="openViz('nqueen')" onkeydown="activateOnKey(event,()=>openViz('nqueen'))">
+        <div class="card-preview" style="align-items:center" aria-hidden="true"><div id="mini-nq" style="display:inline-grid;gap:2px"></div></div>
         <div class="card-info">
           <h3>N-Queen Problem</h3>
-          <p>Watch backtracking place queens, fail, and retry &mdash; row by row.</p>
+          <p>Watch backtracking place queens, fail, and retry, row by row.</p>
           <div class="card-chips"><span class="chip purple">Backtracking</span><span class="chip">Step mode</span></div>
         </div>
       </div>
 
-      <div class="algo-card" onclick="openViz('sudoku')">
-        <div class="card-preview" style="align-items:center"><div id="mini-sdk" style="display:inline-grid;grid-template-columns:repeat(4,1fr);gap:2px"></div></div>
+      <div class="algo-card" role="button" tabindex="0" aria-label="Sudoku Solver" onclick="openViz('sudoku')" onkeydown="activateOnKey(event,()=>openViz('sudoku'))">
+        <div class="card-preview" style="align-items:center" aria-hidden="true"><div id="mini-sdk" style="display:inline-grid;grid-template-columns:repeat(4,1fr);gap:2px"></div></div>
         <div class="card-info">
           <h3>Sudoku Solver</h3>
           <p>Watch constraint-based backtracking fill the grid cell by cell.</p>
@@ -296,34 +354,81 @@ canvas{display:block;width:100%}
 <!-- ═══ SORTING ═══════════════════════════════════════════════ -->
 <div id="viz-sorting" class="viz-section">
   <div class="viz-header">
-    <div class="viz-title">Sorting</div>
+    <h2 class="viz-title">Sorting</h2>
     <div class="viz-badge" id="sort-badge">Bubble Sort</div>
   </div>
   <div class="controls">
-    <select class="ctrl-select" id="sort-algo" onchange="sortAlgoChange()">
-      <option value="bubble">Bubble Sort</option>
-      <option value="selection">Selection Sort</option>
-      <option value="insertion">Insertion Sort</option>
-      <option value="merge">Merge Sort</option>
-      <option value="quick">Quick Sort</option>
-    </select>
-    <label class="ctrl-label">Size</label>
-    <input type="range" id="sort-size" min="8" max="60" value="30" oninput="resetSort()"/>
-    <label class="ctrl-label">Speed</label>
-    <input type="range" id="sort-speed" min="1" max="10" value="5"/>
-    <button class="ctrl-btn" onclick="resetSort()">Randomize</button>
-    <button class="ctrl-btn primary" id="sort-run-btn" onclick="runSort()">&#9654; Run</button>
+    <label class="compare-toggle">
+      <input type="checkbox" id="compare-toggle" onchange="toggleCompareMode()"/>
+      Compare Mode
+    </label>
+    <label class="compare-toggle">
+      <input type="checkbox" id="bench-toggle" onchange="toggleBenchMode()"/>
+      Benchmark
+    </label>
+    <label class="compare-toggle">
+      <input type="checkbox" id="challenge-toggle" onchange="toggleChallengeMode()"/>
+      Challenge
+    </label>
+    <span id="sort-single-controls" style="display:contents">
+      <select class="ctrl-select" id="sort-algo" aria-label="Sorting algorithm" onchange="sortAlgoChange()">
+        <option value="bubble">Bubble Sort</option>
+        <option value="selection">Selection Sort</option>
+        <option value="insertion">Insertion Sort</option>
+        <option value="merge">Merge Sort</option>
+        <option value="quick">Quick Sort</option>
+      </select>
+    </span>
+    <span id="sort-compare-controls" style="display:none">
+      <select class="ctrl-select" id="sort-algo-a" aria-label="Algorithm A" onchange="compareAlgoChange()">
+        <option value="bubble">Bubble Sort</option>
+        <option value="selection">Selection Sort</option>
+        <option value="insertion">Insertion Sort</option>
+        <option value="merge">Merge Sort</option>
+        <option value="quick" selected>Quick Sort</option>
+      </select>
+      <select class="ctrl-select" id="sort-algo-b" aria-label="Algorithm B" onchange="compareAlgoChange()">
+        <option value="bubble" selected>Bubble Sort</option>
+        <option value="selection">Selection Sort</option>
+        <option value="insertion">Insertion Sort</option>
+        <option value="merge">Merge Sort</option>
+        <option value="quick">Quick Sort</option>
+      </select>
+    </span>
+    <span id="sort-bench-controls" style="display:none">
+      <select class="ctrl-select" id="bench-pattern" aria-label="Benchmark input pattern" onchange="benchPatternChange()">
+        <option value="random">Random input</option>
+        <option value="nearly">Nearly sorted input</option>
+        <option value="reversed">Reversed input</option>
+        <option value="fewunique">Few unique values</option>
+      </select>
+      <select class="ctrl-select" id="bench-metric" aria-label="Benchmark metric" onchange="benchViewChange()">
+        <option value="ops">Total ops</option>
+        <option value="comps">Comparisons</option>
+        <option value="swaps">Swaps</option>
+      </select>
+    </span>
+    <span id="sort-size-ctrl" style="display:contents">
+      <label class="ctrl-label">Size</label>
+      <input type="range" id="sort-size" min="8" max="60" value="30" aria-label="Array size" oninput="handleRandomize()"/>
+    </span>
+    <span id="sort-speed-ctrl" style="display:contents">
+      <label class="ctrl-label">Speed</label>
+      <input type="range" id="sort-speed" min="1" max="10" value="5" aria-label="Animation speed"/>
+    </span>
+    <button class="ctrl-btn" id="sort-rand-btn" onclick="handleRandomize()">Randomize</button>
+    <button class="ctrl-btn primary" id="sort-run-btn" onclick="handleRunSort()">&#9654; Run</button>
     <button class="ctrl-btn step-btn" id="sort-step-btn" onclick="stepSort()">&#8594; Step</button>
   </div>
-  <div class="stat-row">
+  <div class="stat-row" id="sort-single-stats">
     <div class="stat">Comparisons: <span id="sort-comps">0</span></div>
     <div class="stat">Swaps: <span id="sort-swaps">0</span></div>
-    <div class="stat">Status: <span id="sort-status">Ready</span></div>
+    <div class="stat">Status: <span id="sort-status" aria-live="polite">Ready</span></div>
   </div>
-  <div class="viz-layout">
+  <div class="viz-layout" id="sort-single-layout">
     <div class="viz-main">
       <div class="canvas-wrap" style="position:relative">
-        <canvas id="sort-canvas" style="height:310px"></canvas>
+        <canvas id="sort-canvas" style="height:310px" aria-hidden="true"></canvas>
         <div class="watermark">AlgoRythm · ap.dev</div>
       </div>
     </div>
@@ -334,7 +439,7 @@ canvas{display:block;width:100%}
       </div>
       <div class="explain-block">
         <div class="explain-header">What’s happening</div>
-        <div class="explain-text" id="sort-explain">Press Run or Step to begin.</div>
+        <div class="explain-text" aria-live="polite" id="sort-explain">Press Run or Step to begin.</div>
       </div>
       <div class="complex-block">
         <div class="complex-header">Complexity</div>
@@ -342,22 +447,91 @@ canvas{display:block;width:100%}
       </div>
     </div>
   </div>
+  <div id="sort-compare-layout" style="display:none">
+    <div class="compare-grid">
+      <div>
+        <div class="viz-header" style="padding:0 0 .7rem">
+          <div class="viz-badge" id="cmp-badge-a">Quick Sort</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat">Comparisons: <span id="cmp-comps-a">0</span></div>
+          <div class="stat">Swaps: <span id="cmp-swaps-a">0</span></div>
+          <div class="stat">Status: <span id="cmp-status-a" aria-live="polite">Ready</span></div>
+        </div>
+        <div class="canvas-wrap" style="position:relative">
+          <canvas id="cmp-canvas-a" style="height:260px" aria-hidden="true"></canvas>
+          <div class="watermark">AlgoRythm · ap.dev</div>
+        </div>
+      </div>
+      <div>
+        <div class="viz-header" style="padding:0 0 .7rem">
+          <div class="viz-badge" id="cmp-badge-b">Bubble Sort</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat">Comparisons: <span id="cmp-comps-b">0</span></div>
+          <div class="stat">Swaps: <span id="cmp-swaps-b">0</span></div>
+          <div class="stat">Status: <span id="cmp-status-b" aria-live="polite">Ready</span></div>
+        </div>
+        <div class="canvas-wrap" style="position:relative">
+          <canvas id="cmp-canvas-b" style="height:260px" aria-hidden="true"></canvas>
+          <div class="watermark">AlgoRythm · ap.dev</div>
+        </div>
+      </div>
+    </div>
+    <div class="compare-summary" id="compare-summary" style="display:none">
+      <div class="summary-header">Comparison Summary</div>
+      <div class="summary-winner" id="summary-winner"></div>
+      <div class="summary-stats" id="summary-stats"></div>
+      <div class="summary-explain" id="summary-explain"></div>
+    </div>
+  </div>
+  <div id="sort-bench-layout" style="display:none">
+    <div class="stat-row">
+      <div class="stat">Sizes: <span>8 &#8594; 256</span></div>
+      <div class="stat">Metric: <span id="bench-metric-label">comparisons + swaps (mean of 3 runs)</span></div>
+      <div class="stat">Status: <span id="bench-status" aria-live="polite">Press Run to benchmark all 5 algorithms</span></div>
+    </div>
+    <div class="canvas-wrap" style="position:relative">
+      <canvas id="bench-canvas" style="height:340px" aria-hidden="true"></canvas>
+      <div class="watermark">AlgoRythm · ap.dev</div>
+    </div>
+    <div class="bench-note" id="bench-note">Each point is a real measured run on a fresh random array, not a formula. Watch the O(n&#178;) family (Bubble, Selection, Insertion) curl upward as the size doubles while the O(n log n) family (Merge, Quick) stays nearly flat: that widening gap is the complexity classes made visible.</div>
+    <div id="bench-table"></div>
+  </div>
+  <div id="sort-challenge-layout" style="display:none">
+    <div class="stat-row">
+      <div class="stat">Score: <span id="ch-score">0/0</span></div>
+      <div class="stat">Streak: <span id="ch-streak">0</span></div>
+      <div class="stat">Comparisons: <span id="cmp-comps-ch">0</span></div>
+      <div class="stat">Swaps: <span id="cmp-swaps-ch">0</span></div>
+      <div class="stat">Status: <span id="cmp-status-ch" aria-live="polite">Ready</span></div>
+    </div>
+    <div class="canvas-wrap" style="position:relative">
+      <canvas id="ch-canvas" style="height:260px" aria-hidden="true"></canvas>
+      <div class="watermark">AlgoRythm · ap.dev</div>
+    </div>
+    <div class="challenge-card" id="ch-card" aria-live="polite">
+      <div class="challenge-q" id="ch-question">Pick an algorithm above, then press Start Challenge. The animation will pause mid-run and ask you to predict what happens next, before it happens.</div>
+      <div class="challenge-opts" id="ch-options"></div>
+      <div class="challenge-feedback" id="ch-feedback"></div>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ BINARY SEARCH ═════════════════════════════════════════ -->
 <div id="viz-bsearch" class="viz-section">
-  <div class="viz-header"><div class="viz-title">Binary Search</div><div class="viz-badge">O(log n)</div></div>
+  <div class="viz-header"><h2 class="viz-title">Binary Search</h2><div class="viz-badge">O(log n)</div></div>
   <div class="controls">
     <button class="ctrl-btn" onclick="resetBS()">New Array</button>
     <label class="ctrl-label">Target:</label>
-    <select class="ctrl-select" id="bs-target-sel"></select>
+    <select class="ctrl-select" id="bs-target-sel" aria-label="Target value to search for"></select>
     <button class="ctrl-btn primary" id="bs-run-btn" onclick="runBS()">&#9654; Run</button>
     <button class="ctrl-btn step-btn" id="bs-step-btn" onclick="stepBS()">&#8594; Step</button>
   </div>
   <div class="stat-row">
     <div class="stat">Steps: <span id="bs-steps">0</span></div>
-    <div class="stat">Range: <span id="bs-range">—</span></div>
-    <div class="stat">Status: <span id="bs-status">Ready</span></div>
+    <div class="stat">Range: <span id="bs-range">-</span></div>
+    <div class="stat">Status: <span id="bs-status" aria-live="polite">Ready</span></div>
   </div>
   <div class="viz-layout">
     <div class="viz-main">
@@ -383,7 +557,7 @@ canvas{display:block;width:100%}
       </div>
       <div class="explain-block">
         <div class="explain-header">What’s happening</div>
-        <div class="explain-text" id="bs-explain">Pick a target value and press Run or Step to begin.</div>
+        <div class="explain-text" aria-live="polite" id="bs-explain">Pick a target value and press Run or Step to begin.</div>
       </div>
       <div class="complex-block">
         <div class="complex-header">Complexity</div>
@@ -399,15 +573,16 @@ canvas{display:block;width:100%}
 <!-- ═══ PATHFINDER ════════════════════════════════════════════ -->
 <div id="viz-pathfinder" class="viz-section">
   <div class="viz-header">
-    <div class="viz-title">Pathfinder</div>
+    <h2 class="viz-title">Pathfinder</h2>
     <div class="viz-badge" id="path-badge">BFS</div>
   </div>
   <div class="controls">
-    <select class="ctrl-select" id="path-algo" onchange="document.getElementById('path-badge').textContent=this.options[this.selectedIndex].text.split(' ')[0]">
+    <select class="ctrl-select" id="path-algo" aria-label="Pathfinding algorithm" onchange="pathAlgoChange()">
       <option value="bfs">BFS (Breadth-First)</option>
       <option value="dfs">DFS (Depth-First)</option>
+      <option value="dijkstra">Dijkstra (Weighted)</option>
     </select>
-    <select class="ctrl-select" id="path-mode">
+    <select class="ctrl-select" id="path-mode" aria-label="Grid edit mode">
       <option value="wall">Draw Wall</option>
       <option value="start">Set Start</option>
       <option value="end">Set End</option>
@@ -419,19 +594,22 @@ canvas{display:block;width:100%}
   </div>
   <div class="stat-row">
     <div class="stat">Visited: <span id="path-visited">0</span></div>
-    <div class="stat">Path length: <span id="path-length">—</span></div>
-    <div class="stat">Status: <span id="path-status">Draw walls then run</span></div>
+    <div class="stat">Path length: <span id="path-length">-</span></div>
+    <div class="stat" id="path-cost-stat" style="display:none">Total cost: <span id="path-cost">-</span></div>
+    <div class="stat">Status: <span id="path-status" aria-live="polite">Draw walls then run</span></div>
   </div>
   <div class="viz-layout">
     <div class="viz-main">
       <div id="path-canvas-wrap" style="position:relative">
-        <div id="path-grid"></div>
+        <div id="path-grid" tabindex="0" role="application" aria-label="Pathfinder grid. Use arrow keys to move the cursor and Enter or Space to apply the current mode (draw wall, set start, or set end)." aria-describedby="path-kb-status" onkeydown="handlePathGridKey(event)"></div>
+        <div id="path-kb-status" class="sr-only" aria-live="polite"></div>
         <div class="path-legend">
           <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Start</div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>End</div>
           <div class="legend-item"><div class="legend-dot" style="background:#2a2f42"></div>Wall</div>
           <div class="legend-item"><div class="legend-dot" style="background:rgba(91,141,238,.28)"></div>Visited</div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div>Path</div>
+          <div class="legend-item" id="path-weight-note" style="display:none"><div class="legend-dot" style="background:hsl(222,75%,48%)"></div>Cell weight (1-9): darker means costlier</div>
         </div>
         <div class="watermark">AlgoRythm · ap.dev</div>
       </div>
@@ -439,29 +617,18 @@ canvas{display:block;width:100%}
     <div class="viz-sidebar">
       <div class="pseudo-block">
         <div class="pseudo-header">Pseudocode</div>
-        <div class="pseudo-code" id="path-pseudo">
-          <div class="pline" id="pathp0">function BFS(grid, start, end):</div>
-          <div class="pline" id="pathp1">&nbsp;&nbsp;queue = [start]</div>
-          <div class="pline" id="pathp2">&nbsp;&nbsp;visited = {start}</div>
-          <div class="pline" id="pathp3">&nbsp;&nbsp;while queue not empty:</div>
-          <div class="pline" id="pathp4">&nbsp;&nbsp;&nbsp;&nbsp;node = queue.dequeue()</div>
-          <div class="pline" id="pathp5">&nbsp;&nbsp;&nbsp;&nbsp;if node == end: tracePath()</div>
-          <div class="pline" id="pathp6">&nbsp;&nbsp;&nbsp;&nbsp;for each neighbor:</div>
-          <div class="pline" id="pathp7">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if not visited, not wall:</div>
-          <div class="pline" id="pathp8">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;visited.add(neighbor)</div>
-          <div class="pline" id="pathp9">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;queue.enqueue(neighbor)</div>
-        </div>
+        <div class="pseudo-code" id="path-pseudo"></div>
       </div>
       <div class="explain-block">
         <div class="explain-header">What’s happening</div>
-        <div class="explain-text" id="path-explain">Draw walls on the grid, then press Run or Step.</div>
+        <div class="explain-text" aria-live="polite" id="path-explain">Draw walls on the grid, then press Run or Step.</div>
       </div>
       <div class="complex-block">
         <div class="complex-header">Complexity</div>
-        <div class="complex-row"><span class="complex-label">Time</span><span class="complex-val">O(V + E)</span></div>
+        <div class="complex-row"><span class="complex-label">Time</span><span class="complex-val" id="path-time">O(V + E)</span></div>
         <div class="complex-row"><span class="complex-label">Space</span><span class="complex-val">O(V)</span></div>
-        <div class="complex-row"><span class="complex-label">Shortest path</span><span class="complex-val" id="path-shortest">Yes (BFS)</span></div>
-        <div class="complex-bar-wrap"><div class="complex-bar" style="width:45%"></div></div>
+        <div class="complex-row"><span class="complex-label">Optimal path</span><span class="complex-val" id="path-shortest">Yes (BFS)</span></div>
+        <div class="complex-bar-wrap"><div class="complex-bar" id="path-complex-bar" style="width:45%"></div></div>
       </div>
     </div>
   </div>
@@ -469,14 +636,14 @@ canvas{display:block;width:100%}
 
 <!-- ═══ TOWERS OF HANOI ═══════════════════════════════════════ -->
 <div id="viz-hanoi" class="viz-section">
-  <div class="viz-header"><div class="viz-title">Towers of Hanoi</div><div class="viz-badge" id="hanoi-badge">3 Disks</div></div>
+  <div class="viz-header"><h2 class="viz-title">Towers of Hanoi</h2><div class="viz-badge" id="hanoi-badge">3 Disks</div></div>
   <div class="controls">
     <label class="ctrl-label">Disks</label>
-    <select class="ctrl-select" id="hanoi-disks" onchange="resetHanoi()">
+    <select class="ctrl-select" id="hanoi-disks" aria-label="Number of disks" onchange="resetHanoi()">
       <option value="3">3 Disks</option><option value="4">4 Disks</option><option value="5">5 Disks</option><option value="6">6 Disks</option>
     </select>
     <label class="ctrl-label">Speed</label>
-    <input type="range" id="hanoi-speed" min="1" max="10" value="6"/>
+    <input type="range" id="hanoi-speed" min="1" max="10" value="6" aria-label="Animation speed"/>
     <button class="ctrl-btn" onclick="resetHanoi()">Reset</button>
     <button class="ctrl-btn primary" id="hanoi-run-btn" onclick="runHanoi()">&#9654; Run</button>
     <button class="ctrl-btn step-btn" id="hanoi-step-btn" onclick="stepHanoi()">&#8594; Step</button>
@@ -484,12 +651,12 @@ canvas{display:block;width:100%}
   <div class="stat-row">
     <div class="stat">Moves: <span id="hanoi-moves">0</span></div>
     <div class="stat">Total: <span id="hanoi-total">7</span></div>
-    <div class="stat">Status: <span id="hanoi-status">Ready</span></div>
+    <div class="stat">Status: <span id="hanoi-status" aria-live="polite">Ready</span></div>
   </div>
   <div class="viz-layout">
     <div class="viz-main">
       <div id="hanoi-wrap" style="position:relative">
-        <canvas id="hanoi-canvas" style="max-width:100%"></canvas>
+        <canvas id="hanoi-canvas" style="max-width:100%" aria-hidden="true"></canvas>
         <div class="hanoi-log" id="hanoi-log">Press Run or Step to begin solving.</div>
         <div class="watermark">AlgoRythm · ap.dev</div>
       </div>
@@ -507,7 +674,7 @@ canvas{display:block;width:100%}
       </div>
       <div class="explain-block">
         <div class="explain-header">What’s happening</div>
-        <div class="explain-text" id="hanoi-explain">Press Run or Step to watch the recursive solution.</div>
+        <div class="explain-text" aria-live="polite" id="hanoi-explain">Press Run or Step to watch the recursive solution.</div>
       </div>
       <div class="complex-block">
         <div class="complex-header">Complexity</div>
@@ -522,14 +689,14 @@ canvas{display:block;width:100%}
 
 <!-- ═══ N-QUEEN ════════════════════════════════════════════════ -->
 <div id="viz-nqueen" class="viz-section">
-  <div class="viz-header"><div class="viz-title">N-Queen Problem</div><div class="viz-badge" id="nq-badge">8×8</div></div>
+  <div class="viz-header"><h2 class="viz-title">N-Queen Problem</h2><div class="viz-badge" id="nq-badge">8×8</div></div>
   <div class="controls">
     <label class="ctrl-label">Board</label>
-    <select class="ctrl-select" id="nq-size" onchange="resetNQ()">
+    <select class="ctrl-select" id="nq-size" aria-label="Board size" onchange="resetNQ()">
       <option value="4">4×4</option><option value="5">5×5</option><option value="6">6×6</option><option value="7">7×7</option><option value="8" selected>8×8</option>
     </select>
     <label class="ctrl-label">Speed</label>
-    <input type="range" id="nq-speed" min="1" max="10" value="6"/>
+    <input type="range" id="nq-speed" min="1" max="10" value="6" aria-label="Animation speed"/>
     <button class="ctrl-btn" onclick="resetNQ()">Reset</button>
     <button class="ctrl-btn primary" id="nq-run-btn" onclick="runNQ()">&#9654; Run</button>
     <button class="ctrl-btn step-btn" id="nq-step-btn" onclick="stepNQ()">&#8594; Step</button>
@@ -537,7 +704,7 @@ canvas{display:block;width:100%}
   <div class="stat-row">
     <div class="stat">Tried: <span id="nq-tries">0</span></div>
     <div class="stat">Backtracks: <span id="nq-backs">0</span></div>
-    <div class="stat">Status: <span id="nq-status">Ready</span></div>
+    <div class="stat">Status: <span id="nq-status" aria-live="polite">Ready</span></div>
   </div>
   <div class="viz-layout">
     <div class="viz-main">
@@ -563,7 +730,7 @@ canvas{display:block;width:100%}
       </div>
       <div class="explain-block">
         <div class="explain-header">What’s happening</div>
-        <div class="explain-text" id="nq-explain">Press Run or Step to watch backtracking in action.</div>
+        <div class="explain-text" aria-live="polite" id="nq-explain">Press Run or Step to watch backtracking in action.</div>
       </div>
       <div class="complex-block">
         <div class="complex-header">Complexity</div>
@@ -577,13 +744,13 @@ canvas{display:block;width:100%}
 
 <!-- ═══ SUDOKU ════════════════════════════════════════════════ -->
 <div id="viz-sudoku" class="viz-section">
-  <div class="viz-header"><div class="viz-title">Sudoku Solver</div><div class="viz-badge">Backtracking</div></div>
+  <div class="viz-header"><h2 class="viz-title">Sudoku Solver</h2><div class="viz-badge">Backtracking</div></div>
   <div class="controls">
-    <select class="ctrl-select" id="sdk-puzzle-sel" onchange="loadSudokuPuzzle()">
+    <select class="ctrl-select" id="sdk-puzzle-sel" aria-label="Sudoku puzzle difficulty" onchange="loadSudokuPuzzle()">
       <option value="0">Puzzle 1 (Easy)</option><option value="1">Puzzle 2 (Medium)</option><option value="2">Puzzle 3 (Hard)</option>
     </select>
     <label class="ctrl-label">Speed</label>
-    <input type="range" id="sdk-speed" min="1" max="10" value="7"/>
+    <input type="range" id="sdk-speed" min="1" max="10" value="7" aria-label="Animation speed"/>
     <button class="ctrl-btn" onclick="loadSudokuPuzzle()">Reset</button>
     <button class="ctrl-btn primary" id="sdk-run-btn" onclick="runSudoku()">&#9654; Run</button>
     <button class="ctrl-btn step-btn" id="sdk-step-btn" onclick="stepSudoku()">&#8594; Step</button>
@@ -591,7 +758,7 @@ canvas{display:block;width:100%}
   <div class="stat-row">
     <div class="stat">Filled: <span id="sdk-filled">0</span></div>
     <div class="stat">Backtracks: <span id="sdk-backs">0</span></div>
-    <div class="stat">Status: <span id="sdk-status">Ready</span></div>
+    <div class="stat">Status: <span id="sdk-status" aria-live="polite">Ready</span></div>
   </div>
   <div class="viz-layout">
     <div class="viz-main">
@@ -618,12 +785,12 @@ canvas{display:block;width:100%}
       </div>
       <div class="explain-block">
         <div class="explain-header">What’s happening</div>
-        <div class="explain-text" id="sdk-explain">Press Run or Step to watch backtracking fill the grid.</div>
+        <div class="explain-text" aria-live="polite" id="sdk-explain">Press Run or Step to watch backtracking fill the grid.</div>
       </div>
       <div class="complex-block">
         <div class="complex-header">Complexity</div>
         <div class="complex-row"><span class="complex-label">Time</span><span class="complex-val">O(9^m)</span></div>
-        <div class="complex-row"><span class="complex-label">m = empty cells</span><span class="complex-val">—</span></div>
+        <div class="complex-row"><span class="complex-label">m = empty cells</span><span class="complex-val">-</span></div>
         <div class="complex-row"><span class="complex-label">Space</span><span class="complex-val">O(m)</span></div>
         <div class="complex-bar-wrap"><div class="complex-bar" style="width:72%"></div></div>
       </div>
@@ -633,17 +800,30 @@ canvas{display:block;width:100%}
 
 </div><!-- end viz-panel -->
 
+</main>
+
 <script>
 // ─── GLOBALS ──────────────────────────────────────────────────
 const ALL_VIZ=['sorting','bsearch','pathfinder','hanoi','nqueen','sudoku']
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+// Lets keyboard-only users activate div-based buttons with Enter/Space,
+// matching native <button> behavior on elements that need custom styling.
+function activateOnKey(e,fn){if(e.key==='Enter'||e.key===' '){e.preventDefault();fn()}}
 let sortRunning=false,bsRunning=false,pathRunning=false,hanoiRunning=false,nqRunning=false,sdkRunning=false
 
 // ─── EASTER EGG (type ap.dev anywhere) ──────────────────────
 let eggBuffer=''
+function closeEasterEgg(){
+  const el=document.getElementById('easter-egg')
+  el.classList.remove('visible');el.setAttribute('aria-hidden','true')
+}
 document.addEventListener('keydown',e=>{
   eggBuffer=(eggBuffer+e.key).slice(-6)
-  if(eggBuffer==='ap.dev'){document.getElementById('easter-egg').classList.add('visible');eggBuffer=''}
+  if(eggBuffer==='ap.dev'){
+    const el=document.getElementById('easter-egg')
+    el.classList.add('visible');el.setAttribute('aria-hidden','false')
+    eggBuffer=''
+  }
 })
 
 // ─── NAVIGATION ──────────────────────────────────────────────
@@ -665,7 +845,7 @@ function goHub(){
   document.getElementById('viz-panel').style.display='none'
   document.getElementById('nav-back').classList.remove('visible')
   document.getElementById('step-mode-badge').classList.remove('on')
-  sortRunning=false;bsRunning=false;pathRunning=false;hanoiRunning=false;nqRunning=false;sdkRunning=false
+  sortRunning=false;bsRunning=false;pathRunning=false;hanoiRunning=false;nqRunning=false;sdkRunning=false;compareRunning=false;benchRunning=false;challengeRunning=false;challengeAwaiting=false
 }
 
 // ─── PSEUDOCODE HELPERS ───────────────────────────────────────
@@ -725,6 +905,15 @@ const sortCanvas=document.getElementById('sort-canvas')
 const sortCtx=sortCanvas.getContext('2d')
 let sortArr=[],sortColors=[],sortComps=0,sortSwaps=0
 let sortStepGen=null,sortStepMode=false
+let compareMode=false,compareRunning=false,cmpA=null,cmpB=null
+let benchMode=false,benchRunning=false,benchResults=null
+let challengeMode=false,challengeRunning=false,challengeAwaiting=false
+let chState=null,chPlan=null,chScore=0,chStreak=0,chWant=0
+const CH_N=14
+const BENCH_SIZES=[8,16,32,64,128,256]
+const BENCH_COLORS={bubble:'#5b8dee',selection:'#8b5cf6',insertion:'#fbbf24',merge:'#34d399',quick:'#fb923c'}
+
+const SORT_LABELS={bubble:'Bubble Sort',selection:'Selection Sort',insertion:'Insertion Sort',merge:'Merge Sort',quick:'Quick Sort'}
 
 const SORT_INFO={
   bubble:{
@@ -754,7 +943,30 @@ const SORT_INFO={
   }
 }
 
-function initSort(){resetSort()}
+function updateSortModeLayouts(){
+  const single=!compareMode&&!benchMode&&!challengeMode
+  document.getElementById('sort-single-controls').style.display=(single||challengeMode)?'contents':'none'
+  document.getElementById('sort-compare-controls').style.display=compareMode?'contents':'none'
+  document.getElementById('sort-single-stats').style.display=single?'flex':'none'
+  document.getElementById('sort-single-layout').style.display=single?'grid':'none'
+  document.getElementById('sort-compare-layout').style.display=compareMode?'block':'none'
+  document.getElementById('sort-bench-layout').style.display=benchMode?'block':'none'
+  document.getElementById('sort-challenge-layout').style.display=challengeMode?'block':'none'
+  document.getElementById('sort-step-btn').style.display=single?'':'none'
+  document.getElementById('sort-bench-controls').style.display=benchMode?'contents':'none'
+  document.getElementById('sort-size-ctrl').style.display=(benchMode||challengeMode)?'none':'contents'
+  document.getElementById('sort-speed-ctrl').style.display=benchMode?'none':'contents'
+  document.getElementById('sort-rand-btn').style.display=benchMode?'none':''
+  document.getElementById('sort-run-btn').innerHTML=challengeMode?'&#9654; Start Challenge':'&#9654; Run'
+}
+function initSort(){
+  compareMode=false;benchMode=false;challengeMode=false
+  document.getElementById('compare-toggle').checked=false
+  document.getElementById('bench-toggle').checked=false
+  document.getElementById('challenge-toggle').checked=false
+  updateSortModeLayouts()
+  resetSort()
+}
 function resetSort(){
   sortRunning=false;sortStepGen=null;sortStepMode=false
   document.getElementById('step-mode-badge').classList.remove('on')
@@ -782,8 +994,40 @@ function resetSort(){
 }
 function sortAlgoChange(){
   const a=document.getElementById('sort-algo').value
-  document.getElementById('sort-badge').textContent={bubble:'Bubble Sort',selection:'Selection Sort',insertion:'Insertion Sort',merge:'Merge Sort',quick:'Quick Sort'}[a]
-  resetSort()
+  document.getElementById('sort-badge').textContent=SORT_LABELS[a]
+  if(challengeMode)resetChallenge();else resetSort()
+}
+function handleRandomize(){if(challengeMode)resetChallenge();else if(benchMode)resetBench();else if(compareMode)resetCompare();else resetSort()}
+function handleRunSort(){if(challengeMode)runChallenge();else if(benchMode)runBenchmark();else if(compareMode)runCompareSort();else runSort()}
+function stopAllSortModes(){
+  sortRunning=false;compareRunning=false;benchRunning=false;challengeRunning=false;challengeAwaiting=false
+}
+function toggleCompareMode(){
+  compareMode=document.getElementById('compare-toggle').checked
+  if(compareMode&&benchMode){benchMode=false;document.getElementById('bench-toggle').checked=false}
+  if(compareMode&&challengeMode){challengeMode=false;document.getElementById('challenge-toggle').checked=false}
+  stopAllSortModes()
+  updateSortModeLayouts()
+  document.getElementById('sort-run-btn').disabled=false
+  if(compareMode)compareAlgoChange();else resetSort()
+}
+function toggleBenchMode(){
+  benchMode=document.getElementById('bench-toggle').checked
+  if(benchMode&&compareMode){compareMode=false;document.getElementById('compare-toggle').checked=false}
+  if(benchMode&&challengeMode){challengeMode=false;document.getElementById('challenge-toggle').checked=false}
+  stopAllSortModes()
+  updateSortModeLayouts()
+  document.getElementById('sort-run-btn').disabled=false
+  if(benchMode)resetBench();else resetSort()
+}
+function toggleChallengeMode(){
+  challengeMode=document.getElementById('challenge-toggle').checked
+  if(challengeMode&&compareMode){compareMode=false;document.getElementById('compare-toggle').checked=false}
+  if(challengeMode&&benchMode){benchMode=false;document.getElementById('bench-toggle').checked=false}
+  stopAllSortModes()
+  updateSortModeLayouts()
+  document.getElementById('sort-run-btn').disabled=false
+  if(challengeMode)resetChallenge();else resetSort()
 }
 function drawSort(){
   const wrap=sortCanvas.parentElement
@@ -791,15 +1035,17 @@ function drawSort(){
   sortCanvas.width=W;sortCanvas.height=H
   sortCtx.clearRect(0,0,W,H)
   const n=sortArr.length,maxVal=Math.max(...sortArr)
-  const barW=Math.max(2,(W-n*1.2)/n)
+  // Reserve 2px per gap up front and keep bar width an integer, so dense
+  // arrays can't round adjacent bars into each other and visually merge.
+  const barW=Math.max(1,Math.floor((W-2*(n+1))/n))
   const gap=(W-barW*n)/(n+1)
   sortArr.forEach((v,i)=>{
-    const x=gap+(barW+gap)*i
+    const x=Math.round(gap+(barW+gap)*i)
     const barH=Math.max(2,Math.floor((v/maxVal)*(H-2)))
     const s=sortColors[i]
     let color=s==='compare'?'#fbbf24':s==='swap'?'#f87171':s==='sorted'?'#34d399':s==='pivot'?'#8b5cf6':'#5b8dee'
     sortCtx.fillStyle=color
-    sortCtx.beginPath();sortCtx.roundRect(Math.floor(x),H-barH,Math.ceil(barW),barH,2);sortCtx.fill()
+    sortCtx.beginPath();sortCtx.roundRect(x,H-barH,barW,barH,2);sortCtx.fill()
   })
 }
 function getSortDelay(){return Math.max(4,115-parseInt(document.getElementById('sort-speed').value)*11)}
@@ -825,7 +1071,7 @@ function*bubbleSortGen(){
       sortColors[j]='compare';sortColors[j+1]='compare';sortComps++
       document.getElementById('sort-comps').textContent=sortComps
       setPseudo('sortp',1)
-      setExplain('sort-explain',`Comparing <span>${sortArr[j]}</span> and <span>${sortArr[j+1]}</span>. ${sortArr[j]>sortArr[j+1]?'Out of order — will swap.':'Already in order, no swap needed.'}`)
+      setExplain('sort-explain',`Comparing <span>${sortArr[j]}</span> and <span>${sortArr[j+1]}</span>. ${sortArr[j]>sortArr[j+1]?'Out of order, will swap.':'Already in order, no swap needed.'}`)
       drawSort();yield
       if(sortArr[j]>sortArr[j+1]){
         [sortArr[j],sortArr[j+1]]=[sortArr[j+1],sortArr[j]];sortSwaps++
@@ -921,7 +1167,7 @@ function*qPartGen(lo,hi){
   for(let j=lo;j<hi;j++){
     sortColors[j]='compare';sortComps++;document.getElementById('sort-comps').textContent=sortComps
     setPseudo('sortp',3)
-    setExplain('sort-explain',`Comparing <span>${sortArr[j]}</span> with pivot <span>${pivot}</span>. ${sortArr[j]<pivot?'Smaller — goes to left partition.':'Larger or equal — stays right.'}`)
+    setExplain('sort-explain',`Comparing <span>${sortArr[j]}</span> with pivot <span>${pivot}</span>. ${sortArr[j]<pivot?'Smaller, goes to left partition.':'Larger or equal, stays right.'}`)
     drawSort();yield
     if(sortArr[j]<pivot){i++;[sortArr[i],sortArr[j]]=[sortArr[j],sortArr[i]];sortSwaps++;document.getElementById('sort-swaps').textContent=sortSwaps;sortColors[j]='swap';drawSort();yield}
     sortColors[j]='default'
@@ -951,6 +1197,517 @@ function stepSort(){
   if(!sortStepGen){sortStepGen=sortGenerator();sortStepMode=true;document.getElementById('step-mode-badge').classList.add('on');document.getElementById('sort-status').textContent='Step mode'}
   const r=sortStepGen.next()
   if(r.done){sortStepGen=null;document.getElementById('step-mode-badge').classList.remove('on')}
+}
+
+// ─── COMPARE MODE ──────────────────────────────────────────────
+function compareAlgoChange(){
+  document.getElementById('cmp-badge-a').textContent=SORT_LABELS[document.getElementById('sort-algo-a').value]
+  document.getElementById('cmp-badge-b').textContent=SORT_LABELS[document.getElementById('sort-algo-b').value]
+  resetCompare()
+}
+function makeCompareState(canvas,algo,sharedArr,suffix){
+  return{canvas,ctx:canvas.getContext('2d'),algo,arr:[...sharedArr],colors:new Array(sharedArr.length).fill('default'),comps:0,swaps:0,suffix}
+}
+function resetCompare(){
+  compareRunning=false
+  document.getElementById('sort-run-btn').disabled=false
+  document.getElementById('compare-summary').style.display='none'
+  const n=parseInt(document.getElementById('sort-size').value)
+  const arr=Array.from({length:n},()=>Math.floor(Math.random()*88)+8)
+  cmpA=makeCompareState(document.getElementById('cmp-canvas-a'),document.getElementById('sort-algo-a').value,arr,'a')
+  cmpB=makeCompareState(document.getElementById('cmp-canvas-b'),document.getElementById('sort-algo-b').value,arr,'b')
+  updateCompareStats(cmpA);updateCompareStats(cmpB)
+  document.getElementById('cmp-status-a').textContent='Ready'
+  document.getElementById('cmp-status-b').textContent='Ready'
+  drawCompareState(cmpA);drawCompareState(cmpB)
+}
+function drawCompareState(st){
+  if(st.silent)return
+  const wrap=st.canvas.parentElement
+  const W=wrap.clientWidth||340,H=260
+  st.canvas.width=W;st.canvas.height=H
+  st.ctx.clearRect(0,0,W,H)
+  const n=st.arr.length,maxVal=Math.max(...st.arr)
+  const barW=Math.max(1,Math.floor((W-2*(n+1))/n))
+  const gap=(W-barW*n)/(n+1)
+  st.arr.forEach((v,i)=>{
+    const x=Math.round(gap+(barW+gap)*i)
+    const barH=Math.max(2,Math.floor((v/maxVal)*(H-2)))
+    const c=st.colors[i]
+    let color=c==='compare'?'#fbbf24':c==='swap'?'#f87171':c==='sorted'?'#34d399':c==='pivot'?'#8b5cf6':'#5b8dee'
+    st.ctx.fillStyle=color
+    st.ctx.beginPath();st.ctx.roundRect(x,H-barH,barW,barH,2);st.ctx.fill()
+    if(st.showValues&&barW>=18){
+      st.ctx.fillStyle='rgba(232,234,240,.8)'
+      st.ctx.font='11px Space Mono,monospace';st.ctx.textAlign='center'
+      st.ctx.fillText(v,x+barW/2,Math.max(13,H-barH-6))
+    }
+  })
+}
+function updateCompareStats(st){
+  if(st.silent)return
+  document.getElementById('cmp-comps-'+st.suffix).textContent=st.comps
+  document.getElementById('cmp-swaps-'+st.suffix).textContent=st.swaps
+}
+function*compareGen(st){
+  if(st.algo==='bubble') yield*cmpBubbleGen(st)
+  else if(st.algo==='selection') yield*cmpSelectionGen(st)
+  else if(st.algo==='insertion') yield*cmpInsertionGen(st)
+  else if(st.algo==='merge') yield*cmpMergeGen(st,0,st.arr.length-1)
+  else if(st.algo==='quick') yield*cmpQuickGen(st,0,st.arr.length-1)
+  st.colors=new Array(st.arr.length).fill('sorted')
+  drawCompareState(st)
+  if(!st.silent)document.getElementById('cmp-status-'+st.suffix).textContent='Done ✓'
+}
+function*cmpBubbleGen(st){
+  const n=st.arr.length
+  for(let i=0;i<n;i++){
+    for(let j=0;j<n-i-1;j++){
+      st.colors[j]='compare';st.colors[j+1]='compare';st.comps++;updateCompareStats(st)
+      if(st.log)st.log.push({q:'bubble',a:st.arr[j],b:st.arr[j+1],ans:st.arr[j]>st.arr[j+1]})
+      drawCompareState(st);yield
+      if(st.arr[j]>st.arr[j+1]){
+        [st.arr[j],st.arr[j+1]]=[st.arr[j+1],st.arr[j]];st.swaps++;updateCompareStats(st)
+        st.colors[j]='swap';st.colors[j+1]='swap'
+        drawCompareState(st);yield
+      }
+      st.colors[j]='default';st.colors[j+1]='default'
+    }
+    st.colors[n-i-1]='sorted';drawCompareState(st);yield
+  }
+}
+function*cmpSelectionGen(st){
+  const n=st.arr.length
+  for(let i=0;i<n;i++){
+    let minIdx=i;st.colors[i]='pivot';drawCompareState(st);yield
+    for(let j=i+1;j<n;j++){
+      st.colors[j]='compare';st.comps++;updateCompareStats(st)
+      if(st.log)st.log.push({q:'selection',cand:st.arr[j],min:st.arr[minIdx],ans:st.arr[j]<st.arr[minIdx]})
+      drawCompareState(st);yield
+      if(st.arr[j]<st.arr[minIdx]){if(minIdx!==i)st.colors[minIdx]='default';minIdx=j;st.colors[minIdx]='pivot'}
+      else st.colors[j]='default'
+    }
+    if(minIdx!==i){[st.arr[i],st.arr[minIdx]]=[st.arr[minIdx],st.arr[i]];st.swaps++;updateCompareStats(st)}
+    st.colors[i]='sorted';st.colors[minIdx]='default';drawCompareState(st);yield
+  }
+}
+function*cmpInsertionGen(st){
+  const n=st.arr.length;st.colors[0]='sorted'
+  for(let i=1;i<n;i++){
+    let key=st.arr[i],j=i-1;st.colors[i]='compare';drawCompareState(st);yield
+    while(j>=0){
+      const willShift=st.arr[j]>key
+      if(st.log)st.log.push({q:'insertion',left:st.arr[j],key,ans:willShift})
+      if(!willShift)break
+      st.comps++;updateCompareStats(st)
+      st.arr[j+1]=st.arr[j];st.colors[j+1]='swap';st.colors[j]='compare'
+      drawCompareState(st);yield
+      st.colors[j+1]='sorted';j--
+    }
+    st.arr[j+1]=key;st.swaps++;updateCompareStats(st)
+    st.colors[j+1]='sorted';drawCompareState(st);yield
+  }
+}
+function*cmpMergeGen(st,l,r){
+  if(l>=r)return
+  const m=Math.floor((l+r)/2)
+  yield*cmpMergeGen(st,l,m);yield*cmpMergeGen(st,m+1,r);yield*cmpMergeMergeGen(st,l,m,r)
+}
+function*cmpMergeMergeGen(st,l,m,r){
+  const left=st.arr.slice(l,m+1),right=st.arr.slice(m+1,r+1)
+  let i=0,j=0,k=l
+  while(i<left.length&&j<right.length){
+    st.colors[k]='compare';st.comps++;updateCompareStats(st)
+    if(st.log)st.log.push({q:'merge',a:left[i],b:right[j],ans:left[i]<=right[j]})
+    drawCompareState(st);yield
+    if(left[i]<=right[j]){st.arr[k]=left[i];i++}else{st.arr[k]=right[j];j++;st.swaps++;updateCompareStats(st)}
+    st.colors[k]='sorted';k++
+  }
+  while(i<left.length){st.arr[k]=left[i];st.colors[k]='sorted';i++;k++}
+  while(j<right.length){st.arr[k]=right[j];st.colors[k]='sorted';j++;k++}
+  drawCompareState(st);yield
+}
+function*cmpQuickGen(st,lo,hi){
+  if(lo>=hi)return
+  const pi=yield*cmpPartGen(st,lo,hi)
+  yield*cmpQuickGen(st,lo,pi-1);yield*cmpQuickGen(st,pi+1,hi)
+}
+function*cmpPartGen(st,lo,hi){
+  const pivot=st.arr[hi];st.colors[hi]='pivot';let i=lo-1
+  drawCompareState(st);yield
+  for(let j=lo;j<hi;j++){
+    st.colors[j]='compare';st.comps++;updateCompareStats(st)
+    if(st.log)st.log.push({q:'quick',a:st.arr[j],pivot,ans:st.arr[j]<pivot})
+    drawCompareState(st);yield
+    if(st.arr[j]<pivot){i++;[st.arr[i],st.arr[j]]=[st.arr[j],st.arr[i]];st.swaps++;updateCompareStats(st);st.colors[j]='swap';drawCompareState(st);yield}
+    st.colors[j]='default'
+  }
+  [st.arr[i+1],st.arr[hi]]=[st.arr[hi],st.arr[i+1]]
+  st.colors[hi]='default';st.colors[i+1]='sorted'
+  drawCompareState(st);yield
+  return i+1
+}
+async function runCompareSort(){
+  if(compareRunning)return
+  compareRunning=true
+  document.getElementById('sort-run-btn').disabled=true
+  document.getElementById('compare-summary').style.display='none'
+  document.getElementById('cmp-status-a').textContent='Running'
+  document.getElementById('cmp-status-b').textContent='Running'
+  const genA=compareGen(cmpA),genB=compareGen(cmpB)
+  let doneA=false,doneB=false,stepsA=0,stepsB=0
+  do{
+    if(!doneA){const r=genA.next();stepsA++;doneA=r.done}
+    if(!doneB){const r=genB.next();stepsB++;doneB=r.done}
+    await sleep(getSortDelay())
+  }while((!doneA||!doneB)&&compareRunning)
+  const completedNaturally=doneA&&doneB
+  compareRunning=false
+  document.getElementById('sort-run-btn').disabled=false
+  if(completedNaturally)showCompareSummary(stepsA,stepsB)
+}
+
+// ─── COMPARE SUMMARY ───────────────────────────────────────────
+const SORT_TIER={bubble:'quadratic',selection:'quadratic',insertion:'quadratic',merge:'linearithmic',quick:'linearithmic'}
+const SORT_MECHANISM={
+  bubble:'repeatedly walks the array comparing and swapping adjacent elements, doing roughly n² comparisons no matter how the data is arranged',
+  selection:'scans the entire unsorted remainder to find the minimum on every pass, always costing about n² comparisons',
+  insertion:'shifts each element backward into its correct position, which is fast on nearly-sorted data but still O(n²) on random data',
+  merge:'splits the array in half recursively and merges the sorted halves back together, guaranteeing O(n log n) time no matter how the input is arranged',
+  quick:'partitions the array around a pivot and recurses on each side, averaging O(n log n) time by discarding a chunk of the array with every partition'
+}
+function explainCompareResult(algoA,algoB,winSide,n){
+  const nameA=SORT_LABELS[algoA],nameB=SORT_LABELS[algoB]
+  if(!winSide){
+    return`Both algorithms finished in the exact same number of steps at this array size (n = <span>${n}</span>). ${nameA} ${SORT_MECHANISM[algoA]}, while ${nameB} ${SORT_MECHANISM[algoB]}. Try a larger array size to see their complexity classes pull apart.`
+  }
+  const winAlgo=winSide==='a'?algoA:algoB,loseAlgo=winSide==='a'?algoB:algoA
+  const winName=SORT_LABELS[winAlgo],loseName=SORT_LABELS[loseAlgo]
+  const winTier=SORT_TIER[winAlgo],loseTier=SORT_TIER[loseAlgo]
+  if(winTier==='linearithmic'&&loseTier==='quadratic'){
+    return`<span>${winName}</span> ${SORT_MECHANISM[winAlgo]}. <span>${loseName}</span> ${SORT_MECHANISM[loseAlgo]}. At n = <span>${n}</span> elements, ${winName}'s O(n log n) growth rate already beats ${loseName}'s O(n²) growth rate, and that gap widens quickly as the array size grows.`
+  }
+  if(winTier==='quadratic'&&loseTier==='linearithmic'){
+    return`<span>${winName}</span> pulled ahead here even though <span>${loseName}</span> has the better average-case complexity (O(n log n) vs O(n²)). At a small array size like n = <span>${n}</span>, lower constant overhead can outweigh a better growth rate, or ${loseName}'s pivot or split choices may have hit a less favorable pattern on this particular array. Try a larger array size to see ${loseName}'s O(n log n) advantage take over.`
+  }
+  if(winTier==='quadratic'&&loseTier==='quadratic'){
+    return`Both <span>${winName}</span> and <span>${loseName}</span> are O(n²) algorithms, so they share the same growth rate. The gap at n = <span>${n}</span> comes down to how each behaves on this specific array: ${winName} ${SORT_MECHANISM[winAlgo]}, while ${loseName} ${SORT_MECHANISM[loseAlgo]}.`
+  }
+  return`Both <span>${winName}</span> and <span>${loseName}</span> run in O(n log n) on average, so the edge for ${winName} at n = <span>${n}</span> comes from implementation details rather than a difference in complexity class: ${winName} ${SORT_MECHANISM[winAlgo]}, while ${loseName} ${SORT_MECHANISM[loseAlgo]}.`
+}
+function showCompareSummary(stepsA,stepsB){
+  const nameA=SORT_LABELS[cmpA.algo],nameB=SORT_LABELS[cmpB.algo]
+  const totalA=cmpA.comps+cmpA.swaps,totalB=cmpB.comps+cmpB.swaps
+  const n=cmpA.arr.length
+  let winSide=null
+  if(stepsA<stepsB)winSide='a'
+  else if(stepsB<stepsA)winSide='b'
+  const stepDiff=Math.abs(stepsA-stepsB)
+  if(winSide){
+    const winnerName=winSide==='a'?nameA:nameB,loserName=winSide==='a'?nameB:nameA
+    document.getElementById('summary-winner').innerHTML=
+      `<span class="win-badge">&#127942; ${winnerName} finished first</span> it completed <span>${stepDiff}</span> step${stepDiff===1?'':'s'} ahead of ${loserName}.`
+  }else{
+    document.getElementById('summary-winner').innerHTML=`<span class="win-badge">Tie</span> ${nameA} and ${nameB} finished in the exact same number of steps.`
+  }
+  document.getElementById('summary-stats').innerHTML=`
+    <div class="summary-stat-col">
+      <h4>${nameA}</h4>
+      <div class="summary-stat-row ${cmpA.comps<cmpB.comps?'better':''}">Comparisons <span>${cmpA.comps}</span></div>
+      <div class="summary-stat-row ${cmpA.swaps<cmpB.swaps?'better':''}">Swaps <span>${cmpA.swaps}</span></div>
+      <div class="summary-stat-row ${totalA<totalB?'better':''}">Total ops <span>${totalA}</span></div>
+    </div>
+    <div class="summary-stat-col">
+      <h4>${nameB}</h4>
+      <div class="summary-stat-row ${cmpB.comps<cmpA.comps?'better':''}">Comparisons <span>${cmpB.comps}</span></div>
+      <div class="summary-stat-row ${cmpB.swaps<cmpA.swaps?'better':''}">Swaps <span>${cmpB.swaps}</span></div>
+      <div class="summary-stat-row ${totalB<totalA?'better':''}">Total ops <span>${totalB}</span></div>
+    </div>`
+  document.getElementById('summary-explain').innerHTML=explainCompareResult(cmpA.algo,cmpB.algo,winSide,n)
+  document.getElementById('compare-summary').style.display='block'
+}
+
+// ─── BENCHMARK MODE ────────────────────────────────────────────
+// Runs each sorting algorithm silently (no rendering) on fresh arrays of
+// doubling sizes and plots the measured operation counts, so the O(n²) vs
+// O(n log n) divergence is shown empirically, not asserted. The input
+// pattern (random / nearly sorted / reversed / few unique) is selectable
+// because it changes which algorithm wins, and the explanation below the
+// chart is rebuilt from the measured numbers for the chosen pattern.
+function benchArray(n,pattern){
+  let arr=Array.from({length:n},()=>Math.floor(Math.random()*999)+1)
+  if(pattern==='nearly'){
+    arr.sort((a,b)=>a-b)
+    const shuffles=Math.max(1,Math.floor(n*0.05))
+    for(let i=0;i<shuffles;i++){const a=Math.floor(Math.random()*n),b=Math.floor(Math.random()*n);[arr[a],arr[b]]=[arr[b],arr[a]]}
+  }else if(pattern==='reversed'){
+    arr.sort((a,b)=>b-a)
+  }else if(pattern==='fewunique'){
+    const vals=[120,340,560,780]
+    arr=Array.from({length:n},()=>vals[Math.floor(Math.random()*vals.length)])
+  }
+  return arr
+}
+function benchMeasure(algo,n,pattern='random'){
+  const arr=benchArray(n,pattern)
+  const st={canvas:null,ctx:null,algo,arr,colors:new Array(n).fill('default'),comps:0,swaps:0,suffix:null,silent:true}
+  let r;const gen=compareGen(st)
+  do{r=gen.next()}while(!r.done)
+  return{comps:st.comps,swaps:st.swaps}
+}
+function benchMetricKey(){return document.getElementById('bench-metric').value}
+const BENCH_METRIC_LABELS={ops:'comparisons + swaps (mean of 3 runs)',comps:'comparisons only (mean of 3 runs)',swaps:'swaps / writes only (mean of 3 runs)'}
+const BENCH_PRERUN_NOTES={
+  random:'Each point is a real measured run on a fresh random array, not a formula. Press Run to see the O(n&#178;) family (Bubble, Selection, Insertion) curl upward while the O(n log n) family (Merge, Quick) stays nearly flat.',
+  nearly:'Arrays arrive about 95% sorted with a few elements shuffled out of place. Press Run to see which algorithms can exploit existing order, and which cannot even notice it.',
+  reversed:'Arrays arrive in exactly the wrong order, the worst case for algorithms that move elements one neighbor at a time. Press Run, and keep an eye on Quick Sort&#39;s pivot.',
+  fewunique:'Arrays contain only four distinct values, so ties are everywhere. Press Run to see which algorithms handle duplicates gracefully.'
+}
+function benchDoneNote(){
+  const pattern=document.getElementById('bench-pattern').value
+  const last=BENCH_SIZES.length-1
+  const at=a=>benchResults&&benchResults[a]&&benchResults[a][last]?benchResults[a][last].ops:null
+  const parts=[]
+  if(pattern==='random')parts.push('The O(n&#178;) family (Bubble, Selection, Insertion) curls upward as the size doubles while the O(n log n) family (Merge, Quick) stays nearly flat: that widening gap is the complexity classes made visible.')
+  if(pattern==='nearly'){
+    parts.push('Existing order is a resource. Insertion Sort moves each element only as far as it needs to go, so on nearly sorted input its inner loop exits almost immediately and it approaches O(n). Selection Sort cannot notice order at all: it scans the whole unsorted remainder on every pass.')
+    if(at('insertion')&&at('selection')&&at('insertion')*3<at('selection'))parts.push('The data shows it: at n = '+BENCH_SIZES[last]+', Insertion needed '+at('insertion').toLocaleString()+' operations to Selection&#39;s '+at('selection').toLocaleString()+'.')
+  }
+  if(pattern==='reversed')parts.push('Reversed input is Insertion Sort&#39;s worst case: every element must travel the maximum distance back, so it performs the largest possible number of shifts. Merge Sort is untouched, doing the same work regardless of input order.')
+  if(pattern==='fewunique')parts.push('With only four distinct values, ties dominate. This Quick Sort partitions with a strict less-than, so elements equal to the pivot all land on the same side, producing lopsided partitions.')
+  if(at('quick')&&at('merge')&&at('quick')>2.5*at('merge'))parts.push('Notice Quick Sort trailing Merge Sort: its last-element pivot picks a near-extreme value on ordered or duplicate-heavy input, so partitions go lopsided and it slides toward its O(n&#178;) worst case. Pivot choice is not a detail.')
+  return parts.join(' ')
+}
+function benchPatternChange(){resetBench()}
+function benchViewChange(){
+  document.getElementById('bench-metric-label').textContent=BENCH_METRIC_LABELS[benchMetricKey()]
+  drawBenchChart();renderBenchTable()
+}
+function resetBench(){
+  benchRunning=false;benchResults=null
+  document.getElementById('sort-run-btn').disabled=false
+  document.getElementById('bench-status').textContent='Press Run to benchmark all 5 algorithms'
+  document.getElementById('bench-metric-label').textContent=BENCH_METRIC_LABELS[benchMetricKey()]
+  document.getElementById('bench-note').innerHTML=BENCH_PRERUN_NOTES[document.getElementById('bench-pattern').value]
+  document.getElementById('bench-table').innerHTML=''
+  drawBenchChart()
+}
+function fmtOps(v){return v>=1000?(v/1000).toFixed(1).replace(/\.0$/,'')+'k':String(v)}
+function drawBenchChart(){
+  const cv=document.getElementById('bench-canvas'),ctx=cv.getContext('2d')
+  const W=cv.parentElement.clientWidth||900,H=340
+  cv.width=W;cv.height=H
+  ctx.clearRect(0,0,W,H)
+  const padL=58,padR=24,padT=20,padB=42
+  const plotW=W-padL-padR,plotH=H-padT-padB
+  const metric=benchMetricKey()
+  let maxOps=100
+  if(benchResults)for(const algo in benchResults)for(const p of benchResults[algo])maxOps=Math.max(maxOps,p[metric])
+  const xAt=i=>padL+plotW*i/(BENCH_SIZES.length-1)
+  const yAt=v=>padT+plotH*(1-v/maxOps)
+  // Gridlines + axis labels
+  ctx.font='10px Space Mono,monospace';ctx.fillStyle='#7a7f96'
+  for(let g=0;g<=4;g++){
+    const v=maxOps*g/4,y=yAt(v)
+    ctx.strokeStyle='#1e2230';ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke()
+    ctx.textAlign='right';ctx.fillText(fmtOps(Math.round(v)),padL-8,y+3)
+  }
+  ctx.textAlign='center'
+  BENCH_SIZES.forEach((n,i)=>ctx.fillText('n='+n,xAt(i),H-padB+16))
+  ctx.fillText('array size (doubling each step)',padL+plotW/2,H-8)
+  // Lines
+  if(benchResults){
+    for(const algo in benchResults){
+      const pts=benchResults[algo]
+      if(!pts.length)continue
+      ctx.strokeStyle=BENCH_COLORS[algo];ctx.lineWidth=2
+      ctx.beginPath()
+      pts.forEach((p,i)=>{const x=xAt(i),y=yAt(p[metric]);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)})
+      ctx.stroke()
+      ctx.fillStyle=BENCH_COLORS[algo]
+      pts.forEach((p,i)=>{ctx.beginPath();ctx.arc(xAt(i),yAt(p[metric]),3,0,Math.PI*2);ctx.fill()})
+    }
+  }
+  // Legend
+  let ly=padT+4
+  for(const algo of ['bubble','selection','insertion','merge','quick']){
+    ctx.fillStyle=BENCH_COLORS[algo]
+    ctx.fillRect(padL+10,ly,10,10)
+    ctx.fillStyle='#7a7f96';ctx.textAlign='left'
+    ctx.fillText(SORT_LABELS[algo]+'  '+SORT_INFO[algo].tavg,padL+26,ly+9)
+    ly+=17
+  }
+}
+function renderBenchTable(){
+  if(!benchResults)return
+  const metric=benchMetricKey()
+  const algos=Object.keys(benchResults)
+  const cols=BENCH_SIZES.map((n,i)=>{
+    const vals=algos.map(a=>benchResults[a][i]?benchResults[a][i][metric]:Infinity)
+    return Math.min(...vals)
+  })
+  let html='<table class="bench-table"><tr><th>Algorithm</th>'+BENCH_SIZES.map(n=>'<th>n='+n+'</th>').join('')+'</tr>'
+  for(const algo of algos){
+    html+='<tr><td>'+SORT_LABELS[algo]+'</td>'
+    BENCH_SIZES.forEach((n,i)=>{
+      const p=benchResults[algo][i]
+      html+=p?'<td class="'+(p[metric]===cols[i]?'best':'')+'">'+p[metric].toLocaleString()+'</td>':'<td>&#8230;</td>'
+    })
+    html+='</tr>'
+  }
+  html+='</table>'
+  document.getElementById('bench-table').innerHTML=html
+}
+async function runBenchmark(){
+  if(benchRunning)return
+  benchRunning=true
+  document.getElementById('sort-run-btn').disabled=true
+  const pattern=document.getElementById('bench-pattern').value
+  document.getElementById('bench-note').innerHTML=BENCH_PRERUN_NOTES[pattern]
+  benchResults={}
+  const algos=['bubble','selection','insertion','merge','quick']
+  for(const algo of algos){
+    benchResults[algo]=[]
+    for(const n of BENCH_SIZES){
+      if(!benchRunning)return
+      document.getElementById('bench-status').textContent='Running '+SORT_LABELS[algo]+' at n = '+n+'...'
+      await sleep(15)
+      let comps=0,swaps=0
+      const TRIALS=3
+      for(let t=0;t<TRIALS;t++){const m=benchMeasure(algo,n,pattern);comps+=m.comps;swaps+=m.swaps}
+      benchResults[algo].push({n,comps:Math.round(comps/TRIALS),swaps:Math.round(swaps/TRIALS),ops:Math.round((comps+swaps)/TRIALS)})
+      drawBenchChart();renderBenchTable()
+    }
+  }
+  document.getElementById('bench-status').textContent='Done ✓ Green cells mark the cheapest algorithm at each size.'
+  document.getElementById('bench-note').innerHTML=benchDoneNote()
+  benchRunning=false
+  document.getElementById('sort-run-btn').disabled=false
+}
+
+// ─── CHALLENGE MODE ────────────────────────────────────────────
+// Predict-before-reveal quizzing. The compare-family generators optionally
+// push a structured entry to st.log at every comparison, BEFORE the yield
+// that shows the outcome. A silent pre-run captures the full log so quiz
+// points can be sampled evenly; the visual run (same array, deterministic,
+// identical log) then pauses at those points with the compared elements
+// highlighted on screen but the outcome not yet applied, so every question
+// is answerable by reading the canvas, not by guessing.
+function challengeSilentLog(algo,arr){
+  const st={canvas:null,ctx:null,algo,arr:[...arr],colors:new Array(arr.length).fill('default'),comps:0,swaps:0,suffix:null,silent:true,log:[]}
+  let r;const gen=compareGen(st)
+  do{r=gen.next()}while(!r.done)
+  return st.log
+}
+function buildChallengePrompt(e){
+  if(e.q==='bubble')return{
+    prompt:`Comparing <span>${e.a}</span> and <span>${e.b}</span> (highlighted). What happens next?`,
+    opts:['They swap','They stay in place'],correct:e.ans?0:1,
+    why:e.ans?`${e.a} is greater than ${e.b}, so Bubble Sort swaps them rightward.`:`${e.a} is not greater than ${e.b}, so they are already in order and no swap happens.`}
+  if(e.q==='selection')return{
+    prompt:`The current minimum is <span>${e.min}</span>. Selection Sort is now checking <span>${e.cand}</span>. What happens?`,
+    opts:[`${e.cand} becomes the new minimum`,`The minimum stays ${e.min}`],correct:e.ans?0:1,
+    why:e.ans?`${e.cand} is smaller than ${e.min}, so it becomes the new minimum candidate.`:`${e.cand} is not smaller than ${e.min}, so the current minimum is kept.`}
+  if(e.q==='insertion')return{
+    prompt:`Insertion Sort is placing key <span>${e.key}</span>. The element to its left is <span>${e.left}</span>. What happens?`,
+    opts:[`${e.left} shifts right`,`${e.key} is inserted here`],correct:e.ans?0:1,
+    why:e.ans?`${e.left} is greater than the key ${e.key}, so it shifts right to make room.`:`${e.left} is not greater than ${e.key}, so the key has found its spot and is inserted.`}
+  if(e.q==='merge')return{
+    prompt:`Merging two sorted runs: the left run offers <span>${e.a}</span>, the right run offers <span>${e.b}</span>. Which is taken next?`,
+    opts:[`${e.a} (from the left run)`,`${e.b} (from the right run)`],correct:e.ans?0:1,
+    why:e.ans?`${e.a} is less than or equal to ${e.b}, and merge always takes the smaller front element.`:`${e.b} is smaller than ${e.a}, and merge always takes the smaller front element.`}
+  return{
+    prompt:`The pivot is <span>${e.pivot}</span>. Quick Sort is examining <span>${e.a}</span>. Which partition does it belong to?`,
+    opts:['Left (smaller than pivot)','Right (pivot or larger)'],correct:e.ans?0:1,
+    why:e.ans?`${e.a} is smaller than the pivot ${e.pivot}, so it is swapped into the left partition.`:`${e.a} is not smaller than the pivot ${e.pivot}, so it stays on the right side.`}
+}
+function resetChallenge(){
+  challengeRunning=false;challengeAwaiting=false
+  chScore=0;chStreak=0
+  const algo=document.getElementById('sort-algo').value
+  const arr=Array.from({length:CH_N},()=>Math.floor(Math.random()*90)+9)
+  const fullLog=challengeSilentLog(algo,arr)
+  chWant=Math.min(8,fullLog.length)
+  const indices=new Set()
+  for(let k=0;k<chWant;k++)indices.add(Math.floor((k+0.5)*fullLog.length/chWant))
+  chPlan={indices,total:fullLog.length}
+  chState={canvas:document.getElementById('ch-canvas'),ctx:document.getElementById('ch-canvas').getContext('2d'),algo,arr:[...arr],colors:new Array(CH_N).fill('default'),comps:0,swaps:0,suffix:'ch',log:[],showValues:true}
+  updateCompareStats(chState)
+  document.getElementById('cmp-status-ch').textContent='Ready'
+  document.getElementById('ch-score').textContent='0/'+chWant
+  document.getElementById('ch-streak').textContent='0'
+  document.getElementById('sort-run-btn').disabled=false
+  document.getElementById('ch-question').innerHTML=`You are quizzing on <span>${SORT_LABELS[algo]}</span>. Press Start Challenge: the animation will pause mid-run and ask you to predict what happens next, before it happens.`
+  document.getElementById('ch-options').innerHTML=''
+  document.getElementById('ch-feedback').innerHTML=''
+  drawCompareState(chState)
+}
+async function presentChallengeQuestion(entry){
+  const q=buildChallengePrompt(entry)
+  challengeAwaiting=true
+  document.getElementById('ch-question').innerHTML=q.prompt
+  document.getElementById('ch-feedback').innerHTML=''
+  const optsEl=document.getElementById('ch-options')
+  optsEl.innerHTML=''
+  let answered=false
+  q.opts.forEach((label,i)=>{
+    const btn=document.createElement('button')
+    btn.className='ctrl-btn ch-opt';btn.textContent=label
+    btn.addEventListener('click',()=>{
+      if(answered)return
+      answered=true
+      const right=i===q.correct
+      if(right){chScore++;chStreak++}else chStreak=0
+      document.getElementById('ch-score').textContent=chScore+'/'+chWant
+      document.getElementById('ch-streak').textContent=chStreak
+      optsEl.querySelectorAll('.ch-opt').forEach((b,bi)=>{
+        b.classList.add('locked')
+        if(bi===q.correct)b.classList.add('correct')
+        else if(bi===i)b.classList.add('wrong')
+      })
+      document.getElementById('ch-feedback').innerHTML=(right?'<span>Correct.</span> ':'<span>Not quite.</span> ')+q.why
+      const cont=document.createElement('button')
+      cont.className='ctrl-btn primary';cont.textContent='Continue'
+      cont.addEventListener('click',()=>{challengeAwaiting=false})
+      optsEl.appendChild(cont)
+      cont.focus()
+    })
+    optsEl.appendChild(btn)
+  })
+  while(challengeAwaiting&&challengeRunning)await sleep(80)
+}
+async function runChallenge(){
+  if(challengeRunning)return
+  resetChallenge()
+  challengeRunning=true
+  document.getElementById('sort-run-btn').disabled=true
+  document.getElementById('cmp-status-ch').textContent='Running'
+  document.getElementById('ch-question').innerHTML='Watch closely. A question is coming.'
+  const gen=compareGen(chState)
+  let done=false
+  while(!done&&challengeRunning){
+    const r=gen.next();done=r.done
+    const idx=chState.log.length-1
+    if(idx>=0&&chPlan.indices.has(idx)){
+      chPlan.indices.delete(idx)
+      document.getElementById('cmp-status-ch').textContent='Paused: your prediction?'
+      await presentChallengeQuestion(chState.log[idx])
+      if(!challengeRunning)break
+      document.getElementById('cmp-status-ch').textContent='Running'
+      document.getElementById('ch-question').innerHTML='Watch the outcome, then keep following along.'
+      document.getElementById('ch-options').innerHTML=''
+    }
+    await sleep(getSortDelay()*3)
+  }
+  if(challengeRunning){
+    document.getElementById('cmp-status-ch').textContent='Done ✓'
+    const pct=chWant?Math.round(100*chScore/chWant):0
+    const verdict=pct===100?'Perfect run. You can read this algorithm like a book.':pct>=75?'Strong. You clearly understand how this algorithm decides.':pct>=50?'Decent. Re-run it and watch the comparisons that surprised you.':'Keep at it. Try Step mode to slow the algorithm down, then come back.'
+    document.getElementById('ch-question').innerHTML=`Challenge complete: <span>${chScore}/${chWant}</span> correct. ${verdict}`
+    document.getElementById('ch-feedback').innerHTML=''
+  }
+  challengeRunning=false
+  document.getElementById('sort-run-btn').disabled=false
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1037,27 +1794,67 @@ async function runBS(){
 // PATHFINDER
 // ════════════════════════════════════════════════════════════
 const ROWS=17,COLS=28
-let pathGrid=[],pathStart=[2,2],pathEnd=[14,25],mouseDown=false
+let pathGrid=[],pathWeights=[],pathStart=[2,2],pathEnd=[14,25],mouseDown=false
+let pathCursor=[2,2]
 let pathQueue=[],pathVisited=new Set(),pathParent={},pathStepMode=false,pathStepping=false
+
+const PATH_INFO={
+  bfs:{
+    label:'BFS',
+    pseudo:['function BFS(grid, start, end):','  queue = [start]','  visited = {start}','  while queue not empty:','    node = queue.dequeue()','    if node == end: tracePath()','    for each neighbor:','      if not visited, not wall:','        visited.add(neighbor)','        queue.enqueue(neighbor)'],
+    time:'O(V + E)',shortest:'Yes (fewest steps)',complexity:45
+  },
+  dfs:{
+    label:'DFS',
+    pseudo:['function DFS(grid, start, end):','  stack = [start]','  visited = {}','  while stack not empty:','    node = stack.pop()','    if visited: continue','    visited.add(node)','    if node == end: tracePath()','    for each neighbor:','      if not visited, not wall:','        stack.push(neighbor)'],
+    time:'O(V + E)',shortest:'No (any valid path)',complexity:45
+  },
+  dijkstra:{
+    label:'Dijkstra',
+    pseudo:['function dijkstra(grid, start, end):','  dist = {start: 0}','  pq = [(0, start)]','  while pq not empty:','    (d, node) = pq.extractMin()','    if visited: continue','    mark node visited','    if node == end: tracePath()','    for each neighbor:','      newDist = d + weight(neighbor)','      if newDist < dist[neighbor]:','        dist[neighbor] = newDist','        pq.insert((newDist, neighbor))'],
+    time:'O((V + E) log V)',shortest:'Yes (lowest cost)',complexity:60
+  }
+}
+
+function weightColor(w){
+  const t=(w-1)/8
+  return `hsl(222,72%,${68-t*42}%)`
+}
+function pathAlgoChange(){
+  const algo=document.getElementById('path-algo').value,info=PATH_INFO[algo]
+  document.getElementById('path-badge').textContent=info.label
+  const pEl=document.getElementById('path-pseudo')
+  pEl.innerHTML=info.pseudo.map((l,i)=>`<div class="pline" id="pathp${i}">${l.replace(/</g,'&lt;')}</div>`).join('')
+  document.getElementById('path-time').textContent=info.time
+  document.getElementById('path-shortest').textContent=info.shortest
+  document.getElementById('path-complex-bar').style.width=info.complexity+'%'
+  const weighted=algo==='dijkstra'
+  document.getElementById('path-weight-note').style.display=weighted?'flex':'none'
+  document.getElementById('path-cost-stat').style.display=weighted?'block':'none'
+  clearPath()
+}
 
 function initPathGrid(){resetPathGrid()}
 function resetPathGrid(){
   pathRunning=false;pathStepMode=false;pathStepping=false
   pathGrid=Array.from({length:ROWS},()=>Array(COLS).fill('empty'))
+  pathWeights=Array.from({length:ROWS},()=>Array.from({length:COLS},()=>Math.floor(Math.random()*9)+1))
   pathGrid[pathStart[0]][pathStart[1]]='start';pathGrid[pathEnd[0]][pathEnd[1]]='end'
-  renderPathGrid()
+  pathCursor=[...pathStart]
+  pathAlgoChange()
   document.getElementById('path-visited').textContent='0'
-  document.getElementById('path-length').textContent='—'
+  document.getElementById('path-length').textContent='-'
+  document.getElementById('path-cost').textContent='-'
   document.getElementById('path-status').textContent='Draw walls then run'
   document.getElementById('path-run-btn').disabled=false
-  clearPseudo('pathp')
   setExplain('path-explain','Draw walls on the grid, then press Run or Step.')
   document.getElementById('step-mode-badge').classList.remove('on')
 }
 function clearPath(){
   for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(pathGrid[r][c]==='visited'||pathGrid[r][c]==='path')pathGrid[r][c]='empty'
   renderPathGrid()
-  document.getElementById('path-visited').textContent='0';document.getElementById('path-length').textContent='—'
+  document.getElementById('path-visited').textContent='0';document.getElementById('path-length').textContent='-'
+  document.getElementById('path-cost').textContent='-'
   document.getElementById('path-status').textContent='Ready';document.getElementById('path-run-btn').disabled=false
   pathQueue=[];pathVisited=new Set();pathParent={};pathStepMode=false;pathStepping=false
   document.getElementById('step-mode-badge').classList.remove('on')
@@ -1069,13 +1866,48 @@ function renderPathGrid(){
     wrap.innerHTML=''
     for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
       const cell=document.createElement('div');cell.className='pcell';cell.dataset.r=r;cell.dataset.c=c
+      cell.setAttribute('aria-hidden','true')
       cell.addEventListener('mousedown',()=>{mouseDown=true;handleCell(r,c)})
       cell.addEventListener('mouseenter',()=>{if(mouseDown)handleCell(r,c)})
       cell.addEventListener('touchstart',e=>{e.preventDefault();handleCell(r,c)},{passive:false})
       wrap.appendChild(cell)
     }
   }
-  wrap.querySelectorAll('.pcell').forEach(cell=>{cell.className='pcell '+pathGrid[+cell.dataset.r][+cell.dataset.c]})
+  const weighted=document.getElementById('path-algo').value==='dijkstra'
+  wrap.querySelectorAll('.pcell').forEach(cell=>{
+    const r=+cell.dataset.r,c=+cell.dataset.c,state=pathGrid[r][c]
+    cell.className='pcell '+state
+    cell.style.background=''
+    if(weighted&&(state==='empty'||state==='visited')){
+      cell.textContent=pathWeights[r][c]
+      if(state==='visited')cell.style.background=weightColor(pathWeights[r][c])
+    }else{
+      cell.textContent=''
+    }
+    if(r===pathCursor[0]&&c===pathCursor[1])cell.classList.add('kfocus')
+  })
+}
+function movePathCursor(dr,dc){
+  const nr=Math.min(ROWS-1,Math.max(0,pathCursor[0]+dr))
+  const nc=Math.min(COLS-1,Math.max(0,pathCursor[1]+dc))
+  pathCursor=[nr,nc]
+  renderPathGrid()
+  announcePathCursor()
+}
+function announcePathCursor(){
+  const[r,c]=pathCursor,state=pathGrid[r][c]
+  const label=state==='empty'?'open':state
+  const weighted=document.getElementById('path-algo').value==='dijkstra'
+  const weightNote=weighted?`, weight ${pathWeights[r][c]}`:''
+  document.getElementById('path-kb-status').textContent=`Row ${r+1}, column ${c+1}: ${label}${weightNote}`
+}
+function handlePathGridKey(e){
+  if(pathRunning||pathStepMode)return
+  if(e.key==='ArrowUp'){e.preventDefault();movePathCursor(-1,0)}
+  else if(e.key==='ArrowDown'){e.preventDefault();movePathCursor(1,0)}
+  else if(e.key==='ArrowLeft'){e.preventDefault();movePathCursor(0,-1)}
+  else if(e.key==='ArrowRight'){e.preventDefault();movePathCursor(0,1)}
+  else if(e.key===' '||e.key==='Enter'){e.preventDefault();handleCell(pathCursor[0],pathCursor[1]);announcePathCursor()}
 }
 document.addEventListener('mouseup',()=>mouseDown=false)
 function handleCell(r,c){
@@ -1087,13 +1919,27 @@ function handleCell(r,c){
   renderPathGrid()
 }
 const DIRS=[[-1,0],[1,0],[0,-1],[0,1]]
-let pathStepQueue=[],pathStepVisited=new Set(),pathStepParent={},pathStepCount=0
+let pathStepQueue=[],pathStepVisited=new Set(),pathStepParent={},pathStepCount=0,pathStepDist={}
 
 function initPathStep(){
-  pathStepQueue=[[...pathStart]];pathStepVisited=new Set();pathStepVisited.add(pathStart.join(','))
-  pathStepParent={};pathStepCount=0
-  setPseudo('pathp','1')
-  setExplain('path-explain',`Initialized. Start node added to the ${document.getElementById('path-algo').value==='bfs'?'queue':'stack'}. Beginning search from (${pathStart[0]},${pathStart[1]}).`)
+  const algo=document.getElementById('path-algo').value
+  pathStepVisited=new Set();pathStepParent={};pathStepCount=0
+  if(algo==='dijkstra'){
+    pathStepQueue=[[0,...pathStart]]
+    pathStepDist={[pathStart.join(',')]:0}
+    setPseudo('pathp',2)
+    setExplain('path-explain',`Initialized. Start node added to the priority queue with cost 0.`)
+  }else{
+    pathStepQueue=[[...pathStart]]
+    pathStepVisited.add(pathStart.join(','))
+    setPseudo('pathp',1)
+    setExplain('path-explain',`Initialized. Start node added to the ${algo==='bfs'?'queue':'stack'}. Beginning search from (${pathStart[0]},${pathStart[1]}).`)
+  }
+}
+function popMinDijkstraStep(){
+  let idx=0
+  for(let i=1;i<pathStepQueue.length;i++)if(pathStepQueue[i][0]<pathStepQueue[idx][0])idx=i
+  return pathStepQueue.splice(idx,1)[0]
 }
 async function stepPath(){
   const algo=document.getElementById('path-algo').value
@@ -1102,6 +1948,35 @@ async function stepPath(){
     pathStepMode=true;document.getElementById('step-mode-badge').classList.add('on')
     document.getElementById('path-status').textContent='Step mode'
     initPathStep();renderPathGrid();return
+  }
+  if(algo==='dijkstra'){
+    if(!pathStepQueue.length){setExplain('path-explain','No more nodes to explore. No path found.');return}
+    let d,r,c,key
+    do{
+      if(!pathStepQueue.length){setExplain('path-explain','No more nodes to explore. No path found.');return}
+      ;[d,r,c]=popMinDijkstraStep();key=`${r},${c}`
+    }while(pathStepVisited.has(key))
+    pathStepVisited.add(key);pathStepCount++
+    document.getElementById('path-visited').textContent=pathStepCount
+    setPseudo('pathp',6)
+    if(r===pathEnd[0]&&c===pathEnd[1]){
+      setPseudo('pathp',7)
+      setExplain('path-explain',`Reached the end node at (${r},${c}) with total cost <span>${d}</span>! Tracing back the lowest-cost path now.`)
+      document.getElementById('path-cost').textContent=d
+      await tracePathStep(pathStepParent,pathEnd);return
+    }
+    setExplain('path-explain',`Visiting (${r},${c}) with accumulated cost <span>${d}</span>. Relaxing edges to its neighbors.`)
+    for(const[dr,dc]of DIRS){
+      const nr=r+dr,nc=c+dc,nk=`${nr},${nc}`
+      if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&pathGrid[nr][nc]!=='wall'&&!pathStepVisited.has(nk)){
+        const w=pathWeights[nr][nc],newDist=d+w
+        if(pathStepDist[nk]===undefined||newDist<pathStepDist[nk]){
+          pathStepDist[nk]=newDist;pathStepParent[nk]=key;pathStepQueue.push([newDist,nr,nc])
+          if(pathGrid[nr][nc]!=='end'&&pathGrid[nr][nc]!=='start')pathGrid[nr][nc]='visited'
+        }
+      }
+    }
+    renderPathGrid();return
   }
   if(!pathStepQueue.length){setExplain('path-explain','No more nodes to explore. No path found.');return}
   const node=algo==='bfs'?pathStepQueue.shift():pathStepQueue.pop()
@@ -1138,7 +2013,7 @@ async function runPath(){
   pathRunning=true;document.getElementById('path-run-btn').disabled=true
   document.getElementById('path-status').textContent='Searching...'
   const algo=document.getElementById('path-algo').value
-  const found=algo==='bfs'?await bfsPath():await dfsPath()
+  const found=algo==='bfs'?await bfsPath():algo==='dfs'?await dfsPath():await dijkstraPath()
   if(!found)document.getElementById('path-status').textContent='No path found'
   pathRunning=false;document.getElementById('path-run-btn').disabled=false
 }
@@ -1148,7 +2023,7 @@ async function bfsPath(){
   while(queue.length&&pathRunning){
     const[r,c]=queue.shift()
     if(r===pathEnd[0]&&c===pathEnd[1]){setPseudo('pathp','5');setExplain('path-explain','End node reached! Tracing shortest path back to start.');await tracePath(parent,pathEnd);return true}
-    setPseudo('pathp','4');setExplain('path-explain',`Visiting (${r},${c}). Exploring neighbors — BFS checks all nearby nodes at current depth first.`)
+    setPseudo('pathp','4');setExplain('path-explain',`Visiting (${r},${c}). Exploring neighbors: BFS checks all nearby nodes at current depth first.`)
     for(const[dr,dc]of DIRS){
       const nr=r+dr,nc=c+dc,key=`${nr},${nc}`
       if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&!visited.has(key)&&pathGrid[nr][nc]!=='wall'){
@@ -1166,11 +2041,47 @@ async function dfsPath(){
     const[r,c]=stack.pop(),key=`${r},${c}`
     if(visited.has(key))continue;visited.add(key)
     if(r===pathEnd[0]&&c===pathEnd[1]){setExplain('path-explain','End reached! DFS found a path (may not be shortest). Tracing back.');await tracePath(parent,pathEnd);return true}
-    setPseudo('pathp','4');setExplain('path-explain',`Visiting (${r},${c}). DFS dives deep — exploring one branch fully before trying others.`)
+    setPseudo('pathp','4');setExplain('path-explain',`Visiting (${r},${c}). DFS dives deep: exploring one branch fully before trying others.`)
     if(pathGrid[r][c]!=='start'&&pathGrid[r][c]!=='end'){pathGrid[r][c]='visited';vc++;document.getElementById('path-visited').textContent=vc;renderPathGrid();await sleep(16)}
     for(const[dr,dc]of DIRS){
       const nr=r+dr,nc=c+dc,nk=`${nr},${nc}`
       if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&!visited.has(nk)&&pathGrid[nr][nc]!=='wall'){parent[nk]=key;stack.push([nr,nc])}
+    }
+  }
+  return false
+}
+function popMinDijkstra(pq){
+  let idx=0
+  for(let i=1;i<pq.length;i++)if(pq[i][0]<pq[idx][0])idx=i
+  return pq.splice(idx,1)[0]
+}
+async function dijkstraPath(){
+  const dist={},parent={},visited=new Set()
+  dist[pathStart.join(',')]=0
+  const pq=[[0,...pathStart]]
+  let vc=0
+  while(pq.length&&pathRunning){
+    const[d,r,c]=popMinDijkstra(pq),key=`${r},${c}`
+    if(visited.has(key))continue
+    visited.add(key)
+    setPseudo('pathp','6')
+    if(r===pathEnd[0]&&c===pathEnd[1]){
+      setPseudo('pathp','7')
+      setExplain('path-explain',`End node reached with total cost <span>${d}</span>! Tracing the lowest-cost path back to start.`)
+      document.getElementById('path-cost').textContent=d
+      await tracePath(parent,pathEnd);return true
+    }
+    setExplain('path-explain',`Visiting (${r},${c}) with accumulated cost <span>${d}</span>. Relaxing edges to its neighbors.`)
+    for(const[dr,dc]of DIRS){
+      const nr=r+dr,nc=c+dc,nk=`${nr},${nc}`
+      if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&pathGrid[nr][nc]!=='wall'&&!visited.has(nk)){
+        const w=pathWeights[nr][nc],newDist=d+w
+        if(dist[nk]===undefined||newDist<dist[nk]){
+          dist[nk]=newDist;parent[nk]=key;pq.push([newDist,nr,nc])
+          if(pathGrid[nr][nc]!=='end'&&pathGrid[nr][nc]!=='start'){pathGrid[nr][nc]='visited';vc++;document.getElementById('path-visited').textContent=vc}
+          renderPathGrid();await sleep(16)
+        }
+      }
     }
   }
   return false
@@ -1306,11 +2217,11 @@ function*solveNQGen(row){
     if(safe){
       setPseudo('nqp','3')
       setExplain('nq-explain',`Row ${row+1}, col ${col+1}: <span>safe</span>. No queen in same column or diagonal. Placing ♛ and moving to next row.`)
-      document.getElementById('nq-log').innerHTML='Row '+(row+1)+', col '+(col+1)+' — <span>safe</span>, placed ♛'
+      document.getElementById('nq-log').innerHTML='Row '+(row+1)+', col '+(col+1)+': <span>safe</span>, placed ♛'
     }else{
       setPseudo('nqp','6')
       setExplain('nq-explain',`Row ${row+1}, col ${col+1}: conflict. Another queen threatens this cell. Trying next column.`)
-      document.getElementById('nq-log').innerHTML='Row '+(row+1)+', col '+(col+1)+' — conflict'
+      document.getElementById('nq-log').innerHTML='Row '+(row+1)+', col '+(col+1)+': conflict'
     }
     yield
     if(safe){
@@ -1400,7 +2311,7 @@ function*solveSdkGen(){
     if(isValidSDK(sdkBoard,r,c,num)){
       sdkBoard[r][c]=num;sdkFilled++;document.getElementById('sdk-filled').textContent=sdkFilled
       setPseudo('sdkp','5')
-      setExplain('sdk-explain',`Placing <span>${num}</span> at row ${r+1}, col ${c+1}. Valid — no conflict in row, column, or 3×3 box.`)
+      setExplain('sdk-explain',`Placing <span>${num}</span> at row ${r+1}, col ${c+1}. Valid, no conflict in row, column, or 3×3 box.`)
       document.getElementById('sdk-log').innerHTML='Trying <span>'+num+'</span> at ('+( r+1)+', '+(c+1)+')'
       renderSDK(r,c,'try');yield
       const result=yield*solveSdkGen()
@@ -1408,7 +2319,7 @@ function*solveSdkGen(){
       sdkBoard[r][c]=0;sdkFilled--;sdkBacks++
       document.getElementById('sdk-filled').textContent=sdkFilled;document.getElementById('sdk-backs').textContent=sdkBacks
       setPseudo('sdkp','7')
-      setExplain('sdk-explain',`<span>${num}</span> at (${r+1},${c+1}) led to a dead end. Backtracking — erasing and trying next digit.`)
+      setExplain('sdk-explain',`<span>${num}</span> at (${r+1},${c+1}) led to a dead end. Backtracking, erasing and trying next digit.`)
       document.getElementById('sdk-log').innerHTML='Backtracking from ('+(r+1)+', '+(c+1)+')'
       renderSDK(r,c,'back');yield
     }
