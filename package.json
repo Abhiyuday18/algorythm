@@ -1,6 +1,6 @@
 {
   "name": "algorythm",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "description": "Dev-only test tooling for AlgoRythm. The app itself (index.html) has zero runtime dependencies -- this package.json exists solely so CI can run the algorithm-correctness test suite in tests/.",
   "scripts": {
