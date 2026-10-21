@@ -61,6 +61,8 @@ Built entirely in vanilla HTML, CSS, and JavaScript. Zero dependencies, zero fra
 - **Challenge Mode**: predict-before-reveal quizzing for sorting. The animation pauses mid-run with the compared elements highlighted and asks what happens next ("will they swap?", "which value is taken?", "which side of the pivot?") before revealing the outcome, with score and streak tracking. Every question is answerable by reading the current state, which turns passive watching into retrieval practice
 - **Quick-check quizzes**: when any algorithm finishes (a full Run, or the last click in Step mode) a multiple-choice card appears below the visualizer with a question specific to what you just watched, such as why BFS cannot find the optimal path on Dijkstra's weighted grid. Correct and wrong answers are marked green and red with a one-line explanation, and the card resets on the next run
 - **Custom array input**: type your own numbers (`5, 3, 8, 1, 9`) and run any sorting mode on your data. Non-numbers are ignored, values are kept within 1-100, and empty or invalid input shows an inline error
+- **Shareable links**: every visualizer has a Share link button that copies a URL carrying the exact scenario (algorithm, starting array, walls and weights, mode and speed) in the part after `#`. Teachers paste one link and the class starts from the same setup. Nothing is sent to a server, and every value in a link is validated before use
+- **Progress and mastery**: quiz results are stored per algorithm in the browser's localStorage and shown on a Progress page with a level for each algorithm (Learning, Familiar, Mastered), accuracy, and best streak. Nothing leaves the device
 - **Interactive controls**: adjust array size, board size, disk count, speed, and more
 - **Pathfinder grid**: draw walls, set start and end points, then watch BFS, DFS, or Dijkstra navigate
 - **Zero install**: runs entirely in the browser, no setup required
@@ -164,6 +166,11 @@ That's it. No `npm install`, no server needed.
 ## Changelog
 
 Project updates are recorded here, newest first.
+
+### 2026-10-21
+- **Shareable links**: a Share link button in every visualizer copies a URL whose hash carries the exact scenario (algorithm, starting array, pathfinder walls and weights, compare, benchmark or challenge settings, speed). Opening the link restores it, ignores anything invalid, and skips the first-visit tour.
+- **Progress and mastery**: quiz answers are saved per algorithm in localStorage and summarized on a new Progress page (levels, accuracy, best streak, per-algorithm cards with a Practice shortcut) plus small badges on the home cards. A two-step reset erases it.
+- Pathfinder cell weights are now generated from a seed so Dijkstra scenarios can be reproduced exactly.
 
 ### 2026-10-20
 - **Quick-check quizzes**: when any algorithm finishes (a full Run or the last click in Step mode), a multiple-choice card appears below the visualizer with a question specific to that algorithm. Answers are marked green or red with a one-line explanation, and the card resets on the next run. Covers all 12 algorithms.

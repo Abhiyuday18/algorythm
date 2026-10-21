@@ -47,7 +47,14 @@ window.__test = {
   getQuizBank: () => QUIZ_BANK,
   getQuizTitles: () => QUIZ_TITLES,
   getChState: () => chState,
-  getChPlan: () => chPlan
+  getChPlan: () => chPlan,
+  getSortBaseArr: () => sortBaseArr,
+  getPathWeightSeed: () => pathWeightSeed,
+  getProgress: () => progress,
+  setProgress: (p) => { progress = p },
+  getCompareMode: () => compareMode,
+  getBenchMode: () => benchMode,
+  getChallengeMode: () => challengeMode
 }
 `
 
@@ -67,11 +74,12 @@ function makeFakeCtx() {
 // giving tests direct access to the app's real functions (sortGenerator,
 // bfsPath, nqGenerator, ...) exactly as a browser would expose them, plus
 // a __test hook for reading otherwise-private top-level state.
-function loadApp() {
+function loadApp(opts = {}) {
   const dom = new JSDOM(html, {
     runScripts: 'outside-only',
     pretendToBeVisual: true,
-    url: 'http://localhost/'
+    url: opts.url || 'http://localhost/',
+    beforeParse: opts.beforeParse
   })
   const { window } = dom
   window.HTMLCanvasElement.prototype.getContext = () => makeFakeCtx()

@@ -160,6 +160,40 @@ canvas{display:block;width:100%}
 .challenge-feedback{font-size:.85rem;color:var(--muted);line-height:1.6;min-height:22px}
 .challenge-feedback span{color:var(--text)}
 
+/* SHARE LINKS */
+.share-wrap{margin-left:auto;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.share-msg{font-size:.76rem;color:var(--green);line-height:1.4;display:inline-flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.share-msg .share-link{width:min(300px,70vw);font-size:.74rem;padding:.3rem .6rem}
+
+/* PROGRESS / MASTERY */
+#progress{padding:3.5rem 2rem 4rem;display:none}
+.pg-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.8rem;margin-bottom:1.8rem}
+.pg-stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.8rem 1rem}
+.pg-stat-val{font-family:var(--mono);font-size:1.45rem;color:var(--text);line-height:1.2}
+.pg-stat-label{font-family:var(--mono);font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:.2rem}
+.pg-note{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:1.4rem;max-width:640px}
+.pg-group{margin-bottom:1.5rem}
+.pg-group-head{display:flex;align-items:baseline;gap:.7rem;margin-bottom:.6rem}
+.pg-group-head h3{font-size:1rem;font-weight:600}
+.pg-group-head span{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+.pg-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.8rem}
+.pg-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.95rem 1.1rem;display:flex;flex-direction:column;gap:.55rem}
+.pg-card-top{display:flex;align-items:center;justify-content:space-between;gap:.6rem}
+.pg-card h4{font-size:.92rem;font-weight:600}
+.lvl{font-family:var(--mono);font-size:.62rem;padding:.16rem .46rem;border-radius:4px;border:1px solid var(--border);color:var(--muted);white-space:nowrap}
+.lvl-learning{color:var(--yellow);border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.08)}
+.lvl-familiar{color:var(--accent);border-color:rgba(91,141,238,.35);background:rgba(91,141,238,.08)}
+.lvl-mastered{color:var(--green);border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.1)}
+.pg-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.pg-bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .4s}
+.pg-card.is-mastered .pg-bar-fill{background:var(--green)}
+.pg-meta{font-size:.76rem;color:var(--muted);line-height:1.55}
+.pg-meta span{color:var(--text);font-family:var(--mono)}
+.pg-actions{display:flex;align-items:center;gap:.8rem;margin-top:1.6rem;flex-wrap:wrap}
+.pg-empty{background:var(--surface);border:1px dashed var(--border);border-radius:12px;padding:1.1rem 1.3rem;font-size:.86rem;color:var(--muted);line-height:1.6;margin-bottom:1.6rem}
+.chip.progress-chip{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.28);color:var(--yellow)}
+.chip.progress-chip.done{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3);color:var(--green)}
+
 /* POST-RUN QUIZ */
 .quiz-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.3rem;margin-top:1.1rem;animation:summaryIn .35s ease;scroll-margin:84px 0 24px}
 .quiz-head{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.7rem}
@@ -347,6 +381,7 @@ canvas{display:block;width:100%}
     <div class="step-mode-badge" id="step-mode-badge" role="status">STEP MODE</div>
   </div>
   <div class="nav-actions">
+    <button class="nav-btn" id="nav-progress" onclick="openProgress()">Progress</button>
     <button class="nav-btn" id="nav-docs" onclick="openDocs()">Docs</button>
     <button class="nav-btn" id="nav-tour" onclick="startTour(true)">Tour</button>
     <button class="nav-btn" id="theme-toggle" onclick="toggleTheme()" aria-pressed="false">Light</button>
@@ -376,7 +411,7 @@ canvas{display:block;width:100%}
         <div class="card-info">
           <h3>Sorting Algorithms</h3>
           <p>Bubble, Selection, Insertion, Merge, Quick: animated comparisons and swaps.</p>
-          <div class="card-chips"><span class="chip">5 algorithms</span><span class="chip">Step mode</span><span class="chip purple">Challenge</span></div>
+          <div class="card-chips"><span class="chip">5 algorithms</span><span class="chip">Step mode</span><span class="chip purple">Challenge</span><span class="chip progress-chip" id="pchip-sorting" hidden></span></div>
         </div>
       </div>
 
@@ -385,7 +420,7 @@ canvas{display:block;width:100%}
         <div class="card-info">
           <h3>Binary Search</h3>
           <p>Eliminate half the search space with every comparison. Step at your own pace.</p>
-          <div class="card-chips"><span class="chip">O(log n)</span><span class="chip">Step mode</span></div>
+          <div class="card-chips"><span class="chip">O(log n)</span><span class="chip">Step mode</span><span class="chip progress-chip" id="pchip-bsearch" hidden></span></div>
         </div>
       </div>
 
@@ -394,7 +429,7 @@ canvas{display:block;width:100%}
         <div class="card-info">
           <h3>Pathfinder</h3>
           <p>Draw walls, set start &amp; end, watch BFS or DFS explore step by step.</p>
-          <div class="card-chips"><span class="chip">BFS</span><span class="chip">DFS</span><span class="chip">Step mode</span></div>
+          <div class="card-chips"><span class="chip">BFS</span><span class="chip">DFS</span><span class="chip">Step mode</span><span class="chip progress-chip" id="pchip-pathfinder" hidden></span></div>
         </div>
       </div>
 
@@ -403,7 +438,7 @@ canvas{display:block;width:100%}
         <div class="card-info">
           <h3>Towers of Hanoi</h3>
           <p>Watch the recursive solution unfold disk by disk with step control.</p>
-          <div class="card-chips"><span class="chip purple">Recursion</span><span class="chip">O(2&#x207f;)</span><span class="chip">Step mode</span></div>
+          <div class="card-chips"><span class="chip purple">Recursion</span><span class="chip">O(2&#x207f;)</span><span class="chip">Step mode</span><span class="chip progress-chip" id="pchip-hanoi" hidden></span></div>
         </div>
       </div>
 
@@ -412,7 +447,7 @@ canvas{display:block;width:100%}
         <div class="card-info">
           <h3>N-Queen Problem</h3>
           <p>Watch backtracking place queens, fail, and retry, row by row.</p>
-          <div class="card-chips"><span class="chip purple">Backtracking</span><span class="chip">Step mode</span></div>
+          <div class="card-chips"><span class="chip purple">Backtracking</span><span class="chip">Step mode</span><span class="chip progress-chip" id="pchip-nqueen" hidden></span></div>
         </div>
       </div>
 
@@ -421,10 +456,26 @@ canvas{display:block;width:100%}
         <div class="card-info">
           <h3>Sudoku Solver</h3>
           <p>Watch constraint-based backtracking fill the grid cell by cell.</p>
-          <div class="card-chips"><span class="chip purple">Backtracking</span><span class="chip">Constraint</span><span class="chip">Step mode</span></div>
+          <div class="card-chips"><span class="chip purple">Backtracking</span><span class="chip">Constraint</span><span class="chip">Step mode</span><span class="chip progress-chip" id="pchip-sudoku" hidden></span></div>
         </div>
       </div>
 
+    </div>
+  </div>
+</section>
+
+<!-- PROGRESS -->
+<section id="progress">
+  <div class="hub-inner">
+    <div class="hub-eyebrow">// progress</div>
+    <h1 class="docs-title">Your mastery</h1>
+    <p class="pg-note">Every quick-check quiz you answer is recorded here, on this device only. An algorithm is <strong>mastered</strong> once you have answered each of its questions correctly at least once.</p>
+    <div class="pg-summary" id="progress-summary"></div>
+    <div class="pg-empty" id="progress-empty" style="display:none">Nothing here yet. Run any algorithm to the end (or click through its last step) and a quick-check question appears below it. Your results will show up on this page.</div>
+    <div id="progress-groups"></div>
+    <div class="pg-actions">
+      <button class="ctrl-btn" id="progress-reset-btn" onclick="armOrResetProgress()">Reset progress</button>
+      <span class="pg-meta" id="progress-reset-msg" role="status" aria-live="polite"></span>
     </div>
   </div>
 </section>
@@ -476,6 +527,22 @@ canvas{display:block;width:100%}
     </div>
 
     <div class="docs-block">
+      <h3>Shareable links</h3>
+      <p>Every visualizer has a <strong>Share link</strong> button. It copies a link that reopens the exact setup you are looking at, so a teacher can paste one link and the whole class starts from the same scenario.</p>
+      <ul>
+        <li>Sorting: algorithm, the starting array (as it was before you pressed Run), speed, and Compare, Benchmark or Challenge settings.</li>
+        <li>Binary Search: the sorted array and the target. Pathfinder: algorithm, start and end cells, walls, and the Dijkstra cell weights.</li>
+        <li>Hanoi, N-Queens and Sudoku: disks, board size or puzzle, and speed.</li>
+      </ul>
+      <p>The setup lives in the part of the address after <code>#</code>, so nothing is sent to a server. Every value in a link is checked before use; anything invalid is ignored and listed in a small note.</p>
+    </div>
+
+    <div class="docs-block">
+      <h3>Progress and mastery</h3>
+      <p>Your quiz answers are saved in this browser (never uploaded) and shown on the <strong>Progress</strong> page. An algorithm is <strong>Learning</strong> after its first answer, <strong>Familiar</strong> once you have answered some of its questions correctly, and <strong>Mastered</strong> once you have answered every one of its questions correctly at least once. Cards on the home screen show a small badge for algorithms you have started. Clearing site data, or the Reset button on the Progress page, erases it.</p>
+    </div>
+
+    <div class="docs-block">
       <h3>Under the hood</h3>
       <p>Every algorithm is written once as a JavaScript generator function that <code>yield</code>s at each visual step. The Run button drains that generator on a timer; the Step button advances it one <code>.next()</code> per click; Compare Mode advances two generators in lockstep; Benchmark Mode drains them silently to count operations; Challenge Mode reads the structured log they emit to build quiz questions. One implementation, five consumers, so the animation, the measurements, and the quiz can never disagree with each other.</p>
       <p>The project ships with an automated test suite that loads this exact file into a simulated browser and checks every algorithm against independent reference implementations on every push. See <code>ARCHITECTURE.md</code> in the repository for the full write-up.</p>
@@ -496,6 +563,7 @@ canvas{display:block;width:100%}
   <div class="viz-header">
     <h2 class="viz-title">Sorting</h2>
     <div class="viz-badge" id="sort-badge">Bubble Sort</div>
+    <div class="share-wrap"><button class="ctrl-btn" onclick="shareScenario('sorting')">Share link</button><span class="share-msg" id="share-msg-sorting" role="status" aria-live="polite"></span></div>
   </div>
   <div class="controls">
     <div class="ctrl-group">
@@ -689,7 +757,7 @@ canvas{display:block;width:100%}
 
 <!-- ═══ BINARY SEARCH ═════════════════════════════════════════ -->
 <div id="viz-bsearch" class="viz-section">
-  <div class="viz-header"><h2 class="viz-title">Binary Search</h2><div class="viz-badge">O(log n)</div></div>
+  <div class="viz-header"><h2 class="viz-title">Binary Search</h2><div class="viz-badge">O(log n)</div><div class="share-wrap"><button class="ctrl-btn" onclick="shareScenario('bsearch')">Share link</button><span class="share-msg" id="share-msg-bsearch" role="status" aria-live="polite"></span></div></div>
   <div class="controls">
     <button class="ctrl-btn" onclick="resetBS()">New Array</button>
     <label class="ctrl-label">Target:</label>
@@ -745,6 +813,7 @@ canvas{display:block;width:100%}
   <div class="viz-header">
     <h2 class="viz-title">Pathfinder</h2>
     <div class="viz-badge" id="path-badge">BFS</div>
+    <div class="share-wrap"><button class="ctrl-btn" onclick="shareScenario('pathfinder')">Share link</button><span class="share-msg" id="share-msg-pathfinder" role="status" aria-live="polite"></span></div>
   </div>
   <div class="controls">
     <select class="ctrl-select" id="path-algo" aria-label="Pathfinding algorithm" onchange="pathAlgoChange()">
@@ -807,7 +876,7 @@ canvas{display:block;width:100%}
 
 <!-- ═══ TOWERS OF HANOI ═══════════════════════════════════════ -->
 <div id="viz-hanoi" class="viz-section">
-  <div class="viz-header"><h2 class="viz-title">Towers of Hanoi</h2><div class="viz-badge" id="hanoi-badge">3 Disks</div></div>
+  <div class="viz-header"><h2 class="viz-title">Towers of Hanoi</h2><div class="viz-badge" id="hanoi-badge">3 Disks</div><div class="share-wrap"><button class="ctrl-btn" onclick="shareScenario('hanoi')">Share link</button><span class="share-msg" id="share-msg-hanoi" role="status" aria-live="polite"></span></div></div>
   <div class="controls">
     <label class="ctrl-label">Disks</label>
     <select class="ctrl-select" id="hanoi-disks" aria-label="Number of disks" onchange="resetHanoi()">
@@ -861,7 +930,7 @@ canvas{display:block;width:100%}
 
 <!-- ═══ N-QUEEN ════════════════════════════════════════════════ -->
 <div id="viz-nqueen" class="viz-section">
-  <div class="viz-header"><h2 class="viz-title">N-Queen Problem</h2><div class="viz-badge" id="nq-badge">8×8</div></div>
+  <div class="viz-header"><h2 class="viz-title">N-Queen Problem</h2><div class="viz-badge" id="nq-badge">8×8</div><div class="share-wrap"><button class="ctrl-btn" onclick="shareScenario('nqueen')">Share link</button><span class="share-msg" id="share-msg-nqueen" role="status" aria-live="polite"></span></div></div>
   <div class="controls">
     <label class="ctrl-label">Board</label>
     <select class="ctrl-select" id="nq-size" aria-label="Board size" onchange="resetNQ()">
@@ -917,7 +986,7 @@ canvas{display:block;width:100%}
 
 <!-- ═══ SUDOKU ════════════════════════════════════════════════ -->
 <div id="viz-sudoku" class="viz-section">
-  <div class="viz-header"><h2 class="viz-title">Sudoku Solver</h2><div class="viz-badge">Backtracking</div></div>
+  <div class="viz-header"><h2 class="viz-title">Sudoku Solver</h2><div class="viz-badge">Backtracking</div><div class="share-wrap"><button class="ctrl-btn" onclick="shareScenario('sudoku')">Share link</button><span class="share-msg" id="share-msg-sudoku" role="status" aria-live="polite"></span></div></div>
   <div class="controls">
     <select class="ctrl-select" id="sdk-puzzle-sel" aria-label="Sudoku puzzle difficulty" onchange="loadSudokuPuzzle()">
       <option value="0">Puzzle 1 (Easy)</option><option value="1">Puzzle 2 (Medium)</option><option value="2">Puzzle 3 (Hard)</option>
@@ -1004,6 +1073,7 @@ document.addEventListener('keydown',e=>{
 function openViz(name){
   document.getElementById('hub').classList.add('hidden')
   document.getElementById('docs').style.display='none'
+  document.getElementById('progress').style.display='none'
   document.getElementById('viz-panel').style.display='block'
   document.getElementById('nav-back').classList.add('visible')
   ALL_VIZ.forEach(v=>{const el=document.getElementById('viz-'+v);if(el)el.style.display=v===name?'block':'none'})
@@ -1018,7 +1088,10 @@ function openViz(name){
 function goHub(){
   document.getElementById('hub').classList.remove('hidden')
   document.getElementById('docs').style.display='none'
+  document.getElementById('progress').style.display='none'
   document.getElementById('viz-panel').style.display='none'
+  updateHubChips()
+  document.querySelectorAll('.share-msg').forEach(e=>{e.innerHTML=''})
   document.getElementById('nav-back').classList.remove('visible')
   document.getElementById('step-mode-badge').classList.remove('on')
   sortRunning=false;bsRunning=false;pathRunning=false;hanoiRunning=false;nqRunning=false;sdkRunning=false;compareRunning=false;benchRunning=false;challengeRunning=false;challengeAwaiting=false
@@ -1233,10 +1306,164 @@ function quizAnswer(section,pos){
     else if(i===pos)b.classList.add('wrong')
   })
   const right=pos===correctPos
+  recordQuizResult(st.key,st.idx,right)
   const why=card.querySelector('.quiz-why')
   why.innerHTML=''
   why.appendChild(quizEl('span','verdict '+(right?'ok':'no'),right?'Correct.':'Not quite. The answer is '+String.fromCharCode(65+correctPos)+'.'))
   why.appendChild(document.createTextNode(' '+item.why))
+}
+
+// ─── PROGRESS / MASTERY ───────────────────────────────────────
+// Every quiz answer is recorded per algorithm in localStorage (this device
+// only). Mastery is deliberately simple and explainable: an algorithm is
+// mastered once each of its questions has been answered correctly at least
+// once. The question count comes from QUIZ_BANK, so adding questions later
+// raises the bar automatically.
+const PROGRESS_KEY='algorythm-progress-v1'
+const PROGRESS_GROUPS=[
+  {viz:'sorting',title:'Sorting',keys:['bubble','selection','insertion','merge','quick']},
+  {viz:'bsearch',title:'Binary Search',keys:['bsearch']},
+  {viz:'pathfinder',title:'Pathfinder',keys:['bfs','dfs','dijkstra']},
+  {viz:'hanoi',title:'Towers of Hanoi',keys:['hanoi']},
+  {viz:'nqueen',title:'N-Queens',keys:['nqueen']},
+  {viz:'sudoku',title:'Sudoku Solver',keys:['sudoku']}
+]
+const LEVEL_LABELS={none:'Not started',learning:'Learning',familiar:'Familiar',mastered:'Mastered'}
+function emptyProgress(){return{algos:{},best:0,streak:0}}
+function sanitizeProgress(raw){
+  const out=emptyProgress()
+  if(!raw||typeof raw!=='object'||Array.isArray(raw))return out
+  const int=v=>Number.isFinite(v)&&v>0?Math.floor(v):0
+  out.best=int(raw.best);out.streak=int(raw.streak)
+  if(raw.algos&&typeof raw.algos==='object')for(const key of Object.keys(QUIZ_BANK)){
+    const a=raw.algos[key]
+    if(!a||typeof a!=='object')continue
+    const solved={}
+    if(a.solved&&typeof a.solved==='object')for(const k of Object.keys(a.solved)){
+      if(/^\d+$/.test(k)&&a.solved[k]===true&&+k<QUIZ_BANK[key].length)solved[k]=true
+    }
+    const attempts=int(a.attempts)
+    out.algos[key]={attempts,correct:Math.min(int(a.correct),attempts),solved,last:int(a.last)}
+  }
+  return out
+}
+function loadProgress(){
+  let raw=null
+  try{raw=JSON.parse(localStorage.getItem(PROGRESS_KEY))}catch(e){}
+  return sanitizeProgress(raw)
+}
+function saveProgress(){try{localStorage.setItem(PROGRESS_KEY,JSON.stringify(progress))}catch(e){}}
+let progress=loadProgress()
+function recordQuizResult(key,idx,correct){
+  if(!QUIZ_BANK[key])return
+  const a=progress.algos[key]||(progress.algos[key]={attempts:0,correct:0,solved:{},last:0})
+  a.attempts++
+  if(correct){a.correct++;a.solved[idx]=true}
+  a.last=Date.now()
+  progress.streak=correct?progress.streak+1:0
+  if(progress.streak>progress.best)progress.best=progress.streak
+  saveProgress()
+  updateHubChips()
+}
+function masteryOf(key){
+  const a=progress.algos[key]||{attempts:0,correct:0,solved:{},last:0}
+  const total=(QUIZ_BANK[key]||[]).length
+  const solved=Object.keys(a.solved).length
+  let level='none'
+  if(a.attempts>0)level=solved===0?'learning':solved<total?'familiar':'mastered'
+  return{key,attempts:a.attempts,correct:a.correct,solved,total,level,last:a.last,pct:total?Math.round(100*solved/total):0}
+}
+function updateHubChips(){
+  for(const g of PROGRESS_GROUPS){
+    const chip=document.getElementById('pchip-'+g.viz)
+    if(!chip)continue
+    const ms=g.keys.map(masteryOf)
+    const mastered=ms.filter(m=>m.level==='mastered').length
+    chip.hidden=!ms.some(m=>m.attempts>0)
+    chip.textContent=g.keys.length>1?mastered+'/'+g.keys.length+' mastered':(mastered?'mastered':'in progress')
+    chip.classList.toggle('done',mastered===g.keys.length)
+  }
+}
+function timeAgo(ts){
+  if(!ts)return 'never'
+  const days=Math.floor((Date.now()-ts)/86400000)
+  return days<=0?'today':days===1?'yesterday':days+' days ago'
+}
+function practiceAlgo(key){
+  const g=PROGRESS_GROUPS.find(x=>x.keys.includes(key))
+  if(!g)return
+  openViz(g.viz)
+  if(g.viz==='sorting'){document.getElementById('sort-algo').value=key;sortAlgoChange()}
+  if(g.viz==='pathfinder'){document.getElementById('path-algo').value=key;pathAlgoChange()}
+}
+function progressCard(m){
+  const card=quizEl('div','pg-card'+(m.level==='mastered'?' is-mastered':''))
+  const top=quizEl('div','pg-card-top')
+  top.appendChild(quizEl('h4','',QUIZ_TITLES[m.key]||m.key))
+  top.appendChild(quizEl('span','lvl lvl-'+m.level,LEVEL_LABELS[m.level]))
+  const bar=quizEl('div','pg-bar')
+  bar.setAttribute('role','progressbar');bar.setAttribute('aria-label',(QUIZ_TITLES[m.key]||m.key)+' mastery')
+  bar.setAttribute('aria-valuemin','0');bar.setAttribute('aria-valuemax','100');bar.setAttribute('aria-valuenow',String(m.pct))
+  const fill=quizEl('div','pg-bar-fill');fill.style.width=m.pct+'%';bar.appendChild(fill)
+  const meta=quizEl('div','pg-meta')
+  const line=(label,val)=>{const d=quizEl('div','',label+' ');d.appendChild(quizEl('span','',val));return d}
+  meta.appendChild(line('Questions solved',m.solved+'/'+m.total))
+  meta.appendChild(line('Correct answers',m.attempts?m.correct+' of '+m.attempts:'none yet'))
+  meta.appendChild(line('Last practiced',timeAgo(m.last)))
+  const btn=quizEl('button','ctrl-btn','Practice');btn.type='button'
+  btn.addEventListener('click',()=>practiceAlgo(m.key))
+  card.appendChild(top);card.appendChild(bar);card.appendChild(meta);card.appendChild(btn)
+  return card
+}
+let progressResetArmed=false
+function disarmProgressReset(){
+  progressResetArmed=false
+  document.getElementById('progress-reset-btn').textContent='Reset progress'
+  document.getElementById('progress-reset-msg').textContent=''
+}
+function renderProgress(){
+  const all=PROGRESS_GROUPS.flatMap(g=>g.keys.map(masteryOf))
+  const attempts=all.reduce((s,m)=>s+m.attempts,0),correct=all.reduce((s,m)=>s+m.correct,0)
+  const mastered=all.filter(m=>m.level==='mastered').length
+  const stats=[[attempts,'Questions answered'],[attempts?Math.round(100*correct/attempts)+'%':'-','Accuracy'],[mastered+'/'+all.length,'Algorithms mastered'],[progress.best,'Best streak']]
+  const sum=document.getElementById('progress-summary');sum.innerHTML=''
+  stats.forEach(([v,l])=>{const d=quizEl('div','pg-stat');d.appendChild(quizEl('div','pg-stat-val',String(v)));d.appendChild(quizEl('div','pg-stat-label',l));sum.appendChild(d)})
+  document.getElementById('progress-empty').style.display=attempts?'none':'block'
+  const wrap=document.getElementById('progress-groups');wrap.innerHTML=''
+  PROGRESS_GROUPS.forEach(g=>{
+    const ms=g.keys.map(masteryOf)
+    const grp=quizEl('div','pg-group')
+    const head=quizEl('div','pg-group-head')
+    head.appendChild(quizEl('h3','',g.title))
+    head.appendChild(quizEl('span','',ms.filter(m=>m.level==='mastered').length+'/'+ms.length+' mastered'))
+    const cards=quizEl('div','pg-cards')
+    ms.forEach(m=>cards.appendChild(progressCard(m)))
+    grp.appendChild(head);grp.appendChild(cards);wrap.appendChild(grp)
+  })
+  disarmProgressReset()
+}
+function openProgress(){
+  goHub()
+  document.getElementById('hub').classList.add('hidden')
+  document.getElementById('progress').style.display='block'
+  document.getElementById('nav-back').classList.add('visible')
+  renderProgress()
+}
+function armOrResetProgress(){
+  if(!progressResetArmed){
+    progressResetArmed=true
+    document.getElementById('progress-reset-btn').textContent='Click again to erase all progress'
+    document.getElementById('progress-reset-msg').textContent='This cannot be undone.'
+    return
+  }
+  resetProgress()
+}
+function resetProgress(){
+  progress=emptyProgress()
+  saveProgress()
+  updateHubChips()
+  renderProgress()
+  document.getElementById('progress-reset-msg').textContent='Progress erased.'
 }
 
 // ─── MINI PREVIEWS ────────────────────────────────────────────
@@ -1284,6 +1511,10 @@ buildMinis()
 const sortCanvas=document.getElementById('sort-canvas')
 const sortCtx=sortCanvas.getContext('2d')
 let sortArr=[],sortColors=[],sortComps=0,sortSwaps=0
+// The array a scenario started from, before any sorting mutates it. Share
+// links serialize this, so a link reproduces the starting setup, not a
+// half-sorted snapshot.
+let sortBaseArr=[]
 let sortStepGen=null,sortStepMode=false
 let compareMode=false,compareRunning=false,cmpA=null,cmpB=null
 let benchMode=false,benchRunning=false,benchResults=null
@@ -1360,6 +1591,7 @@ function resetSort(){
   document.getElementById('sort-step-btn').disabled=false
   const n=parseInt(document.getElementById('sort-size').value)
   sortArr=customArr?[...customArr]:Array.from({length:n},()=>Math.floor(Math.random()*88)+8)
+  sortBaseArr=[...sortArr]
   sortColors=new Array(sortArr.length).fill('default')
   sortComps=0;sortSwaps=0
   document.getElementById('sort-comps').textContent='0'
@@ -1416,6 +1648,14 @@ function showCustomMsg(text,kind){
 function syncSizeCaption(){
   const slider=document.getElementById('sort-size')
   document.getElementById('sort-size-val').textContent=customArr?customArr.length+' (custom)':slider.value
+}
+// Used by share links: load a pre-validated array exactly as if the user had
+// typed it, before the mode-specific reset runs and picks it up.
+function loadSharedArray(values){
+  customArr=[...values]
+  document.getElementById('custom-array-input').value=values.join(', ')
+  syncSizeCaption()
+  showCustomMsg('Loaded '+values.length+' numbers from the shared link. Randomize goes back to a random array.','ok')
 }
 function clearCustomArray(){
   customArr=null
@@ -1661,6 +1901,7 @@ function resetCompare(){
   document.getElementById('compare-summary').style.display='none'
   const n=parseInt(document.getElementById('sort-size').value)
   const arr=customArr?[...customArr]:Array.from({length:n},()=>Math.floor(Math.random()*88)+8)
+  sortBaseArr=[...arr]
   cmpA=makeCompareState(document.getElementById('cmp-canvas-a'),document.getElementById('sort-algo-a').value,arr,'a')
   cmpB=makeCompareState(document.getElementById('cmp-canvas-b'),document.getElementById('sort-algo-b').value,arr,'b')
   updateCompareStats(cmpA);updateCompareStats(cmpB)
@@ -2073,6 +2314,7 @@ function resetChallenge(){
   chScore=0;chStreak=0
   const algo=document.getElementById('sort-algo').value
   const arr=customArr?[...customArr]:Array.from({length:CH_N},()=>Math.floor(Math.random()*90)+9)
+  sortBaseArr=[...arr]
   const fullLog=challengeSilentLog(algo,arr)
   chWant=Math.min(8,fullLog.length)
   const indices=new Set()
@@ -2163,11 +2405,14 @@ async function runChallenge(){
 let bsArr=[],bsLow=0,bsHigh=0,bsStepGen=null
 
 function initBS(){resetBS()}
-function resetBS(){
+function resetBS(shared){
   bsRunning=false;bsStepGen=null
   quizReset('bsearch')
-  const set=new Set();while(set.size<16)set.add(Math.floor(Math.random()*95)+3)
-  bsArr=[...set].sort((a,b)=>a-b);bsLow=0;bsHigh=bsArr.length-1
+  // `shared` is a pre-validated sorted array supplied by a share link; the
+  // "New Array" button calls this with no argument and gets a random one.
+  if(Array.isArray(shared)&&shared.length){bsArr=[...shared]}
+  else{const set=new Set();while(set.size<16)set.add(Math.floor(Math.random()*95)+3);bsArr=[...set].sort((a,b)=>a-b)}
+  bsLow=0;bsHigh=bsArr.length-1
   document.getElementById('bs-steps').textContent='0'
   document.getElementById('bs-range').textContent='0 – '+(bsArr.length-1)
   document.getElementById('bs-status').textContent='Ready'
@@ -2286,11 +2531,23 @@ function pathAlgoChange(){
   clearPath()
 }
 
+// Cell weights come from a seeded generator so a share link can carry one
+// short seed instead of 476 numbers and still reproduce the exact grid.
+let pathWeightSeed=0
+function seededRandom(seed){
+  let a=seed>>>0
+  return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}
+}
+function weightsFromSeed(seed){
+  const rnd=seededRandom(seed)
+  return Array.from({length:ROWS},()=>Array.from({length:COLS},()=>Math.floor(rnd()*9)+1))
+}
 function initPathGrid(){resetPathGrid()}
 function resetPathGrid(){
   pathRunning=false;pathStepMode=false;pathStepping=false
   pathGrid=Array.from({length:ROWS},()=>Array(COLS).fill('empty'))
-  pathWeights=Array.from({length:ROWS},()=>Array.from({length:COLS},()=>Math.floor(Math.random()*9)+1))
+  pathWeightSeed=(Math.random()*4294967296)>>>0
+  pathWeights=weightsFromSeed(pathWeightSeed)
   pathGrid[pathStart[0]][pathStart[1]]='start';pathGrid[pathEnd[0]][pathEnd[1]]='end'
   pathCursor=[...pathStart]
   pathAlgoChange()
@@ -2882,9 +3139,240 @@ function showTourStep(){
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&tourIdx>=0)endTour()})
 window.addEventListener('resize',()=>{if(tourIdx>=0)showTourStep()})
 
+// ─── SHAREABLE LINKS ─────────────────────────────────────────
+// A link is  base#/<visualizer>?key=value&...  and carries the exact starting
+// scenario: algorithm, array (as it was before running), and settings. The
+// Pathfinder's random cell weights are reproduced from a short seed and its
+// walls from a hex bitmask. Links are untrusted input (anyone can edit one by
+// hand), so every value is checked against a whitelist or range before use and
+// anything invalid is ignored with a note, never rendered or evaluated.
+const SHARE_CANONICAL='https://abhiyuday18.github.io/algorythm/'
+const SHARE_PATTERNS=['random','nearly','reversed','fewunique']
+const SHARE_METRICS=['ops','comps','swaps']
+const SHARE_PATH_ALGOS=['bfs','dfs','dijkstra']
+const SHARE_HEX_LEN=Math.ceil(ROWS*COLS/4)
+const SHARE_DEFAULT_START=[2,2],SHARE_DEFAULT_END=[14,25]
+const SHARE_SPEED_IDS={sorting:'sort-speed',hanoi:'hanoi-speed',nqueen:'nq-speed',sudoku:'sdk-speed'}
+// Opened from a downloaded file, location would be a local disk path that
+// means nothing to the person receiving the link, so use the live site.
+function shareBase(loc){
+  loc=loc||window.location
+  return loc.protocol==='file:'?SHARE_CANONICAL:loc.origin+loc.pathname
+}
+function shareInt(v,lo,hi){
+  if(typeof v!=='string'||!/^\d{1,9}$/.test(v))return null
+  const n=Number(v)
+  return n>=lo&&n<=hi?n:null
+}
+function shareToken(v,allowed){return typeof v==='string'&&allowed.includes(v)?v:null}
+function wallsToHex(grid){
+  const total=ROWS*COLS
+  let hex='',any=false
+  for(let i=0;i<total;i+=4){
+    let nib=0
+    for(let b=0;b<4;b++){
+      const idx=i+b
+      if(idx<total&&grid[Math.floor(idx/COLS)][idx%COLS]==='wall'){nib|=8>>b;any=true}
+    }
+    hex+=nib.toString(16)
+  }
+  return any?hex.replace(/0+$/,''):''
+}
+function hexToWalls(hex){
+  const padded=hex.padEnd(SHARE_HEX_LEN,'0'),walls=[]
+  for(let i=0;i<ROWS*COLS;i++){
+    if(parseInt(padded[i>>2],16)&(8>>(i&3)))walls.push([Math.floor(i/COLS),i%COLS])
+  }
+  return walls
+}
+function captureScenario(viz){
+  const val=id=>document.getElementById(id).value
+  const p={}
+  if(viz==='sorting'){
+    if(compareMode){p.mode='compare';p.a=val('sort-algo-a');p.b=val('sort-algo-b')}
+    else if(benchMode){p.mode='bench';p.pattern=val('bench-pattern');p.metric=val('bench-metric')}
+    else{if(challengeMode)p.mode='challenge';p.algo=val('sort-algo')}
+    if(!benchMode){if(sortBaseArr.length)p.arr=sortBaseArr.join(',');p.speed=val('sort-speed')}
+  }else if(viz==='bsearch'){
+    p.arr=bsArr.join(',');p.target=val('bs-target-sel')
+  }else if(viz==='pathfinder'){
+    p.algo=val('path-algo');p.start=pathStart.join('.');p.end=pathEnd.join('.')
+    const w=wallsToHex(pathGrid)
+    if(w)p.walls=w
+    if(p.algo==='dijkstra')p.weights=pathWeightSeed.toString(36)
+  }else if(viz==='hanoi'){
+    p.disks=val('hanoi-disks');p.speed=val('hanoi-speed')
+  }else if(viz==='nqueen'){
+    p.size=val('nq-size');p.speed=val('nq-speed')
+  }else if(viz==='sudoku'){
+    p.puzzle=val('sdk-puzzle-sel');p.speed=val('sdk-speed')
+  }
+  return p
+}
+function buildShareLink(viz){
+  const qs=Object.entries(captureScenario(viz)).map(([k,v])=>k+'='+encodeURIComponent(String(v)).replace(/%2C/g,',')).join('&')
+  return shareBase()+'#/'+viz+(qs?'?'+qs:'')
+}
+function parseShareHash(hash){
+  const m=/^#\/([a-z]+)(?:\?(.*))?$/.exec(hash||'')
+  if(!m)return null
+  const params=Object.create(null)
+  if(m[2])for(const pair of m[2].split('&')){
+    const i=pair.indexOf('=')
+    if(i<1)continue
+    try{params[decodeURIComponent(pair.slice(0,i))]=decodeURIComponent(pair.slice(i+1))}catch(e){}
+  }
+  return{route:m[1],params}
+}
+function setShareSpeed(viz,n){
+  const id=SHARE_SPEED_IDS[viz]
+  if(!id||n===null)return
+  document.getElementById(id).value=n
+  if(viz==='sorting')document.getElementById('sort-speed-val').textContent=n
+}
+function applySortingScenario(p,bad){
+  openViz('sorting')
+  // A link always describes the whole setup, so start from plain single mode.
+  if(compareMode){document.getElementById('compare-toggle').checked=false;toggleCompareMode()}
+  if(benchMode){document.getElementById('bench-toggle').checked=false;toggleBenchMode()}
+  if(challengeMode){document.getElementById('challenge-toggle').checked=false;toggleChallengeMode()}
+  const sortKeys=Object.keys(SORT_LABELS)
+  const mode=shareToken(p.mode,['compare','bench','challenge'])
+  if(p.mode!==undefined&&mode===null)bad('mode')
+  const algo=shareToken(p.algo,sortKeys)
+  if(p.algo!==undefined&&algo===null)bad('algo')
+  if(algo)document.getElementById('sort-algo').value=algo
+  const speed=shareInt(p.speed,1,10)
+  if(p.speed!==undefined&&speed===null)bad('speed')
+  setShareSpeed('sorting',speed)
+  if(p.arr!==undefined){
+    const r=parseCustomArray(p.arr)
+    if(r.values.length>=CUSTOM_MIN_LEN)loadSharedArray(r.values);else bad('array')
+  }
+  if(mode==='compare'){
+    for(const[k,id]of[['a','sort-algo-a'],['b','sort-algo-b']]){
+      const v=shareToken(p[k],sortKeys)
+      if(v)document.getElementById(id).value=v;else if(p[k]!==undefined)bad(k)
+    }
+    document.getElementById('compare-toggle').checked=true;toggleCompareMode()
+  }else if(mode==='bench'){
+    const pat=shareToken(p.pattern,SHARE_PATTERNS),met=shareToken(p.metric,SHARE_METRICS)
+    if(pat)document.getElementById('bench-pattern').value=pat;else if(p.pattern!==undefined)bad('pattern')
+    if(met)document.getElementById('bench-metric').value=met;else if(p.metric!==undefined)bad('metric')
+    document.getElementById('bench-toggle').checked=true;toggleBenchMode()
+  }else if(mode==='challenge'){
+    document.getElementById('challenge-toggle').checked=true;toggleChallengeMode()
+  }else sortAlgoChange()
+}
+function applyBsearchScenario(p,bad){
+  openViz('bsearch')
+  if(p.arr!==undefined){
+    const vals=[...new Set(p.arr.split(',').filter(t=>/^\d{1,3}$/.test(t)).map(Number))].filter(n=>n>=1).sort((a,b)=>a-b)
+    if(vals.length>=3&&vals.length<=24)resetBS(vals);else bad('array')
+  }
+  if(p.target!==undefined){
+    const t=shareInt(p.target,1,999)
+    if(t!==null&&bsArr.includes(t))document.getElementById('bs-target-sel').value=t;else bad('target')
+  }
+}
+function applyPathfinderScenario(p,bad){
+  const algo=shareToken(p.algo,SHARE_PATH_ALGOS)
+  if(p.algo!==undefined&&algo===null)bad('algo')
+  const cell=v=>{const m=/^(\d{1,2})\.(\d{1,2})$/.exec(v||'');return m&&+m[1]<ROWS&&+m[2]<COLS?[+m[1],+m[2]]:null}
+  let s=cell(p.start),e=cell(p.end)
+  if(p.start!==undefined&&!s)bad('start')
+  if(p.end!==undefined&&!e)bad('end')
+  s=s||[...SHARE_DEFAULT_START];e=e||[...SHARE_DEFAULT_END]
+  if(s[0]===e[0]&&s[1]===e[1]){bad('start');bad('end');s=[...SHARE_DEFAULT_START];e=[...SHARE_DEFAULT_END]}
+  openViz('pathfinder')
+  if(algo)document.getElementById('path-algo').value=algo
+  pathStart=s;pathEnd=e
+  resetPathGrid()
+  if(p.weights!==undefined){
+    const seed=/^[0-9a-z]{1,7}$/.test(p.weights)?parseInt(p.weights,36):NaN
+    if(Number.isFinite(seed)&&seed<=4294967295){pathWeightSeed=seed;pathWeights=weightsFromSeed(seed)}else bad('weights')
+  }
+  if(p.walls!==undefined){
+    if(/^[0-9a-f]{1,119}$/.test(p.walls)){
+      for(const[r,c]of hexToWalls(p.walls)){
+        if(!(r===s[0]&&c===s[1])&&!(r===e[0]&&c===e[1]))pathGrid[r][c]='wall'
+      }
+    }else bad('walls')
+  }
+  renderPathGrid()
+}
+function applySimpleScenario(viz,p,bad){
+  openViz(viz)
+  const spec={hanoi:['disks','hanoi-disks',3,6,resetHanoi],nqueen:['size','nq-size',4,8,resetNQ],sudoku:['puzzle','sdk-puzzle-sel',0,2,loadSudokuPuzzle]}[viz]
+  const[key,id,lo,hi,reset]=spec
+  if(p[key]!==undefined){
+    const n=shareInt(p[key],lo,hi)
+    if(n!==null){document.getElementById(id).value=n;reset()}else bad(key)
+  }
+  const speed=shareInt(p.speed,1,10)
+  if(p.speed!==undefined&&speed===null)bad('speed')
+  setShareSpeed(viz,speed)
+}
+function applyScenario(viz,p){
+  const ignored=[]
+  const bad=name=>{if(!ignored.includes(name))ignored.push(name)}
+  if(viz==='sorting')applySortingScenario(p,bad)
+  else if(viz==='bsearch')applyBsearchScenario(p,bad)
+  else if(viz==='pathfinder')applyPathfinderScenario(p,bad)
+  else applySimpleScenario(viz,p,bad)
+  const msg=document.getElementById('share-msg-'+viz)
+  if(msg)msg.textContent='Opened from a shared link'+(ignored.length?' (ignored invalid values: '+ignored.join(', ')+')':'')+'.'
+  return{ignored}
+}
+function applyHashRoute(){
+  const parsed=parseShareHash(window.location.hash)
+  if(!parsed)return false
+  if(parsed.route==='docs'){openDocs();return true}
+  if(parsed.route==='progress'){openProgress();return true}
+  if(!ALL_VIZ.includes(parsed.route))return false
+  applyScenario(parsed.route,parsed.params)
+  return true
+}
+async function copyText(text){
+  try{if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(text);return true}}catch(e){}
+  try{
+    const ta=document.createElement('textarea')
+    ta.value=text;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;opacity:0'
+    document.body.appendChild(ta);ta.select()
+    const ok=typeof document.execCommand==='function'&&document.execCommand('copy')
+    ta.remove()
+    return !!ok
+  }catch(e){return false}
+}
+async function shareScenario(viz){
+  const link=buildShareLink(viz)
+  try{window.history.replaceState(null,'',link.slice(link.indexOf('#')))}catch(e){}
+  const msg=document.getElementById('share-msg-'+viz)
+  msg.innerHTML=''
+  if(await copyText(link)){
+    msg.textContent='Link copied. Anyone who opens it sees this exact setup.'
+  }else{
+    msg.appendChild(document.createTextNode('Copy this link:'))
+    const inp=quizEl('input','ctrl-input share-link');inp.type='text';inp.readOnly=true;inp.value=link
+    inp.setAttribute('aria-label','Shareable link')
+    msg.appendChild(inp);inp.focus();inp.select()
+  }
+  return link
+}
+function closeTourQuietly(){
+  tourIdx=-1;tourClearHighlight()
+  const pop=document.getElementById('tour-pop')
+  if(pop)pop.remove()
+}
+
 // ─── STARTUP ─────────────────────────────────────────────────
 initTheme()
-setTimeout(()=>{if(!window.__disableTour)startTour(false)},700)
+updateHubChips()
+// A shared link opens its scenario directly, and must not be covered by the
+// first-visit tour (which stays available from the nav and is not marked done).
+const linkedRoute=applyHashRoute()
+window.addEventListener('hashchange',()=>{closeTourQuietly();applyHashRoute()})
+setTimeout(()=>{if(!window.__disableTour&&!linkedRoute)startTour(false)},700)
 </script>
 </body>
 </html>

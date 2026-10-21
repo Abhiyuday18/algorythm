@@ -123,6 +123,12 @@ The interesting part is the trigger. "The run loop exited" is not the same as "t
 
 `quizShow` is idempotent per run (it is a no-op while a quiz for the current run exists), which makes it safe to call from every exit, including the three separate "no path found" branches in the pathfinder's step mode. Resets go through `quizReset` at every place a run can begin or be invalidated.
 
+## Shareable links and progress
+
+**URL state.** A share link is `base#/<visualizer>?key=value&...`. `captureScenario(viz)` reads the current controls into a flat object and `applyScenario(viz, params)` does the reverse, so a link is a plain serialization of UI state rather than a second source of truth. Two things needed groundwork to be reproducible: the sorting array is snapshotted before a run (`sortBaseArr`, because the live array is mutated while sorting), and Pathfinder weights are generated from a seed (`weightsFromSeed`, a small mulberry32 PRNG) so one short token reproduces 476 cell weights. Walls travel as a hex bitmask with trailing zeros trimmed. Links are untrusted input, so every parameter is checked against a whitelist or numeric range, invalid ones are dropped and named in a note, and values only ever reach the DOM through `value` or `textContent`. From a `file:` page the base falls back to the hosted URL, since a local path means nothing to the recipient.
+
+**Progress.** `recordQuizResult` is called from `quizAnswer` and writes a small object to `localStorage` (`algorythm-progress-v1`). On load it is run through `sanitizeProgress`, which only trusts known algorithm keys and in-range question indexes, so corrupt or hand-edited storage cannot break the page. Mastery is derived, never stored: `masteryOf` computes the level from which distinct questions have been answered correctly. Every storage access is wrapped in try/catch, so a browser with storage blocked simply runs without persistence.
+
 ## Rendering
 
 - **Canvas API**: sorting bars and Towers of Hanoi disks, redrawn from scratch on every step (`drawSort()`, `drawHanoi()`). Cheap enough at this scale that there's no need for partial redraws.
