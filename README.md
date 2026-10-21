@@ -161,6 +161,27 @@ That's it. No `npm install`, no server needed.
 
 ---
 
+## Changelog
+
+Project updates are recorded here, newest first.
+
+### 2026-10-20
+- **Quick-check quizzes**: when any algorithm finishes (a full Run or the last click in Step mode), a multiple-choice card appears below the visualizer with a question specific to that algorithm. Answers are marked green or red with a one-line explanation, and the card resets on the next run. Covers all 12 algorithms.
+- **Custom array input**: type comma-separated numbers into the sorting visualizer. Non-numbers are ignored, values are kept within 1-100, and empty or invalid input shows an inline error.
+- Documentation: new Docs page section for quizzes, architecture notes on how a finished run is detected, and test counts removed from the docs so they cannot go stale.
+
+### 2026-07-18 (v2.0)
+- **Pathfinder**: Dijkstra's algorithm on a weighted grid with cost-shaded cells and verified lowest-cost paths.
+- **Sorting modes**: Compare Mode (race two algorithms with an auto-written summary), Benchmark Mode (measured operation counts across array sizes and input patterns), and Challenge Mode (predict-before-reveal quizzing).
+- **Interface**: adaptive light and dark theme, a skippable guided tour, an in-app Docs page, and a cleaner grouped layout for the controls.
+- **Accessibility**: full keyboard operation including an arrow-key interface for the pathfinder grid, live-region narration for screen readers, and reduced-motion support.
+- **Engineering**: an automated test suite that runs the real `index.html` against independent reference implementations, GitHub Actions CI, and `ARCHITECTURE.md`.
+
+### 2026-06-09 (v1.0)
+- First release: sorting (Bubble, Selection, Insertion, Merge, Quick), binary search, BFS and DFS pathfinding, Towers of Hanoi, N-Queens, and a Sudoku solver, each with Run and Step modes, live pseudocode, and plain-English explanations.
+
+---
+
 ## About
 
 Built by **[Abhiyuday Pratap Singh](https://github.com/Abhiyuday18)** - CS sophomore at San Francisco State University.
