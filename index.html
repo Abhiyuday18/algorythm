@@ -102,6 +102,16 @@ nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-co
 .ctrl-label{font-size:.76rem;color:var(--muted);font-family:var(--mono)}
 input[type=range]{accent-color:var(--accent);cursor:pointer;width:110px}
 
+/* CUSTOM ARRAY INPUT */
+.custom-row{display:flex;flex-wrap:wrap;margin:-.2rem 0 1.1rem}
+.ctrl-input{background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.82rem;padding:.42rem .8rem;border-radius:7px;outline:none;transition:border-color .2s;width:min(340px,100%)}
+.ctrl-input::placeholder{color:var(--muted);opacity:.7}
+.ctrl-input:hover,.ctrl-input:focus{border-color:var(--accent)}
+.ctrl-input[aria-invalid="true"]{border-color:var(--red)}
+.custom-msg{font-size:.76rem;line-height:1.5;color:var(--muted);min-height:1.15rem}
+.custom-msg.error{color:var(--red)}
+.custom-msg.ok{color:var(--green)}
+
 /* STATS */
 .stat-row{display:flex;gap:1.3rem;margin-bottom:.9rem;flex-wrap:wrap;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:.5rem .95rem;width:fit-content;max-width:100%}
 .stat{font-family:var(--mono);font-size:.75rem;color:var(--muted)}
@@ -149,6 +159,27 @@ canvas{display:block;width:100%}
 .ch-opt.wrong{border-color:var(--red);color:var(--red);background:rgba(248,113,113,.1)}
 .challenge-feedback{font-size:.85rem;color:var(--muted);line-height:1.6;min-height:22px}
 .challenge-feedback span{color:var(--text)}
+
+/* POST-RUN QUIZ */
+.quiz-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.3rem;margin-top:1.1rem;animation:summaryIn .35s ease;scroll-margin:84px 0 24px}
+.quiz-head{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.7rem}
+.quiz-tag{font-family:var(--mono);font-size:.66rem;color:var(--accent);text-transform:uppercase;letter-spacing:.07em}
+.quiz-algo{font-family:var(--mono);font-size:.68rem;padding:.18rem .5rem;background:rgba(91,141,238,.1);border:1px solid rgba(91,141,238,.22);border-radius:4px;color:var(--accent)}
+.quiz-q{font-size:.95rem;font-weight:500;color:var(--text);line-height:1.55;margin-bottom:.85rem}
+.quiz-opts{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.8rem}
+.quiz-opt{display:flex;align-items:flex-start;gap:.7rem;width:100%;text-align:left;white-space:normal;line-height:1.45;padding:.6rem .9rem;font-weight:400}
+.quiz-letter{flex:none;width:1.3rem;height:1.3rem;margin-top:.02rem;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.68rem;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:4px}
+.quiz-opt.locked{pointer-events:none;cursor:default}
+.quiz-opt.locked:not(.correct):not(.wrong){opacity:.55}
+.quiz-opt.correct{border-color:var(--green);color:var(--green);background:rgba(52,211,153,.1)}
+.quiz-opt.wrong{border-color:var(--red);color:var(--red);background:rgba(248,113,113,.1)}
+.quiz-opt.correct .quiz-letter,.quiz-opt.wrong .quiz-letter{color:inherit;border-color:currentColor}
+.quiz-opt.correct::after{content:'\2713';margin-left:auto;padding-left:.6rem;font-weight:700}
+.quiz-opt.wrong::after{content:'\2717';margin-left:auto;padding-left:.6rem;font-weight:700}
+.quiz-why{font-size:.84rem;color:var(--muted);line-height:1.6;min-height:1.3rem}
+.quiz-why .verdict{font-weight:600}
+.quiz-why .verdict.ok{color:var(--green)}
+.quiz-why .verdict.no{color:var(--red)}
 
 /* BENCHMARK */
 .bench-note{font-size:.82rem;color:var(--muted);line-height:1.6;margin-top:.85rem}
@@ -271,7 +302,7 @@ canvas{display:block;width:100%}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .skip-link{position:absolute;top:-40px;left:.5rem;z-index:1000;background:var(--accent);color:#fff;padding:.55rem 1rem;border-radius:6px;font-family:var(--sans);font-size:.85rem;font-weight:600;text-decoration:none;transition:top .15s}
 .skip-link:focus{top:.5rem}
-.ctrl-btn:focus-visible,.ctrl-select:focus-visible,input[type=range]:focus-visible,.compare-toggle input:focus-visible,.algo-card:focus-visible,.nav-back:focus-visible,.nav-logo:focus-visible,.egg-close:focus-visible,#path-grid:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ctrl-btn:focus-visible,.ctrl-select:focus-visible,.ctrl-input:focus-visible,input[type=range]:focus-visible,.compare-toggle input:focus-visible,.algo-card:focus-visible,.nav-back:focus-visible,.nav-logo:focus-visible,.egg-close:focus-visible,#path-grid:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 #path-grid:focus .pcell.kfocus{box-shadow:inset 0 0 0 2px var(--yellow)}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{transition:none!important;animation:none!important}
@@ -423,11 +454,16 @@ canvas{display:block;width:100%}
     <div class="docs-block">
       <h3>The four sorting modes</h3>
       <ul>
-        <li><strong>Single</strong>: one algorithm, with Run (auto-play) and Step (one operation per click).</li>
+        <li><strong>Single</strong>: one algorithm, with Run (auto-play) and Step (one operation per click). Type your own comma-separated numbers into <strong>Custom array</strong> and press Use Array to run it on your data: non-numbers are ignored, values are kept within 1-100, and Compare and Challenge use the same array. Randomize returns to a random one.</li>
         <li><strong>Compare</strong>: two algorithms race on identical copies of the same array, ending with a summary of who finished first and a plain-English explanation of why.</li>
         <li><strong>Benchmark</strong>: all five algorithms are measured on real arrays at doubling sizes (8 to 256) and the operation counts are plotted, so the O(n&#178;) vs O(n log n) gap appears as data. Choose the input pattern (random, nearly sorted, reversed, few unique values) to see the rankings change.</li>
         <li><strong>Challenge</strong>: the animation pauses mid-run and asks you to predict the next operation before it happens, with score and streak tracking. Every question is answerable from what is on screen.</li>
       </ul>
+    </div>
+
+    <div class="docs-block">
+      <h3>Quick-check quizzes</h3>
+      <p>Whenever an algorithm finishes (a full Run, or the last click in Step mode) a short multiple-choice question about what you just watched appears below the visualizer. Every algorithm has its own questions: why Bubble Sort compares adjacent elements, why BFS cannot find the cheapest path on Dijkstra's weighted grid, what N-Queens does when no column is safe in a row, and so on. Pick an answer to see it marked green or red, with a one-line explanation. Starting a new run clears the card, and the question changes between runs.</p>
     </div>
 
     <div class="docs-block">
@@ -442,7 +478,7 @@ canvas{display:block;width:100%}
     <div class="docs-block">
       <h3>Under the hood</h3>
       <p>Every algorithm is written once as a JavaScript generator function that <code>yield</code>s at each visual step. The Run button drains that generator on a timer; the Step button advances it one <code>.next()</code> per click; Compare Mode advances two generators in lockstep; Benchmark Mode drains them silently to count operations; Challenge Mode reads the structured log they emit to build quiz questions. One implementation, five consumers, so the animation, the measurements, and the quiz can never disagree with each other.</p>
-      <p>The project ships with a 74-test suite that loads this exact file into a simulated browser and checks every algorithm against independent reference implementations on every push. See <code>ARCHITECTURE.md</code> in the repository for the full write-up.</p>
+      <p>The project ships with an automated test suite that loads this exact file into a simulated browser and checks every algorithm against independent reference implementations on every push. See <code>ARCHITECTURE.md</code> in the repository for the full write-up.</p>
     </div>
 
     <div class="docs-block">
@@ -542,6 +578,16 @@ canvas{display:block;width:100%}
       </div>
     </div>
   </div>
+  <div class="custom-row" id="sort-custom-row">
+    <div class="ctrl-group">
+      <label class="ctrl-caption" for="custom-array-input">Custom array</label>
+      <div class="ctrl-inline">
+        <input type="text" class="ctrl-input" id="custom-array-input" placeholder="5, 3, 8, 1, 9" autocomplete="off" spellcheck="false" aria-describedby="custom-msg" onkeydown="if(event.key==='Enter'){event.preventDefault();useCustomArray()}"/>
+        <button class="ctrl-btn" id="custom-array-btn" onclick="useCustomArray()">Use Array</button>
+      </div>
+      <div class="custom-msg" id="custom-msg" role="status" aria-live="polite"></div>
+    </div>
+  </div>
   <div class="stat-row" id="sort-single-stats">
     <div class="stat">Comparisons: <span id="sort-comps">0</span></div>
     <div class="stat">Swaps: <span id="sort-swaps">0</span></div>
@@ -569,6 +615,7 @@ canvas{display:block;width:100%}
       </div>
     </div>
   </div>
+  <div class="quiz-card" id="quiz-sorting" role="region" aria-label="Quick check quiz" aria-live="polite" style="display:none"></div>
   <div id="sort-compare-layout" style="display:none">
     <div class="compare-grid">
       <div>
@@ -690,6 +737,7 @@ canvas{display:block;width:100%}
       </div>
     </div>
   </div>
+  <div class="quiz-card" id="quiz-bsearch" role="region" aria-label="Quick check quiz" aria-live="polite" style="display:none"></div>
 </div>
 
 <!-- ═══ PATHFINDER ════════════════════════════════════════════ -->
@@ -754,6 +802,7 @@ canvas{display:block;width:100%}
       </div>
     </div>
   </div>
+  <div class="quiz-card" id="quiz-pathfinder" role="region" aria-label="Quick check quiz" aria-live="polite" style="display:none"></div>
 </div>
 
 <!-- ═══ TOWERS OF HANOI ═══════════════════════════════════════ -->
@@ -807,6 +856,7 @@ canvas{display:block;width:100%}
       </div>
     </div>
   </div>
+  <div class="quiz-card" id="quiz-hanoi" role="region" aria-label="Quick check quiz" aria-live="polite" style="display:none"></div>
 </div>
 
 <!-- ═══ N-QUEEN ════════════════════════════════════════════════ -->
@@ -862,6 +912,7 @@ canvas{display:block;width:100%}
       </div>
     </div>
   </div>
+  <div class="quiz-card" id="quiz-nqueen" role="region" aria-label="Quick check quiz" aria-live="polite" style="display:none"></div>
 </div>
 
 <!-- ═══ SUDOKU ════════════════════════════════════════════════ -->
@@ -918,6 +969,7 @@ canvas{display:block;width:100%}
       </div>
     </div>
   </div>
+  <div class="quiz-card" id="quiz-sudoku" role="region" aria-label="Quick check quiz" aria-live="polite" style="display:none"></div>
 </div>
 
 </div><!-- end viz-panel -->
@@ -1008,6 +1060,185 @@ function clearPseudo(prefix){
   document.querySelectorAll('[id^="'+prefix+'"]').forEach(el=>el.classList.remove('active','done-line'))
 }
 
+// ─── POST-RUN QUIZ ────────────────────────────────────────────
+// When an algorithm finishes (a full Run, or the last click in Step mode) a
+// multiple-choice card appears below the visualizer. Questions are static
+// data keyed by algorithm; each item is {q, opts, a: index of the correct
+// option, why: one-line explanation}. Option order is shuffled per display
+// so the correct answer is not always in the same slot, and consecutive
+// runs of the same algorithm avoid repeating the previous question.
+const QUIZ_TITLES={bubble:'Bubble Sort',selection:'Selection Sort',insertion:'Insertion Sort',merge:'Merge Sort',quick:'Quick Sort',bsearch:'Binary Search',bfs:'BFS',dfs:'DFS',dijkstra:'Dijkstra',hanoi:'Towers of Hanoi',nqueen:'N-Queens',sudoku:'Sudoku Solver'}
+const QUIZ_BANK={
+  bubble:[
+    {q:'Why does Bubble Sort only compare adjacent elements?',
+     opts:['Swapping neighbors moves a large value one step toward its final spot, so repeated passes carry it to the end','Neighbors are always the closest in value, so they are the only pairs worth comparing','Comparing elements that are far apart is not possible on an array','One pass over all neighboring pairs is enough to fully sort the array'],a:0,
+     why:'Each pass pushes the largest unsorted value to the right end, so after enough passes every element has reached its place.'},
+    {q:'After the first full pass of Bubble Sort, which value is guaranteed to be in its final position?',
+     opts:['The largest value, at the far right','The smallest value, at the far left','The value that started in the middle','Every value that was already in order'],a:0,
+     why:'The largest value is swapped rightward every time it is compared, so it lands in the last slot after one pass.'}
+  ],
+  selection:[
+    {q:'Selection Sort makes at most one swap per pass. Why?',
+     opts:['It scans the whole unsorted part to find the minimum first, then swaps it into place once','It only swaps when two neighbors are out of order','It skips swapping unless the array is already sorted','It swaps the first and last unsorted elements on every pass'],a:0,
+     why:'Finding the minimum needs comparisons only, so a single swap at the end of each pass puts it in its final position.'},
+    {q:'Which input makes Selection Sort do the fewest comparisons?',
+     opts:['None of them: it makes about n²/2 comparisons whatever the order','An already sorted array','A reversed array','A nearly sorted array'],a:0,
+     why:'It always scans the full unsorted remainder, so the order of the input never lets it skip a comparison.'}
+  ],
+  insertion:[
+    {q:'Why is Insertion Sort fast on a nearly sorted array?',
+     opts:['Each value only shifts past the few larger values on its left, so the inner loop stops almost at once','It skips every element that is smaller than its right neighbor without looking at it','It splits the array in half so fewer elements are examined','It swaps the smallest value to the front before it starts'],a:0,
+     why:'When values are already near their place, shifting stops after a step or two, so total work approaches O(n).'},
+    {q:'What does Insertion Sort do with the value it picks up (the key)?',
+     opts:['Shifts larger values right until it finds the key\'s slot, then drops the key in','Swaps it with the smallest value in the unsorted part','Compares it with a pivot and sends it to one side','Merges it into a second sorted array'],a:0,
+     why:'Everything left of the key is already sorted, so larger values slide right to open exactly the right gap.'}
+  ],
+  merge:[
+    {q:'Why does Merge Sort take O(n log n) time on every input?',
+     opts:['It halves the array about log n times, and each level of merging costs about n comparisons','It skips the parts of the array that are already in order','It picks a pivot near the median, so the work is always balanced','It only sorts half of the elements and copies the rest'],a:0,
+     why:'The recursion is log n levels deep and each level touches all n elements once, however the input is arranged.'},
+    {q:'When merging two sorted halves, which value is taken next?',
+     opts:['The smaller of the two front values','The larger of the two front values','Whichever half is longer','The middle value of the combined range'],a:0,
+     why:'Both halves are already sorted, so the smaller front value is the smallest one left across both.'}
+  ],
+  quick:[
+    {q:'What does the partition step do with the pivot?',
+     opts:['Moves smaller values to its left and the rest to its right, which puts the pivot in its final position','Swaps the pivot with the largest value so it ends up last','Splits the array exactly in half around the pivot\'s position','Sorts the pivot\'s neighbors and ignores everything else'],a:0,
+     why:'After partitioning, everything left of the pivot is smaller and everything right is not, so the pivot never has to move again.'},
+    {q:'On which input is Quick Sort with a last-element pivot slowest?',
+     opts:['An already sorted array','A randomly shuffled array','An array shorter than 10 elements','An array with unusually large values'],a:0,
+     why:'The last element is then the largest, so every partition removes just one value and the work grows toward O(n²).'}
+  ],
+  bsearch:[
+    {q:'Why does Binary Search require a sorted array?',
+     opts:['Comparing with the middle shows which half cannot hold the target, which only works if order is guaranteed','Unsorted arrays cannot be read by position','It needs the smallest value first to find a starting point','Sorting makes each comparison cheaper to compute'],a:0,
+     why:'Without guaranteed order, discarding half the array after one comparison could throw away the target.'},
+    {q:'This array has 16 elements. What is the most comparisons Binary Search could need?',
+     opts:['5','4','8','16'],a:0,
+     why:'Each comparison halves the range (16, 8, 4, 2, 1), so at most 5 comparisons are needed, about log₂ n.'}
+  ],
+  bfs:[
+    {q:'Why does BFS find a path with the fewest steps?',
+     opts:['It explores every cell one step away, then two steps away, and so on, so the end is first reached by a shortest route','It always moves toward the end cell first','It follows one branch to the end before trying others','It remembers which cells have the lowest weights'],a:0,
+     why:'Exploring in rings of equal distance means the end cell is first reached by the route with the fewest steps.'},
+    {q:'BFS returns the path with the fewest steps. When might that not be the cheapest path?',
+     opts:['When cells have different costs, because step count ignores cost','When the grid has no walls','When the start and end are far apart','Never: fewest steps is always cheapest'],a:0,
+     why:'BFS counts steps, not weights, so a longer route over cheap cells can cost less. Dijkstra is built for that case.'}
+  ],
+  dfs:[
+    {q:'Why can DFS return a path that is not the shortest?',
+     opts:['It follows one branch as deep as it can and stops the first time it reaches the end, however long that route is','It skips cells next to walls, so it misses shorter routes','It only moves in straight lines','It visits cells in random order'],a:0,
+     why:'DFS commits to a branch before looking at alternatives, so the first path it finds can wind far longer than necessary.'},
+    {q:'What data structure drives DFS, compared with BFS?',
+     opts:['A stack, which takes the most recently added cell next','A queue, which takes the oldest added cell next','A priority queue ordered by cost','A sorted array of cell weights'],a:0,
+     why:'Taking the newest cell first makes DFS dive down one branch before backing up, while the queue in BFS spreads out evenly.'}
+  ],
+  dijkstra:[
+    {q:'Why would BFS not find the optimal path on a weighted grid?',
+     opts:['BFS minimizes the number of steps, but the cheapest route can take more steps through low-weight cells','BFS cannot walk around walls','BFS visits some cells more than once and gets confused','BFS always picks the cell with the highest weight next'],a:0,
+     why:'BFS treats every step as equal and ignores the 1 to 9 weights, while Dijkstra adds weights up and expands the cheapest cell first.'},
+    {q:'Which unvisited cell does Dijkstra expand next?',
+     opts:['The one with the lowest total cost from the start so far','The one closest to the end cell','The one added to the queue most recently','The one with the lowest weight of its own'],a:0,
+     why:'Always taking the cheapest known cell first means that once a cell is visited, no cheaper route to it can exist.'}
+  ],
+  hanoi:[
+    {q:'Why does adding one more disk roughly double the number of moves?',
+     opts:['Moving n disks means moving n-1 disks twice, plus one move for the largest disk','Each disk has to visit every peg exactly twice','The largest disk has to move once for every smaller disk','Every extra disk forces one more peg into use'],a:0,
+     why:'The smaller disks go to the spare peg and back on top, so moves(n) = 2 x moves(n-1) + 1, which works out to 2ⁿ - 1.'},
+    {q:'Before the largest disk can move, where must all the smaller disks be?',
+     opts:['Stacked on the spare peg, out of the way','On the destination peg','Still on top of the largest disk','Spread across all three pegs'],a:0,
+     why:'The largest disk can only move onto an empty peg, so every smaller disk must already be stacked on the third peg.'}
+  ],
+  nqueen:[
+    {q:'What happens when no column is safe in a row?',
+     opts:['The algorithm backtracks: it removes the queen from the previous row and tries that queen\'s next column','It places a queen anyway and fixes the conflict later','It restarts from the first row with an empty board','It skips that row and moves on to the next one'],a:0,
+     why:'No safe cell means an earlier placement must be wrong, so the algorithm undoes it and tries the next option.'},
+    {q:'Why does the safety check only look at columns and diagonals, not rows?',
+     opts:['Exactly one queen is placed per row, so two queens can never share a row','Queens only attack along columns and diagonals','The grid layout checks rows automatically','Row conflicts are fixed after all queens are placed'],a:0,
+     why:'The search fills one row at a time, so a new queen can only clash with earlier ones through a column or a diagonal.'}
+  ],
+  sudoku:[
+    {q:'What does the solver do when no digit from 1 to 9 fits the current cell?',
+     opts:['It backtracks: erases the previous cell\'s digit and tries that cell\'s next candidate','It leaves the cell blank and moves on','It restarts the whole puzzle','It picks the digit with the fewest conflicts'],a:0,
+     why:'A cell with no valid digit proves an earlier guess was wrong, so the solver undoes it and tries the next digit there.'},
+    {q:'Why is a digit only placed if it passes the row, column, and 3x3 box checks?',
+     opts:['A digit that breaks a rule can never lead to a valid solution, so rejecting it early prunes the search','Digits that pass are guaranteed to be part of the final answer','The checks make each digit appear exactly once in the puzzle','The checks only decide which cells to color'],a:0,
+     why:'Rejecting rule-breaking digits immediately cuts off whole branches of guesses that could never work.'}
+  ]
+}
+const quizState={},quizLast={}
+function quizEl(tag,cls,text){
+  const e=document.createElement(tag)
+  if(cls)e.className=cls
+  if(text!==undefined)e.textContent=text
+  return e
+}
+function quizShuffledOrder(n){
+  const o=Array.from({length:n},(_,i)=>i)
+  for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[o[i],o[j]]=[o[j],o[i]]}
+  return o
+}
+function quizPickIndex(key){
+  const bank=QUIZ_BANK[key]
+  if(!bank||!bank.length)return -1
+  let idx=Math.floor(Math.random()*bank.length)
+  if(bank.length>1&&idx===quizLast[key])idx=(idx+1)%bank.length
+  quizLast[key]=idx
+  return idx
+}
+function quizReset(section){
+  delete quizState[section]
+  const card=document.getElementById('quiz-'+section)
+  if(card){card.style.display='none';card.innerHTML=''}
+}
+function quizShow(section,key){
+  if(quizState[section])return
+  const card=document.getElementById('quiz-'+section)
+  const idx=quizPickIndex(key)
+  if(!card||idx<0)return
+  const item=QUIZ_BANK[key][idx]
+  const st={key,idx,order:quizShuffledOrder(item.opts.length),answered:false}
+  quizState[section]=st
+  card.innerHTML=''
+  const head=quizEl('div','quiz-head')
+  head.appendChild(quizEl('span','quiz-tag','Quick check'))
+  head.appendChild(quizEl('span','quiz-algo',QUIZ_TITLES[key]||key))
+  const q=quizEl('div','quiz-q',item.q);q.id='quiz-q-'+section
+  const opts=quizEl('div','quiz-opts');opts.setAttribute('role','group');opts.setAttribute('aria-labelledby',q.id)
+  const why=quizEl('div','quiz-why')
+  st.order.forEach((origIdx,pos)=>{
+    const b=quizEl('button','ctrl-btn quiz-opt');b.type='button'
+    b.appendChild(quizEl('span','quiz-letter',String.fromCharCode(65+pos)))
+    b.appendChild(quizEl('span','quiz-text',item.opts[origIdx]))
+    b.addEventListener('click',()=>quizAnswer(section,pos))
+    opts.appendChild(b)
+  })
+  card.appendChild(head);card.appendChild(q);card.appendChild(opts);card.appendChild(why)
+  card.style.display='block'
+  if(card.scrollIntoView){
+    const calm=typeof window.matchMedia==='function'&&window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    try{card.scrollIntoView({block:'nearest',behavior:calm?'auto':'smooth'})}catch(e){card.scrollIntoView()}
+  }
+}
+function quizAnswer(section,pos){
+  const st=quizState[section]
+  if(!st||st.answered)return
+  st.answered=true;st.picked=pos
+  const item=QUIZ_BANK[st.key][st.idx]
+  const correctPos=st.order.indexOf(item.a)
+  const card=document.getElementById('quiz-'+section)
+  card.querySelectorAll('.quiz-opt').forEach((b,i)=>{
+    b.classList.add('locked');b.setAttribute('aria-disabled','true')
+    if(i===correctPos)b.classList.add('correct')
+    else if(i===pos)b.classList.add('wrong')
+  })
+  const right=pos===correctPos
+  const why=card.querySelector('.quiz-why')
+  why.innerHTML=''
+  why.appendChild(quizEl('span','verdict '+(right?'ok':'no'),right?'Correct.':'Not quite. The answer is '+String.fromCharCode(65+correctPos)+'.'))
+  why.appendChild(document.createTextNode(' '+item.why))
+}
+
 // ─── MINI PREVIEWS ────────────────────────────────────────────
 function buildMinis(){
   // Sort bars
@@ -1093,6 +1324,7 @@ const SORT_INFO={
 }
 
 function updateSortModeLayouts(){
+  quizReset('sorting')
   const single=!compareMode&&!benchMode&&!challengeMode
   document.getElementById('sort-single-controls').style.display=(single||challengeMode)?'contents':'none'
   document.getElementById('sort-compare-controls').style.display=compareMode?'contents':'none'
@@ -1106,6 +1338,8 @@ function updateSortModeLayouts(){
   document.getElementById('sort-size-ctrl').style.display=(benchMode||challengeMode)?'none':'contents'
   document.getElementById('sort-speed-ctrl').style.display=benchMode?'none':'contents'
   document.getElementById('sort-rand-btn').style.display=benchMode?'none':''
+  // Benchmark measures its own generated input patterns, so a custom array has no meaning there.
+  document.getElementById('sort-custom-row').style.display=benchMode?'none':'flex'
   document.getElementById('sort-run-btn').innerHTML=challengeMode?'&#9654; Start Challenge':'&#9654; Run'
 }
 function initSort(){
@@ -1113,17 +1347,20 @@ function initSort(){
   document.getElementById('compare-toggle').checked=false
   document.getElementById('bench-toggle').checked=false
   document.getElementById('challenge-toggle').checked=false
+  document.getElementById('custom-array-input').value=''
+  clearCustomArray()
   updateSortModeLayouts()
   resetSort()
 }
 function resetSort(){
   sortRunning=false;sortStepGen=null;sortStepMode=false
+  quizReset('sorting')
   document.getElementById('step-mode-badge').classList.remove('on')
   const btn=document.getElementById('sort-run-btn');btn.textContent='▶ Run';btn.disabled=false
   document.getElementById('sort-step-btn').disabled=false
   const n=parseInt(document.getElementById('sort-size').value)
-  sortArr=Array.from({length:n},()=>Math.floor(Math.random()*88)+8)
-  sortColors=new Array(n).fill('default')
+  sortArr=customArr?[...customArr]:Array.from({length:n},()=>Math.floor(Math.random()*88)+8)
+  sortColors=new Array(sortArr.length).fill('default')
   sortComps=0;sortSwaps=0
   document.getElementById('sort-comps').textContent='0'
   document.getElementById('sort-swaps').textContent='0'
@@ -1146,7 +1383,60 @@ function sortAlgoChange(){
   document.getElementById('sort-badge').textContent=SORT_LABELS[a]
   if(challengeMode)resetChallenge();else resetSort()
 }
-function handleRandomize(){if(challengeMode)resetChallenge();else if(benchMode)resetBench();else if(compareMode)resetCompare();else resetSort()}
+function handleRandomize(){
+  clearCustomArray()
+  if(challengeMode)resetChallenge();else if(benchMode)resetBench();else if(compareMode)resetCompare();else resetSort()
+}
+
+// ─── CUSTOM ARRAY INPUT ────────────────────────────────────────
+// The loaded array lives in one shared variable that the single, Compare,
+// and Challenge resets all read, so switching algorithm or mode keeps the
+// same data. Only Randomize (or moving the Size slider) goes back to random.
+const CUSTOM_MIN=1,CUSTOM_MAX=100,CUSTOM_MIN_LEN=2,CUSTOM_MAX_LEN=60
+const CUSTOM_NUM_RE=/^[+-]?(\d+\.?\d*|\.\d+)$/
+let customArr=null
+function parseCustomArray(text){
+  const tokens=String(text==null?'':text).split(',').map(t=>t.trim()).filter(t=>t!=='')
+  const values=[];let ignored=0,clamped=0
+  for(const tok of tokens){
+    if(!CUSTOM_NUM_RE.test(tok)){ignored++;continue}
+    let v=Math.round(Number(tok))
+    if(v<CUSTOM_MIN){v=CUSTOM_MIN;clamped++}
+    else if(v>CUSTOM_MAX){v=CUSTOM_MAX;clamped++}
+    values.push(v)
+  }
+  const truncated=Math.max(0,values.length-CUSTOM_MAX_LEN)
+  return{values:values.slice(0,CUSTOM_MAX_LEN),ignored,clamped,truncated,tokens:tokens.length}
+}
+function showCustomMsg(text,kind){
+  const el=document.getElementById('custom-msg')
+  el.textContent=text;el.className='custom-msg'+(kind?' '+kind:'')
+  document.getElementById('custom-array-input').setAttribute('aria-invalid',kind==='error'?'true':'false')
+}
+function syncSizeCaption(){
+  const slider=document.getElementById('sort-size')
+  document.getElementById('sort-size-val').textContent=customArr?customArr.length+' (custom)':slider.value
+}
+function clearCustomArray(){
+  customArr=null
+  showCustomMsg('','')
+  syncSizeCaption()
+}
+function useCustomArray(){
+  const res=parseCustomArray(document.getElementById('custom-array-input').value)
+  if(res.tokens===0){showCustomMsg('Type some numbers first, like 5, 3, 8, 1, 9.','error');return}
+  if(res.values.length===0){showCustomMsg('No valid numbers found. Use comma-separated numbers like 5, 3, 8, 1, 9.','error');return}
+  if(res.values.length<CUSTOM_MIN_LEN){showCustomMsg('Enter at least 2 numbers so there is something to sort.','error');return}
+  customArr=res.values
+  stopAllSortModes()
+  if(challengeMode)resetChallenge();else if(compareMode)resetCompare();else resetSort()
+  syncSizeCaption()
+  const notes=[]
+  if(res.ignored)notes.push(res.ignored+(res.ignored===1?' entry was':' entries were')+' not a number and ignored')
+  if(res.clamped)notes.push(res.clamped+(res.clamped===1?' value was':' values were')+' kept within '+CUSTOM_MIN+'-'+CUSTOM_MAX)
+  if(res.truncated)notes.push('only the first '+CUSTOM_MAX_LEN+' numbers were used')
+  showCustomMsg('Loaded '+customArr.length+' numbers'+(notes.length?' ('+notes.join('; ')+')':'')+'. Randomize goes back to a random array.','ok')
+}
 function handleRunSort(){if(challengeMode)runChallenge();else if(benchMode)runBenchmark();else if(compareMode)runCompareSort();else runSort()}
 function stopAllSortModes(){
   sortRunning=false;compareRunning=false;benchRunning=false;challengeRunning=false;challengeAwaiting=false
@@ -1331,21 +1621,29 @@ function*qPartGen(lo,hi){
 async function runSort(){
   if(sortRunning)return
   sortRunning=true;sortStepMode=false
+  quizReset('sorting')
+  const algoKey=document.getElementById('sort-algo').value
   sortStepGen=sortGenerator()
+  const gen=sortStepGen
   document.getElementById('sort-run-btn').disabled=true
   document.getElementById('sort-status').textContent='Running'
   document.getElementById('step-mode-badge').classList.remove('on')
   let r
   do{r=sortStepGen.next();drawSort();await sleep(getSortDelay())}while(!r.done&&sortRunning)
+  // A reset or algorithm change mid-run clears sortStepGen, so only a run
+  // that reached the end of its own generator counts as finished.
+  const finished=r.done&&sortStepGen===gen
   sortRunning=false
   document.getElementById('sort-run-btn').textContent='▶ Run'
   document.getElementById('sort-run-btn').disabled=false
+  if(finished)quizShow('sorting',algoKey)
 }
 function stepSort(){
   if(sortRunning)return
-  if(!sortStepGen){sortStepGen=sortGenerator();sortStepMode=true;document.getElementById('step-mode-badge').classList.add('on');document.getElementById('sort-status').textContent='Step mode'}
+  if(!sortStepGen){sortStepGen=sortGenerator();sortStepMode=true;document.getElementById('step-mode-badge').classList.add('on');document.getElementById('sort-status').textContent='Step mode';quizReset('sorting')}
+  const algoKey=document.getElementById('sort-algo').value
   const r=sortStepGen.next()
-  if(r.done){sortStepGen=null;document.getElementById('step-mode-badge').classList.remove('on')}
+  if(r.done){sortStepGen=null;document.getElementById('step-mode-badge').classList.remove('on');quizShow('sorting',algoKey)}
 }
 
 // ─── COMPARE MODE ──────────────────────────────────────────────
@@ -1362,7 +1660,7 @@ function resetCompare(){
   document.getElementById('sort-run-btn').disabled=false
   document.getElementById('compare-summary').style.display='none'
   const n=parseInt(document.getElementById('sort-size').value)
-  const arr=Array.from({length:n},()=>Math.floor(Math.random()*88)+8)
+  const arr=customArr?[...customArr]:Array.from({length:n},()=>Math.floor(Math.random()*88)+8)
   cmpA=makeCompareState(document.getElementById('cmp-canvas-a'),document.getElementById('sort-algo-a').value,arr,'a')
   cmpB=makeCompareState(document.getElementById('cmp-canvas-b'),document.getElementById('sort-algo-b').value,arr,'b')
   updateCompareStats(cmpA);updateCompareStats(cmpB)
@@ -1774,13 +2072,13 @@ function resetChallenge(){
   challengeRunning=false;challengeAwaiting=false
   chScore=0;chStreak=0
   const algo=document.getElementById('sort-algo').value
-  const arr=Array.from({length:CH_N},()=>Math.floor(Math.random()*90)+9)
+  const arr=customArr?[...customArr]:Array.from({length:CH_N},()=>Math.floor(Math.random()*90)+9)
   const fullLog=challengeSilentLog(algo,arr)
   chWant=Math.min(8,fullLog.length)
   const indices=new Set()
   for(let k=0;k<chWant;k++)indices.add(Math.floor((k+0.5)*fullLog.length/chWant))
   chPlan={indices,total:fullLog.length}
-  chState={canvas:document.getElementById('ch-canvas'),ctx:document.getElementById('ch-canvas').getContext('2d'),algo,arr:[...arr],colors:new Array(CH_N).fill('default'),comps:0,swaps:0,suffix:'ch',log:[],showValues:true}
+  chState={canvas:document.getElementById('ch-canvas'),ctx:document.getElementById('ch-canvas').getContext('2d'),algo,arr:[...arr],colors:new Array(arr.length).fill('default'),comps:0,swaps:0,suffix:'ch',log:[],showValues:true}
   updateCompareStats(chState)
   document.getElementById('cmp-status-ch').textContent='Ready'
   document.getElementById('ch-score').textContent='0/'+chWant
@@ -1867,6 +2165,7 @@ let bsArr=[],bsLow=0,bsHigh=0,bsStepGen=null
 function initBS(){resetBS()}
 function resetBS(){
   bsRunning=false;bsStepGen=null
+  quizReset('bsearch')
   const set=new Set();while(set.size<16)set.add(Math.floor(Math.random()*95)+3)
   bsArr=[...set].sort((a,b)=>a-b);bsLow=0;bsHigh=bsArr.length-1
   document.getElementById('bs-steps').textContent='0'
@@ -1926,17 +2225,21 @@ function*bsGenerator(target){
 }
 function stepBS(){
   const t=parseInt(document.getElementById('bs-target-sel').value)
-  if(!bsStepGen){bsStepGen=bsGenerator(t);document.getElementById('step-mode-badge').classList.add('on');document.getElementById('bs-status').textContent='Step mode'}
+  if(!bsStepGen){bsStepGen=bsGenerator(t);document.getElementById('step-mode-badge').classList.add('on');document.getElementById('bs-status').textContent='Step mode';quizReset('bsearch')}
   const r=bsStepGen.next()
-  if(r.done){bsStepGen=null;document.getElementById('step-mode-badge').classList.remove('on')}
+  if(r.done){bsStepGen=null;document.getElementById('step-mode-badge').classList.remove('on');quizShow('bsearch','bsearch')}
 }
 async function runBS(){
   const t=parseInt(document.getElementById('bs-target-sel').value)
+  quizReset('bsearch')
   bsStepGen=bsGenerator(t);bsRunning=true
+  const gen=bsStepGen
   document.getElementById('bs-run-btn').disabled=true;document.getElementById('bs-step-btn').disabled=true
   document.getElementById('step-mode-badge').classList.remove('on')
   let r;do{r=bsStepGen.next();await sleep(700)}while(!r.done&&r.value!=='found'&&bsRunning)
+  const finished=r.done&&bsStepGen===gen
   document.getElementById('bs-run-btn').disabled=false;document.getElementById('bs-step-btn').disabled=false;bsRunning=false
+  if(finished)quizShow('bsearch','bsearch')
 }
 
 // ════════════════════════════════════════════════════════════
@@ -2000,6 +2303,7 @@ function resetPathGrid(){
   document.getElementById('step-mode-badge').classList.remove('on')
 }
 function clearPath(){
+  quizReset('pathfinder')
   for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(pathGrid[r][c]==='visited'||pathGrid[r][c]==='path')pathGrid[r][c]='empty'
   renderPathGrid()
   document.getElementById('path-visited').textContent='0';document.getElementById('path-length').textContent='-'
@@ -2099,10 +2403,10 @@ async function stepPath(){
     initPathStep();renderPathGrid();return
   }
   if(algo==='dijkstra'){
-    if(!pathStepQueue.length){setExplain('path-explain','No more nodes to explore. No path found.');return}
+    if(!pathStepQueue.length){setExplain('path-explain','No more nodes to explore. No path found.');quizShow('pathfinder',algo);return}
     let d,r,c,key
     do{
-      if(!pathStepQueue.length){setExplain('path-explain','No more nodes to explore. No path found.');return}
+      if(!pathStepQueue.length){setExplain('path-explain','No more nodes to explore. No path found.');quizShow('pathfinder',algo);return}
       ;[d,r,c]=popMinDijkstraStep();key=`${r},${c}`
     }while(pathStepVisited.has(key))
     pathStepVisited.add(key);pathStepCount++
@@ -2127,7 +2431,7 @@ async function stepPath(){
     }
     renderPathGrid();return
   }
-  if(!pathStepQueue.length){setExplain('path-explain','No more nodes to explore. No path found.');return}
+  if(!pathStepQueue.length){setExplain('path-explain','No more nodes to explore. No path found.');quizShow('pathfinder',algo);return}
   const node=algo==='bfs'?pathStepQueue.shift():pathStepQueue.pop()
   const[r,c]=node;const key=`${r},${c}`;pathStepCount++
   document.getElementById('path-visited').textContent=pathStepCount
@@ -2155,6 +2459,7 @@ async function tracePathStep(parent,end){
   document.getElementById('path-length').textContent=len;document.getElementById('path-status').textContent='Path found ✓'
   setExplain('path-explain',`Path found! Length: <span>${len}</span> steps. The yellow cells show the optimal route from start to end.`)
   pathStepMode=false;document.getElementById('step-mode-badge').classList.remove('on')
+  quizShow('pathfinder',document.getElementById('path-algo').value)
 }
 async function runPath(){
   if(pathRunning||pathStepMode)return
@@ -2163,8 +2468,12 @@ async function runPath(){
   document.getElementById('path-status').textContent='Searching...'
   const algo=document.getElementById('path-algo').value
   const found=algo==='bfs'?await bfsPath():algo==='dfs'?await dfsPath():await dijkstraPath()
+  // A grid reset or leaving the page mid-run clears pathRunning, so only a
+  // search that ran to its own end (path found or frontier exhausted) counts.
+  const finished=pathRunning
   if(!found)document.getElementById('path-status').textContent='No path found'
   pathRunning=false;document.getElementById('path-run-btn').disabled=false
+  if(finished)quizShow('pathfinder',algo)
 }
 async function bfsPath(){
   const queue=[[...pathStart]],visited=new Set(),parent={}
@@ -2255,6 +2564,7 @@ const DCOL=['#5b8dee','#8b5cf6','#34d399','#fbbf24','#fb923c','#f87171']
 function initHanoi(){resetHanoi()}
 function resetHanoi(){
   hanoiRunning=false;hanoiMoveIdx=0
+  quizReset('hanoi')
   hanoiN=parseInt(document.getElementById('hanoi-disks').value)
   document.getElementById('hanoi-badge').textContent=hanoiN+' Disks'
   document.getElementById('hanoi-total').textContent=(Math.pow(2,hanoiN)-1)
@@ -2306,20 +2616,21 @@ function doHanoiMove(from,to){
 }
 function stepHanoi(){
   if(hanoiRunning)return
-  if(hanoiMoveIdx===0){document.getElementById('step-mode-badge').classList.add('on');document.getElementById('hanoi-status').textContent='Step mode'}
+  if(hanoiMoveIdx===0){document.getElementById('step-mode-badge').classList.add('on');document.getElementById('hanoi-status').textContent='Step mode';quizReset('hanoi')}
   if(hanoiMoveIdx>=hanoiMoves.length){setExplain('hanoi-explain','All disks moved to peg C! Solution complete.');document.getElementById('hanoi-status').textContent='Solved ✓';document.getElementById('step-mode-badge').classList.remove('on');return}
   const[from,to]=hanoiMoves[hanoiMoveIdx++]
   doHanoiMove(from,to)
-  if(hanoiMoveIdx>=hanoiMoves.length){document.getElementById('hanoi-status').textContent='Solved ✓';document.getElementById('step-mode-badge').classList.remove('on');document.getElementById('hanoi-log').innerHTML='All disks on peg C! Used <span>'+(Math.pow(2,hanoiN)-1)+'</span> moves.'}
+  if(hanoiMoveIdx>=hanoiMoves.length){document.getElementById('hanoi-status').textContent='Solved ✓';document.getElementById('step-mode-badge').classList.remove('on');document.getElementById('hanoi-log').innerHTML='All disks on peg C! Used <span>'+(Math.pow(2,hanoiN)-1)+'</span> moves.';quizShow('hanoi','hanoi')}
 }
 async function runHanoi(){
   if(hanoiRunning)return
   hanoiRunning=true;hanoiMoveIdx=0;hanoiMoveCount=0;hanoiPegs=[[],[],[]];for(let i=hanoiN;i>=1;i--)hanoiPegs[0].push(i)
+  quizReset('hanoi')
   document.getElementById('hanoi-run-btn').disabled=true;document.getElementById('hanoi-status').textContent='Solving...'
   document.getElementById('step-mode-badge').classList.remove('on')
   document.getElementById('hanoi-moves').textContent='0'
   for(const[from,to]of hanoiMoves){if(!hanoiRunning)break;doHanoiMove(from,to);await sleep(getHanoiDelay())}
-  if(hanoiRunning){document.getElementById('hanoi-status').textContent='Solved ✓';document.getElementById('hanoi-log').innerHTML='All disks on peg C! Used <span>'+(Math.pow(2,hanoiN)-1)+'</span> moves.'}
+  if(hanoiRunning){document.getElementById('hanoi-status').textContent='Solved ✓';document.getElementById('hanoi-log').innerHTML='All disks on peg C! Used <span>'+(Math.pow(2,hanoiN)-1)+'</span> moves.';quizShow('hanoi','hanoi')}
   hanoiRunning=false;document.getElementById('hanoi-run-btn').disabled=false
 }
 
@@ -2331,6 +2642,7 @@ let nqBoard=[],nqN=8,nqTries=0,nqBacks=0,nqStepGen=null
 function initNQ(){resetNQ()}
 function resetNQ(){
   nqRunning=false;nqStepGen=null;nqN=parseInt(document.getElementById('nq-size').value)
+  quizReset('nqueen')
   document.getElementById('nq-badge').textContent=nqN+'×'+nqN
   nqBoard=new Array(nqN).fill(-1);nqTries=0;nqBacks=0
   document.getElementById('nq-tries').textContent='0';document.getElementById('nq-backs').textContent='0'
@@ -2387,18 +2699,19 @@ function*solveNQGen(row){
 }
 function stepNQ(){
   if(nqRunning)return
-  if(!nqStepGen){nqStepGen=nqGenerator();document.getElementById('step-mode-badge').classList.add('on');document.getElementById('nq-status').textContent='Step mode'}
+  if(!nqStepGen){nqStepGen=nqGenerator();document.getElementById('step-mode-badge').classList.add('on');document.getElementById('nq-status').textContent='Step mode';quizReset('nqueen')}
   const r=nqStepGen.next()
-  if(r.done){nqStepGen=null;document.getElementById('step-mode-badge').classList.remove('on');document.getElementById('nq-status').textContent='Solved ✓';document.getElementById('nq-log').innerHTML='All '+nqN+' queens placed!';setExplain('nq-explain','Solution found! All '+nqN+' queens placed with no conflicts.')}
+  if(r.done){nqStepGen=null;document.getElementById('step-mode-badge').classList.remove('on');document.getElementById('nq-status').textContent='Solved ✓';document.getElementById('nq-log').innerHTML='All '+nqN+' queens placed!';setExplain('nq-explain','Solution found! All '+nqN+' queens placed with no conflicts.');quizShow('nqueen','nqueen')}
 }
 async function runNQ(){
   if(nqRunning)return
   nqRunning=true;nqTries=0;nqBacks=0;nqBoard=new Array(nqN).fill(-1)
+  quizReset('nqueen')
   nqStepGen=nqGenerator()
   document.getElementById('nq-run-btn').disabled=true;document.getElementById('nq-status').textContent='Solving...'
   document.getElementById('step-mode-badge').classList.remove('on')
   let r;do{r=nqStepGen.next();await sleep(getNQDelay())}while(!r.done&&nqRunning)
-  if(nqRunning){document.getElementById('nq-status').textContent='Solved ✓';document.getElementById('nq-log').innerHTML='All '+nqN+' queens placed!'}
+  if(nqRunning){document.getElementById('nq-status').textContent='Solved ✓';document.getElementById('nq-log').innerHTML='All '+nqN+' queens placed!';quizShow('nqueen','nqueen')}
   nqRunning=false;document.getElementById('nq-run-btn').disabled=false;nqStepGen=null
 }
 
@@ -2415,6 +2728,7 @@ let sdkGiven=[],sdkBoard=[],sdkFilled=0,sdkBacks=0,sdkStepGen=null
 function initSudoku(){loadSudokuPuzzle()}
 function loadSudokuPuzzle(){
   sdkRunning=false;sdkStepGen=null
+  quizReset('sudoku')
   const idx=parseInt(document.getElementById('sdk-puzzle-sel').value)
   sdkGiven=SDK_PUZZLES[idx].map(r=>[...r]);sdkBoard=sdkGiven.map(r=>[...r])
   sdkFilled=0;sdkBacks=0
@@ -2477,7 +2791,7 @@ function*solveSdkGen(){
 }
 function stepSudoku(){
   if(sdkRunning)return
-  if(!sdkStepGen){sdkStepGen=sdkGenerator();document.getElementById('step-mode-badge').classList.add('on');document.getElementById('sdk-status').textContent='Step mode'}
+  if(!sdkStepGen){sdkStepGen=sdkGenerator();document.getElementById('step-mode-badge').classList.add('on');document.getElementById('sdk-status').textContent='Step mode';quizReset('sudoku')}
   const r=sdkStepGen.next()
   if(r.done){
     sdkStepGen=null;document.getElementById('step-mode-badge').classList.remove('on')
@@ -2485,11 +2799,13 @@ function stepSudoku(){
     for(let row=0;row<9;row++)for(let col=0;col<9;col++)if(sdkGiven[row][col]===0){const el=document.getElementById('sdk-'+row+'-'+col);el.className='sdk-cell done';bS(row,col,el)}
     document.getElementById('sdk-status').textContent='Solved ✓'
     setExplain('sdk-explain','Puzzle solved! All cells filled with valid digits.')
+    quizShow('sudoku','sudoku')
   }
 }
 async function runSudoku(){
   if(sdkRunning)return
   sdkBoard=sdkGiven.map(r=>[...r]);sdkRunning=true;sdkFilled=0;sdkBacks=0
+  quizReset('sudoku')
   sdkStepGen=sdkGenerator()
   document.getElementById('sdk-run-btn').disabled=true;document.getElementById('sdk-status').textContent='Solving...'
   document.getElementById('step-mode-badge').classList.remove('on')
@@ -2500,6 +2816,7 @@ async function runSudoku(){
     document.getElementById('sdk-status').textContent='Solved ✓'
     document.getElementById('sdk-log').innerHTML='Solved in <span>'+sdkFilled+'</span> placements, <span>'+sdkBacks+'</span> backtracks.'
     setExplain('sdk-explain','Puzzle solved! <span>'+sdkFilled+'</span> cells filled, <span>'+sdkBacks+'</span> backtracks needed.')
+    quizShow('sudoku','sudoku')
   }
   sdkRunning=false;document.getElementById('sdk-run-btn').disabled=false;sdkStepGen=null
 }

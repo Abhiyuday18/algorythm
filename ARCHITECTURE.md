@@ -111,6 +111,18 @@ const SORT_INFO = {
 
 Switching algorithms re-renders the pseudocode block by mapping over `info.pseudo` into `<div class="pline" id="...">` elements, which is also what makes line-highlighting during execution possible (`setPseudo('sortp', activeLineIndex)` just toggles a class on the matching `id`).
 
+## Post-run quizzes: deciding when a run is really finished
+
+When an algorithm finishes, a multiple-choice card appears below its visualizer. The content is plain data (`QUIZ_BANK`, keyed by algorithm, each item `{q, opts, a, why}`) and one shared pair of functions (`quizShow`/`quizReset`) builds and clears the card for any of the six visualizers, with option order shuffled per display and the previous question skipped on the next run.
+
+The interesting part is the trigger. "The run loop exited" is not the same as "the algorithm finished": a Randomize, algorithm change, or grid reset mid-run also exits the loop, and quizzing someone about a run they abandoned would be wrong. Each visualizer already had a different way of knowing it was interrupted, so the hook reuses it instead of adding a new flag:
+
+- **Sorting and binary search** capture their generator when the run starts and only count the run as finished if `r.done && currentGenerator === capturedGenerator`; every reset path sets the shared generator variable to `null`.
+- **Pathfinder, N-Queens, Sudoku, Hanoi** check the existing `*Running` flag after the loop, which every reset and `goHub()` already clears.
+- **Step mode** is the generator's own `done` result (or, for Hanoi, the last move in the precomputed list), so it needs no extra bookkeeping.
+
+`quizShow` is idempotent per run (it is a no-op while a quiz for the current run exists), which makes it safe to call from every exit, including the three separate "no path found" branches in the pathfinder's step mode. Resets go through `quizReset` at every place a run can begin or be invalidated.
+
 ## Rendering
 
 - **Canvas API**: sorting bars and Towers of Hanoi disks, redrawn from scratch on every step (`drawSort()`, `drawHanoi()`). Cheap enough at this scale that there's no need for partial redraws.
@@ -129,7 +141,7 @@ Two details make this work:
 - **Private state access.** The app's top-level `let` bindings (`sortArr`, `pathGrid`, `nqBoard`, ...) are not `window` properties, and eval scopes don't persist between calls. So a small `__test` hook object is appended to the *same* eval invocation as the app script; its arrow functions close over the live bindings, giving tests read (and where needed, write) access without changing a line of `index.html`.
 - **Reference implementations, not self-agreement.** The pathfinding tests don't just check that the app "found a path" - they re-derive the expected result with independent BFS/Dijkstra implementations written inside the test files, then assert the app's reported path length and cost match. Sorting, N-Queens, and Sudoku results are checked against their mathematical definitions (sortedness, conflict-freedom, constraint validity).
 
-The suite (46 tests) runs on every push via GitHub Actions. All of this tooling is dev-only: `index.html` still runs with zero dependencies.
+The suite runs on every push via GitHub Actions. All of this tooling is dev-only: `index.html` still runs with zero dependencies.
 
 ## Adding a new algorithm
 
@@ -139,5 +151,6 @@ The pattern in this file is consistent enough that adding a 6th sorting algorith
 2. Write a `function* yourAlgoGen(){ ... }` that mutates `sortArr`/`sortColors`, calls `setPseudo`/`setExplain`/`drawSort()`, and `yield`s once per visual step.
 3. Add one `else if` branch to `sortGenerator()` dispatching to it.
 4. Add an `<option>` to the `#sort-algo` (and `#sort-algo-a`/`#sort-algo-b`) selects.
+5. Add an entry to `QUIZ_BANK` and `QUIZ_TITLES` so the post-run quiz has questions for it. A test fails if any algorithm in the selects has no questions.
 
 No changes are needed to `runSort`, `stepSort`, or the Compare Mode engine - they all operate on whatever generator `sortGenerator()`/`compareGen()` hands them.

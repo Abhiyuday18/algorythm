@@ -42,6 +42,10 @@ window.__test = {
   setPathEnd: (e) => { pathEnd = e },
   getPathCursor: () => pathCursor,
   setPathCursor: (r, c) => { pathCursor[0] = r; pathCursor[1] = c },
+  getCustomArr: () => customArr,
+  getQuizState: () => quizState,
+  getQuizBank: () => QUIZ_BANK,
+  getQuizTitles: () => QUIZ_TITLES,
   getChState: () => chState,
   getChPlan: () => chPlan
 }
